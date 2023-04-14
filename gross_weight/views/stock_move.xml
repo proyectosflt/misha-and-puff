@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_picking_form_inherit_gross_weight" model="ir.ui.view">
+        <field name="name">stock.picking.view.form.inherit</field>
+        <field name="model">stock.picking</field>
+        <field name="inherit_id" ref="stock.view_picking_form"/>
+        <field name="arch" type="xml">
+            <xpath
+                expr="//page[@name='operations']/field[@name='move_ids_without_package']/tree[1]/field[@name='product_qty']"
+                position="after">
+                <field name="gross_weight"/>
+                <field name="cone_quantity"/>
+            </xpath>
+        </field>
+    </record>
+</odoo>
