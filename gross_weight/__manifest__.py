@@ -13,12 +13,13 @@
     'data': [
        'views/product_product.xml',
        'views/stock_move.xml',
-       'views/stock_move_line.xml'
+       'views/stock_move_line.xml',
+       'views/stock_quant.xml',
     ],
     'demo': [
        
     ],
-    'auto_install': False,
+    'auto_install': True,
     'application': False,
     'assets': {
         
