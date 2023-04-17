@@ -70,3 +70,12 @@ class StockQuant(models.Model):
                 'cone_quantity': cone_quantity,
             })
         return self._get_available_quantity(product_id, location_id, lot_id=lot_id, package_id=package_id, owner_id=owner_id, strict=False, allow_negative=True), in_date
+    
+    # @api.model
+    def _get_inventory_fields_create(self):
+        """ Returns a list of fields user can edit when he want to create a quant in `inventory_mode`.
+        """
+
+        inventory_fields_create = super()._get_inventory_fields_create()
+        inventory_fields_create += ['gross_weight', 'cone_quantity']
+        return inventory_fields_create
