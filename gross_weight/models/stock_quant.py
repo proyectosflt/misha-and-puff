@@ -54,8 +54,8 @@ class StockQuant(models.Model):
             quant.write({
                 'quantity': quant.quantity + quantity,
                 'in_date': in_date,
-                'gross_weight': gross_weight,
-                'cone_quantity': cone_quantity,
+                'gross_weight': quant.gross_weight + gross_weight,
+                'cone_quantity': quant.cone_quantity + cone_quantity,
             })
         else:
             self.create({
