@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_invoice_tree_extended" model="ir.ui.view">
+        <field name="name">account.move.tree.extended</field>
+        <field name="model">account.move</field>
+        <field name="inherit_id" ref="account.view_invoice_tree"/>
+        <field name="arch" type="xml">
+            <!-- Remove the conflicting decoration-muted attribute that causes cancelled invoices to be gray -->
+            <xpath expr="//list" position="attributes">
+                <attribute name="decoration-muted"></attribute>
+            </xpath>
+            
+            <!-- Add decoration for cancelled state to the status_in_payment field instead -->
+            <xpath expr="//field[@name='status_in_payment']" position="attributes">
+                <attribute name="decoration-muted">state == 'cancel'</attribute>
+            </xpath>
+        </field>
+    </record>
+</odoo>
