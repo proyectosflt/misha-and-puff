@@ -7,10 +7,10 @@
         <field name="arch" type="xml">
            <xpath expr="//field[@name='status_in_payment']" position="attributes">
                 <attribute name="decoration-danger">payment_state == 'not_paid'</attribute>
-                <attribute name="decoration-muted">state == 'cancel'</attribute>
+                <attribute name="decoration-muted">payment_state == 'cancel'</attribute>
                 <attribute name="decoration-warning">payment_state in ('partial', 'in_payment')</attribute>
                 <attribute name="decoration-success">payment_state in ('paid', 'reversed')</attribute>
-                <attribute name="decoration-info">state == 'draft'</attribute>
+                <attribute name="decoration-info">payment_state == 'draft'</attribute>
            </xpath>
         </field>
     </record>
