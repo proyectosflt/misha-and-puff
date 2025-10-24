@@ -5,7 +5,7 @@
         <field name="model">account.move</field>
         <field name="inherit_id" ref="account.view_invoice_tree"/>
         <field name="arch" type="xml">
-           <xpath expr="//field[@name='payment_state']" position="attributes">
+           <xpath expr="//field[@name='status_in_payment']" position="attributes">
                 <attribute name="decoration-danger">payment_state == 'not_paid'</attribute>
                 <attribute name="decoration-muted">state == 'cancel'</attribute>
                 <attribute name="decoration-warning">payment_state in ('partial', 'in_payment')</attribute>
