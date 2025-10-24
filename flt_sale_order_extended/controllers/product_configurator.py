@@ -1,3 +1,4 @@
+from odoo import http
 from odoo.addons.sale.controllers.product_configurator import SaleProductConfiguratorController
 
 
@@ -30,12 +31,12 @@ class SaleProductConfiguratorControllerCustom(SaleProductConfiguratorController)
         )
 
         product_or_template = (
-            self.env['product.product'].browse(values['id']) if values.get('id')
-            else self.env['product.template'].browse(values['product_tmpl_id'])
+            http.request.env['product.product'].browse(values['id']) if values.get('id')
+            else http.request.env['product.template'].browse(values['product_tmpl_id'])
         )
 
         for line in values['attribute_lines']:
-            ptal = self.env['product.template.attribute.line'].browse(line['id'])
+            ptal = http.request.env['product.template.attribute.line'].browse(line['id'])
             # Sort attribute values alphabetically by name
             sorted_ptavs = ptal.product_template_value_ids.sorted('name')
             line['attribute_values'] = [
