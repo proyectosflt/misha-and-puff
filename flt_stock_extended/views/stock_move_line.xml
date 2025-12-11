@@ -13,9 +13,8 @@
                 <field name="peso_neto"/>
             </xpath>
             <xpath expr="//list" position="inside">
-                <field name="picking_id" column_invisible="1"/>
                 <button name="action_calcular" string="Calcular" type="object" 
-                        column_invisible="picking_id and (picking_id.state == 'done' or picking_id.state == 'cancel')"/>
+                        column_invisible="parent.state in ('done', 'cancel')"/>
             </xpath>
         </field>
     </record>
