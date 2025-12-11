@@ -6,15 +6,15 @@
         <field name="inherit_id" ref="stock.view_stock_move_line_operation_tree"/>
         <field name="arch" type="xml">
             <xpath expr="//field[@name='quantity']" position="before">
-                <field name="tara_bolsa" column_invisible="parent.picking_type_code != 'incoming'"/>
-                <field name="cantidad_conos" column_invisible="parent.picking_type_code != 'incoming'"/>
-                <field name="tara_cono" column_invisible="parent.picking_type_code != 'incoming'"/>
-                <field name="peso_bruto" column_invisible="parent.picking_type_code != 'incoming'"/>
-                <field name="peso_neto" column_invisible="parent.picking_type_code != 'incoming'"/>
+                <field name="tara_bolsa" column_invisible="parent.picking_type_id != 1"/>
+                <field name="cantidad_conos" column_invisible="parent.picking_type_id != 1"/>
+                <field name="tara_cono" column_invisible="parent.picking_type_id != 1"/>
+                <field name="peso_bruto" column_invisible="parent.picking_type_id != 1"/>
+                <field name="peso_neto" column_invisible="parent.picking_type_id != 1"/>
             </xpath>
             <xpath expr="//list" position="inside">
                 <button name="action_calcular" string="Calcular" type="object" 
-                        column_invisible="parent.state in ('done', 'cancel') or parent.picking_type_code != 'incoming'"/>
+                        column_invisible="parent.state in ('done', 'cancel') or parent.picking_type_id != 1"/>
             </xpath>
         </field>
     </record>
