@@ -10,11 +10,13 @@ class StockMoveLine(models.Model):
     peso_bruto = fields.Float(string="Peso bruto")
     peso_neto = fields.Float(string="Peso neto")
 
+    @api.depends('result_package_id.package_type_id.base_weight')
     def _compute_tara_bolsa(self):
         for record in self:
             if not record.tara_bolsa:
                 record.tara_bolsa = record.result_package_id.package_type_id.base_weight or 0.0
 
+    @api.depends('product_id.tara_cono')
     def _compute_tara_cono(self):
         for record in self:
             if not record.tara_cono:
