@@ -6,6 +6,7 @@
     'depends': ['stock'],
     'data': [
         'views/stock_move_line.xml',
+        'views/product_product.xml',
     ],
     'installable': True,
     'application': False,
