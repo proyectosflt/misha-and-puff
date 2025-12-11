@@ -5,6 +5,7 @@
     'summary': 'Add new features to stock module',
     'depends': ['stock'],
     'data': [
+        'security/ir.model.access.csv',
         'views/stock_move_line.xml',
         'views/product_product.xml',
     ],
