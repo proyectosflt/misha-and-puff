@@ -5,7 +5,7 @@
     'summary': 'Add new features to stock module',
     'depends': ['stock'],
     'data': [
-        'views/stock_picking_views',
+        'views/stock_move_line.xml',
     ],
     'installable': True,
     'application': False,
