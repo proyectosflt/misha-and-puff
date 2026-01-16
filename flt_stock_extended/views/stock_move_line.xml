@@ -14,7 +14,7 @@
                 <field name="tara_cono" column_invisible="parent.picking_type_id != 1"/>
                 <field name="peso_bruto" column_invisible="parent.picking_type_id != 1"/>
                 <field name="peso_neto" column_invisible="parent.picking_type_id != 1"/>
-            </xpath>
+            </xpath> 
             <xpath expr="//list" position="inside">
                 <button name="action_calcular" string="Calcular" type="object" 
                         column_invisible="parent.state in ('done', 'cancel') or parent.picking_type_id != 1"/>
