@@ -31,12 +31,16 @@ class StockMoveLine(models.Model):
     def _action_done(self):
         """Override to pass custom fields in context for stock.quant updates"""
         for ml in self:
-            # Pass the custom field values in context
+            # Pass the custom field values and location/package info in context
             ctx = dict(ml.env.context or {})
             ctx.update({
                 'quant_cantidad_conos': ml.cantidad_conos or 0,
                 'quant_peso_bruto': ml.peso_bruto or 0.0,
                 'quant_peso_neto': ml.peso_neto or 0.0,
+                'move_line_location_id': ml.location_id.id,
+                'move_line_location_dest_id': ml.location_dest_id.id,
+                'move_line_package_id': ml.package_id.id if ml.package_id else False,
+                'move_line_result_package_id': ml.result_package_id.id if ml.result_package_id else False,
             })
             super(StockMoveLine, ml.with_context(ctx))._action_done()
         return True

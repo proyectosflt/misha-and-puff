@@ -16,6 +16,21 @@ class StockQuant(models.Model):
         peso_bruto = self.env.context.get('quant_peso_bruto', 0.0)
         peso_neto = self.env.context.get('quant_peso_neto', 0.0)
         
+        # Determine if this is a source (removal) or destination (addition) operation
+        move_line_location_id = self.env.context.get('move_line_location_id')
+        move_line_location_dest_id = self.env.context.get('move_line_location_dest_id')
+        move_line_package_id = self.env.context.get('move_line_package_id')
+        move_line_result_package_id = self.env.context.get('move_line_result_package_id')
+        
+        # Apply negative sign for source location/package (removal)
+        package_id_val = package_id.id if package_id else False
+        is_source = (location_id.id == move_line_location_id and package_id_val == move_line_package_id)
+        
+        if is_source:
+            cantidad_conos = -cantidad_conos
+            peso_bruto = -peso_bruto
+            peso_neto = -peso_neto
+        
         # If peso_neto is provided, use it as the quantity
         if peso_neto != 0.0:
             quantity = peso_neto
