@@ -9,15 +9,22 @@
                 <attribute name="column_invisible">parent.picking_type_id == 1</attribute>
             </xpath>
             <xpath expr="//field[@name='quantity']" position="before">
-                <field name="tara_bolsa" column_invisible="parent.picking_type_id != 1"/>
+                <!-- <field name="tara_bolsa" column_invisible="parent.picking_type_id != 1"/>
                 <field name="cantidad_conos" column_invisible="parent.picking_type_id != 1"/>
                 <field name="tara_cono" column_invisible="parent.picking_type_id != 1"/>
                 <field name="peso_bruto" column_invisible="parent.picking_type_id != 1"/>
-                <field name="peso_neto" column_invisible="parent.picking_type_id != 1"/>
+                <field name="peso_neto" column_invisible="parent.picking_type_id != 1"/> -->
+                <field name="tara_bolsa"/>
+                <field name="cantidad_conos"/>
+                <field name="tara_cono"/>
+                <field name="peso_bruto"/>
+                <field name="peso_neto"/>
             </xpath> 
             <xpath expr="//list" position="inside">
                 <button name="action_calcular" string="Calcular" type="object" 
-                        column_invisible="parent.state in ('done', 'cancel') or parent.picking_type_id != 1"/>
+                        column_invisible="parent.state in ('done', 'cancel')"/>
+                <!-- <button name="action_calcular" string="Calcular" type="object" 
+                        column_invisible="parent.state in ('done', 'cancel') or parent.picking_type_id != 1"/> -->
             </xpath>
         </field>
     </record>

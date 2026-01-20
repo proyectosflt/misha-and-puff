@@ -8,6 +8,7 @@
         'security/ir.model.access.csv',
         'views/stock_move_line.xml',
         'views/product_product.xml',
+        'views/stock_quant.xml',
     ],
     'installable': True,
     'application': False,
