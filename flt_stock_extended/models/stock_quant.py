@@ -31,15 +31,11 @@ class StockQuant(models.Model):
             peso_bruto = -peso_bruto
             peso_neto = -peso_neto
         
-        # If peso_neto is provided, use it as the quantity
-        if peso_neto != 0.0:
-            quantity = peso_neto
-        
         # Call parent to handle standard quantity logic
         res = super(StockQuant, self)._update_available_quantity(product_id, location_id, quantity, lot_id=lot_id, package_id=package_id, owner_id=owner_id, in_date=in_date, **kwargs)
         
-        # Update our custom fields if any value is set
-        if 'quant_cantidad_conos' in self.env.context or 'quant_peso_bruto' in self.env.context or 'quant_peso_neto' in self.env.context:
+        # Update our custom fields if any value is set and quantity is not zero
+        if quantity and ('quant_cantidad_conos' in self.env.context or 'quant_peso_bruto' in self.env.context or 'quant_peso_neto' in self.env.context):
             self = self.sudo()
             quants = self._gather(product_id, location_id, lot_id=lot_id, package_id=package_id, owner_id=owner_id, strict=True)
             if quants:
