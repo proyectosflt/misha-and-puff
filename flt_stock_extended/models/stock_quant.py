@@ -39,7 +39,7 @@ class StockQuant(models.Model):
         res = super(StockQuant, self)._update_available_quantity(product_id, location_id, quantity, lot_id=lot_id, package_id=package_id, owner_id=owner_id, in_date=in_date, **kwargs)
         
         # Update our custom fields if any value is set
-        if cantidad_conos or peso_bruto or peso_neto:
+        if 'quant_cantidad_conos' in self.env.context or 'quant_peso_bruto' in self.env.context or 'quant_peso_neto' in self.env.context:
             self = self.sudo()
             quants = self._gather(product_id, location_id, lot_id=lot_id, package_id=package_id, owner_id=owner_id, strict=True)
             if quants:
