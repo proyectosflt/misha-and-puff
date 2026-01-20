@@ -5,8 +5,8 @@
         <field name="model">stock.move.line</field>
         <field name="inherit_id" ref="stock.view_stock_move_line_operation_tree"/>
         <field name="arch" type="xml">
-            <xpath expr="//field[@name='quantity']" position="attributes">
-                <attribute name="column_invisible">parent.picking_type_id == 1</attribute>
+            <xpath expr="//field[@name='package_id']" position="attributes">
+                <attribute name="column_invisible">parent.picking_type_code == 'incoming'</attribute>
             </xpath>
             <xpath expr="//field[@name='quantity']" position="before">
                 <!-- <field name="tara_bolsa" column_invisible="parent.picking_type_id != 1"/>
@@ -25,6 +25,31 @@
                         column_invisible="parent.state in ('done', 'cancel')"/>
                 <!-- <button name="action_calcular" string="Calcular" type="object" 
                         column_invisible="parent.state in ('done', 'cancel') or parent.picking_type_id != 1"/> -->
+            </xpath>
+        </field>
+    </record>
+
+    <record id="view_move_line_detailed_tree_inherit" model="ir.ui.view">
+        <field name="name">stock.move.line.detailed.operation.tree.inherit</field>
+        <field name="model">stock.move.line</field>
+        <field name="inherit_id" ref="stock.view_stock_move_line_detailed_operation_tree"/>
+        <field name="arch" type="xml">
+            <!-- <xpath expr="//field[@name='quantity']" position="attributes">
+                <attribute name="column_invisible">parent.picking_type_id == 1</attribute>
+            </xpath> -->
+            <xpath expr="//field[@name='package_id']" position="attributes">
+                <attribute name="column_invisible">parent.picking_type_code == 'incoming'</attribute>
+            </xpath>
+            <xpath expr="//field[@name='quantity']" position="before">
+                <field name="tara_bolsa"/>
+                <field name="cantidad_conos"/>
+                <field name="tara_cono"/>
+                <field name="peso_bruto"/>
+                <field name="peso_neto"/>
+            </xpath> 
+            <xpath expr="//list" position="inside">
+                <button name="action_calcular" string="Calcular" type="object" 
+                        column_invisible="parent.state in ('done', 'cancel')"/>
             </xpath>
         </field>
     </record>
