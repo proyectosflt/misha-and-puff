@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="report_package_barcode_small_extended" inherit_id="stock.report_package_barcode_small">
+        <xpath expr="//div[hasclass('page')]" position="replace">
+            <div class="page">
+                <div class="oe_structure"/>
+                <t t-if="o.quant_ids and o.quant_ids[0].product_id">
+                    <t t-set="product" t-value="o.quant_ids[0].product_id"/>
+                    <!-- First Line: Color -->
+                    <div class="text-center" style="font-size: 40px; font-weight: bold;">
+                        <span t-esc="product.product_template_variant_value_ids.filtered(lambda v: v.attribute_id.name == 'Color').name"/>
+                    </div>
+                    <!-- Second Line: Product Name -->
+                    <div class="text-center" style="font-size: 30px;">
+                        <span t-field="product.name"/>
+                    </div>
+                </t>
+                <!-- Third Line: Conos, KGB, KGN -->
+                <div class="row text-center mt-2" style="font-size: 20px;">
+                    <div class="col-4">
+                        <strong>CONOS</strong><br/>
+                        <span t-field="o.cantidad_conos"/>
+                    </div>
+                    <div class="col-4">
+                        <strong>KGB</strong><br/>
+                        <span t-field="o.peso_bruto"/>
+                    </div>
+                    <div class="col-4">
+                        <div style="border: 2px solid green; padding: 2px;">
+                            <strong>KGN</strong><br/>
+                            <span t-field="o.peso_neto"/>
+                        </div>
+                    </div>
+                </div>
+                <!-- Fourth Line: Barcode -->
+                <div class="text-center mt-3">
+                    <span t-field="o.name" t-options="{'widget': 'barcode', 'width': 600, 'height': 100, 'img_style': 'width:100%;height:100px;'}"/>
+                    <div t-field="o.name"/>
+                </div>
+                <div class="oe_structure"/>
+            </div>
+        </xpath>
+    </template>
+</odoo>
