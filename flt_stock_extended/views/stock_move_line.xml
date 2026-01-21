@@ -36,7 +36,8 @@
         <field name="arch" type="xml">
 
              <xpath expr="//field[@name='location_dest_id']" position="after">
-                <field name="package_id"/>
+                <field name="picking_type_id" column_invisible="1"/>
+                <field name="package_id" column_invisible="picking_type_id == 1"/>
             </xpath>
             <xpath expr="//field[@name='quantity']" position="before">
                 <field name="tara_bolsa"/>
@@ -46,6 +47,7 @@
                 <field name="peso_neto"/>
             </xpath> 
             <xpath expr="//list" position="inside">
+                <field name="state" column_invisible="1"/>
                 <button name="action_calcular" string="Calcular" type="object" 
                         column_invisible="state in ('done', 'cancel')"/>
             </xpath>
