@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_color_family_tree" model="ir.ui.view">
+        <field name="name">color.family.list</field>
+        <field name="model">color.family</field>
+        <field name="arch" type="xml">
+            <list string="Familia de Colores">
+                <field name="name"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_color_family_form" model="ir.ui.view">
+        <field name="name">color.family.form</field>
+        <field name="model">color.family</field>
+        <field name="arch" type="xml">
+            <form string="Familia de Colores">
+                <sheet>
+                    <group>
+                        <field name="name"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_color_family" model="ir.actions.act_window">
+        <field name="name">Familia de Colores</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">color.family</field>
+        <field name="view_mode">list,form</field>
+    </record>
+
+    <menuitem id="menu_color_family"
+              name="Color Family"
+              parent="stock.menu_product_in_config_stock"
+              action="action_color_family"
+              sequence="50"/>
+</odoo>

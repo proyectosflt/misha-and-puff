@@ -11,6 +11,7 @@
         'views/report_package_barcode.xml',
         'views/stock_quant.xml',
         'views/stock_quant_package.xml',
+        'views/color_family_views.xml',
     ],
     'installable': True,
     'application': False,
