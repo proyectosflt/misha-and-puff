@@ -26,10 +26,8 @@
                         <span t-field="o.peso_bruto"/>
                     </div>
                     <div class="col-4">
-                        <div style="border: 2px solid green; padding: 2px;">
-                            <strong>KGN</strong><br/>
-                            <span t-field="o.peso_neto"/>
-                        </div>
+                        <strong>KGN</strong><br/>
+                        <span t-field="o.peso_neto"/>
                     </div>
                 </div>
                 <!-- Fourth Line: Barcode -->
