@@ -16,19 +16,24 @@ class ProductProduct(models.Model):
     x_studio_color_name = fields.Char(string='Color Name', compute='_compute_studio_fields', store=True)
     default_code = fields.Char(compute='_compute_studio_fields', store=True)
 
-    @api.depends('product_template_variant_value_ids.attribute_id.name',
+    @api.depends('product_template_variant_value_ids',
+                 'product_template_variant_value_ids.attribute_id.name',
                  'product_template_variant_value_ids.product_attribute_value_id.name',
-                 'name')
+                 'name',
+                 'product_tmpl_id.name')
     def _compute_studio_fields(self):
         for product in self:
             title = False
             color_code = False
             color_name = False
             
-            for ptav in product.product_template_variant_value_ids:
-                if ptav.attribute_id.name == 'Title':
+            # Access the many2many field safely
+            ptavs = product.product_template_variant_value_ids
+            for ptav in ptavs:
+                attr_name = ptav.attribute_id.name and ptav.attribute_id.name.strip()
+                if attr_name == 'Title':
                     title = ptav.product_attribute_value_id.name
-                elif ptav.attribute_id.name == 'Color':
+                elif attr_name == 'Color':
                     val = ptav.product_attribute_value_id.name
                     if val:
                         parts = val.split('-', 1)
@@ -40,8 +45,12 @@ class ProductProduct(models.Model):
             product.x_studio_color_code = color_code
             product.x_studio_color_name = color_name
             
-            if product.name and color_code:
-                product.default_code = "%s-%s" % (product.name, color_code)
+            # Use product.name which delegates to template name
+            # or fallback to product_tmpl_id.name directly
+            prod_name = product.name or (product.product_tmpl_id and product.product_tmpl_id.name)
+            
+            if prod_name and color_code:
+                product.default_code = "%s-%s" % (prod_name, color_code)
             else:
                 product.default_code = False
 
