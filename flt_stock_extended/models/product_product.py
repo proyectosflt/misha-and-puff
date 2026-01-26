@@ -66,7 +66,6 @@ class ProductProduct(models.Model):
 
     def write(self, vals):
         res = super(ProductProduct, self).write(vals)
-        self._compute_studio_fields()
         for product in self:
             if product.uom_id.name == 'kg' and product.weight == 0:
                 raise ValidationError("El peso del producto no puede ser 0.")
