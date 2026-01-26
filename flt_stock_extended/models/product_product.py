@@ -66,6 +66,7 @@ class ProductProduct(models.Model):
 
     def write(self, vals):
         res = super(ProductProduct, self).write(vals)
+        self._compute_studio_fields()
         for product in self:
             if product.uom_id.name == 'kg' and product.weight == 0:
                 raise ValidationError("El peso del producto no puede ser 0.")
@@ -78,7 +79,9 @@ class ProductProduct(models.Model):
                 uom = self.env['uom.uom'].browse(vals['uom_id'])
                 if uom.name == 'kg' and vals.get('weight', 0) == 0:
                     vals['weight'] = 1.0
-        return super(ProductProduct, self).create(vals_list)
+        products = super(ProductProduct, self).create(vals_list)
+        products._compute_studio_fields()
+        return products
 
     @api.onchange('uom_id')
     def _onchange_uom_id_weight(self):
