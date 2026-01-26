@@ -11,6 +11,40 @@ class ProductProduct(models.Model):
     color_family_id = fields.Many2one('color.family', string='Familia de Color', compute='_compute_color_family_id', store=True)
     weight = fields.Float(default=1.0)
 
+    x_studio_title = fields.Char(string='Title', compute='_compute_studio_fields', store=True)
+    x_studio_color_code = fields.Char(string='Color Code', compute='_compute_studio_fields', store=True)
+    x_studio_color_name = fields.Char(string='Color Name', compute='_compute_studio_fields', store=True)
+    default_code = fields.Char(compute='_compute_studio_fields', store=True)
+
+    @api.depends('product_template_variant_value_ids.attribute_id.name',
+                 'product_template_variant_value_ids.product_attribute_value_id.name',
+                 'name')
+    def _compute_studio_fields(self):
+        for product in self:
+            title = False
+            color_code = False
+            color_name = False
+            
+            for ptav in product.product_template_variant_value_ids:
+                if ptav.attribute_id.name == 'Title':
+                    title = ptav.product_attribute_value_id.name
+                elif ptav.attribute_id.name == 'Color':
+                    val = ptav.product_attribute_value_id.name
+                    if val:
+                        parts = val.split('-', 1)
+                        color_code = parts[0].strip()
+                        if len(parts) > 1:
+                            color_name = parts[1].strip()
+            
+            product.x_studio_title = title
+            product.x_studio_color_code = color_code
+            product.x_studio_color_name = color_name
+            
+            if product.name and color_code:
+                product.default_code = "%s-%s" % (product.name, color_code)
+            else:
+                product.default_code = False
+
     @api.depends('product_template_variant_value_ids.product_attribute_value_id.color_family_id', 'product_template_variant_value_ids.attribute_id.name')
     def _compute_color_family_id(self):
         for product in self:
