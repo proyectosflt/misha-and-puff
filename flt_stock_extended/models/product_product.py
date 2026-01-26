@@ -95,8 +95,8 @@ class ProductProduct(models.Model):
                     vals['weight'] = 1.0
         products = super(ProductProduct, self).create(vals_list)
         # Force recomputation after creation to ensure relationships are established
-        products.modified(['product_template_variant_value_ids'])
-        products.recompute()
+        products.flush()
+        products._compute_studio_fields()
         return products
 
     @api.onchange('uom_id')
