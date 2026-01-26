@@ -8,7 +8,7 @@ class ProductProduct(models.Model):
 
     product_type_id = fields.Many2one('product.type', string='Clasificación de producto')
     tara_cono = fields.Float(string='Tara Cono')
-    color_family_id = fields.Many2one('color.family', string='Familia de Color', compute='_compute_color_family_id', store=True)
+    color_family_id = fields.Many2one('color.family', string='Familia de Color', compute='_compute_studio_fields', store=True)
     weight = fields.Float(default=1.0)
 
     x_studio_title = fields.Char(string='Title', compute='_compute_studio_fields', store=True)
@@ -19,8 +19,10 @@ class ProductProduct(models.Model):
     @api.depends('product_template_variant_value_ids',
                  'product_template_variant_value_ids.attribute_id.name',
                  'product_template_variant_value_ids.product_attribute_value_id.name',
+                 'product_template_variant_value_ids.product_attribute_value_id.color_family_id',
                  'product_tmpl_id.attribute_line_ids',
                  'product_tmpl_id.attribute_line_ids.value_ids',
+                 'product_tmpl_id.attribute_line_ids.value_ids.color_family_id',
                  'product_tmpl_id.attribute_line_ids.attribute_id.name',
                  'name',
                  'product_tmpl_id.name')
@@ -29,6 +31,7 @@ class ProductProduct(models.Model):
             title = False
             color_code = False
             color_name = False
+            color_family = False
             
             # First, check variant-specific values (for multi-variant attributes)
             ptavs = product.product_template_variant_value_ids
@@ -38,6 +41,7 @@ class ProductProduct(models.Model):
                     title = ptav.product_attribute_value_id.name
                 elif attr_name == 'Color':
                     val = ptav.product_attribute_value_id.name
+                    color_family = ptav.product_attribute_value_id.color_family_id
                     if val:
                         parts = val.split('-', 1)
                         color_code = parts[0].strip()
@@ -54,6 +58,7 @@ class ProductProduct(models.Model):
                         title = attr_line.value_ids[0].name
                     elif attr_name == 'Color' and not color_code and len(attr_line.value_ids) == 1:
                         val = attr_line.value_ids[0].name
+                        color_family = attr_line.value_ids[0].color_family_id
                         if val:
                             parts = val.split('-', 1)
                             color_code = parts[0].strip()
@@ -63,6 +68,7 @@ class ProductProduct(models.Model):
             product.x_studio_title = title
             product.x_studio_color_code = color_code
             product.x_studio_color_name = color_name
+            product.color_family_id = color_family
             
             # Use product.name which delegates to template name
             # or fallback to product_tmpl_id.name directly
@@ -72,16 +78,6 @@ class ProductProduct(models.Model):
                 product.default_code = "%s-%s" % (prod_name, color_code)
             else:
                 product.default_code = False
-
-    @api.depends('product_template_variant_value_ids.product_attribute_value_id.color_family_id', 'product_template_variant_value_ids.attribute_id.name')
-    def _compute_color_family_id(self):
-        for product in self:
-            color_family = False
-            for ptav in product.product_template_variant_value_ids:
-                if ptav.attribute_id.name == 'Color':
-                    color_family = ptav.product_attribute_value_id.color_family_id
-                    break
-            product.color_family_id = color_family
 
     def write(self, vals):
         res = super(ProductProduct, self).write(vals)
