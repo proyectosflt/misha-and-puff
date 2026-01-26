@@ -9,6 +9,7 @@ class ProductProduct(models.Model):
     product_type_id = fields.Many2one('product.type', string='Clasificación de producto')
     tara_cono = fields.Float(string='Tara Cono')
     color_family_id = fields.Many2one('color.family', string='Familia de Color', compute='_compute_color_family_id', store=True)
+    weight = fields.Float(default=1.0)
 
     @api.depends('product_template_variant_value_ids.product_attribute_value_id.color_family_id', 'product_template_variant_value_ids.attribute_id.name')
     def _compute_color_family_id(self):
@@ -20,12 +21,12 @@ class ProductProduct(models.Model):
                     break
             product.color_family_id = color_family
 
-    # def write(self, vals):
-    #     res = super(ProductProduct, self).write(vals)
-    #     for product in self:
-    #         if product.uom_id.name == 'kg' and product.weight == 0:
-    #             raise ValidationError("El peso del producto no puede ser 0.")
-    #     return res
+    def write(self, vals):
+        res = super(ProductProduct, self).write(vals)
+        for product in self:
+            if product.uom_id.name == 'kg' and product.weight == 0:
+                raise ValidationError("El peso del producto no puede ser 0.")
+        return res
 
     @api.model_create_multi
     def create(self, vals_list):
