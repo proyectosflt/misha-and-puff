@@ -20,13 +20,6 @@ class ProductProduct(models.Model):
                     break
             product.color_family_id = color_family
 
-    def write(self, vals):
-        res = super(ProductProduct, self).write(vals)
-        for product in self:
-            if product.uom_id.name == 'kg' and product.weight == 0:
-                raise ValidationError("El peso del producto no puede ser 0.")
-        return res
-
     @api.model_create_multi
     def create(self, vals_list):
         for vals in vals_list:
@@ -37,8 +30,6 @@ class ProductProduct(models.Model):
         return super(ProductProduct, self).create(vals_list)
 
     @api.onchange('uom_id')
-
-
     def _onchange_uom_id_weight(self):
         if self.uom_id.name == 'kg' and self.weight == 0:
             self.weight = 1.0
