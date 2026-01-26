@@ -94,8 +94,6 @@ class ProductProduct(models.Model):
                 if uom.name == 'kg' and vals.get('weight', 0) == 0:
                     vals['weight'] = 1.0
         products = super(ProductProduct, self).create(vals_list)
-        # Force recomputation after creation to ensure relationships are established
-        products.flush()
         products._compute_studio_fields()
         return products
 
