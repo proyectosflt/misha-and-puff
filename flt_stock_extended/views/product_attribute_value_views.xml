@@ -8,7 +8,6 @@
             <list string="Colors" editable="bottom">
                 <field name="name"/>
                 <field name="color_family_id"/>
-                <field name="attribute_id" optional="show"/>
             </list>
         </field>
     </record>
@@ -22,7 +21,6 @@
                     <group>
                         <field name="name"/>
                         <field name="color_family_id"/>
-                        <field name="attribute_id"/>
                     </group>
                 </sheet>
             </form>
