@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 from odoo import models, fields, api
+from odoo.exceptions import ValidationError
+
 
 class ProductProduct(models.Model):
     _inherit = 'product.product'
@@ -17,4 +19,16 @@ class ProductProduct(models.Model):
                     color_family = ptav.product_attribute_value_id.color_family_id
                     break
             product.color_family_id = color_family
+
+    @api.constrains('weight', 'uom_id')
+    def _check_weight_kg(self):
+        for product in self:
+            if product.uom_name == 'kg' and product.weight == 0:
+                raise ValidationError("El peso del producto no puede ser 0.")
+
+    @api.onchange('uom_id')
+    def _onchange_uom_id_weight(self):
+        if self.uom_name == 'kg' and self.weight == 0:
+            self.weight = 1.0
+
 
