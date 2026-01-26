@@ -19,6 +19,9 @@ class ProductProduct(models.Model):
     @api.depends('product_template_variant_value_ids',
                  'product_template_variant_value_ids.attribute_id.name',
                  'product_template_variant_value_ids.product_attribute_value_id.name',
+                 'product_tmpl_id.attribute_line_ids',
+                 'product_tmpl_id.attribute_line_ids.value_ids',
+                 'product_tmpl_id.attribute_line_ids.attribute_id.name',
                  'name',
                  'product_tmpl_id.name')
     def _compute_studio_fields(self):
@@ -27,7 +30,7 @@ class ProductProduct(models.Model):
             color_code = False
             color_name = False
             
-            # Access the many2many field safely
+            # First, check variant-specific values (for multi-variant attributes)
             ptavs = product.product_template_variant_value_ids
             for ptav in ptavs:
                 attr_name = ptav.attribute_id.name and ptav.attribute_id.name.strip()
@@ -40,6 +43,22 @@ class ProductProduct(models.Model):
                         color_code = parts[0].strip()
                         if len(parts) > 1:
                             color_name = parts[1].strip()
+            
+            # Second, check template attribute lines for single-value attributes
+            # (when there's only one value for an attribute, it's not in variant values)
+            if product.product_tmpl_id:
+                for attr_line in product.product_tmpl_id.attribute_line_ids:
+                    attr_name = attr_line.attribute_id.name and attr_line.attribute_id.name.strip()
+                    # Only use template values if we haven't found variant-specific ones
+                    if attr_name == 'Title' and not title and len(attr_line.value_ids) == 1:
+                        title = attr_line.value_ids[0].name
+                    elif attr_name == 'Color' and not color_code and len(attr_line.value_ids) == 1:
+                        val = attr_line.value_ids[0].name
+                        if val:
+                            parts = val.split('-', 1)
+                            color_code = parts[0].strip()
+                            if len(parts) > 1:
+                                color_name = parts[1].strip()
             
             product.x_studio_title = title
             product.x_studio_color_code = color_code
