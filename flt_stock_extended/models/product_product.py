@@ -20,13 +20,15 @@ class ProductProduct(models.Model):
                     break
             product.color_family_id = color_family
 
-    @api.constrains('weight', 'uom_id')
-    def _check_weight_kg(self):
+    def write(self, vals):
+        res = super(ProductProduct, self).write(vals)
         for product in self:
             if product.uom_id.name == 'kg' and product.weight == 0:
                 raise ValidationError("El peso del producto no puede ser 0.")
+        return res
 
     @api.onchange('uom_id')
+
     def _onchange_uom_id_weight(self):
         if self.uom_id.name == 'kg' and self.weight == 0:
             self.weight = 1.0
