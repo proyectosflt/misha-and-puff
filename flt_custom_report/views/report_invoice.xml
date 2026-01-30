@@ -1,0 +1,308 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="flt_main_layout">
+        <t t-set="is_invoice_or_boleta" t-value="o.l10n_latam_document_type_id.code in ['01', '03']"/>
+        <t t-set="is_debit_note" t-value="o.l10n_latam_document_type_id.code == '08'"/>
+        <t t-set="is_credit_or_debit_note" t-value="o.l10n_latam_document_type_id.code in ['07', '08']"/>
+
+        <div class="container-fluid" style="margin: 0; padding: 0;">
+            <div class="header">
+                <div class="row">
+                    <div style="width: 60%;">
+                        <img t-if="o.company_id.logo" t-att-src="image_data_uri(o.company_id.logo)" style="max-height: 80px; margin-bottom: 10px;" alt="Logo"/>
+                        <div style="padding: 0px; margin: 0px; font-size: 11px;">
+                            <div name="address">
+                                <strong>
+                                    <span t-esc="', '.join(filter(None, [
+                                        o.company_id.street or '',
+                                        o.company_id.street2 or '',
+                                        o.company_id.city or '',
+                                        o.company_id.state_id and o.company_id.state_id.name or '',
+                                        o.company_id.zip or '',
+                                        o.company_id.country_id and o.company_id.country_id.name or ''
+                                    ]))"/>
+                                </strong>
+                            </div>
+                            <div t-if="o.company_id.phone">
+                                <span>Tel:</span> <span t-field="o.company_id.phone"/>
+                            </div>
+                            <div t-if="o.company_id.email">
+                                <strong><span>E-mail:</span> <span t-field="o.company_id.email"/></strong>
+                            </div>
+                            <div t-if="o.company_id.website">
+                                <a t-att-href="o.company_id.website"><span t-field="o.company_id.website"/></a>
+                            </div>
+                        </div>
+                    </div>
+                    <div style="width: 40%;">
+                        <div style="border: 2px solid black; padding: 10px; text-align: center;">
+                            <div class="h6 mb-0"><strong>R.U.C.N°<span t-field="o.company_id.vat"/></strong></div>
+                            <div class="h6 mt-1 mb-1" style="font-weight: bold;" t-esc="{
+                                    '01': 'FACTURA ELECTRÓNICA',
+                                    '03': 'BOLETA DE VENTA ELECTRÓNICA',
+                                    '07': 'NOTA DE CRÉDITO ELECTRÓNICA',
+                                    '08': 'NOTA DE DÉBITO ELECTRÓNICA',
+                                }.get(o.l10n_latam_document_type_id.code, '')"/>
+                            <div class="h6 mb-0"><strong><span t-field="o.name"/></strong></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="article" style="margin-top: 200;">
+                <div class="row">
+                    <div class="col-6">
+                        <table class="table table-borderless" style="margin-bottom: unset; width: 100%; table-layout: fixed; font-size: 11px;">
+                            <tbody>
+                                <tr>
+                                    <td class="p-0"><strong>SEÑOR(ES) : </strong><span t-field="o.partner_id.name"/></td>
+                                </tr>
+                                <tr>
+                                    <td class="p-0"><strong t-if="o.partner_id.l10n_latam_identification_type_id.l10n_pe_vat_code == '6'">R.U.C.</strong><strong t-elif="o.partner_id.l10n_latam_identification_type_id.l10n_pe_vat_code == '1'">D.N.I.</strong><strong t-else="">R.U.C.</strong><strong> : </strong><span t-field="o.partner_id.vat"/></td>
+                                </tr>
+                                <tr>
+                                    <td class="p-0"><strong>DIRECCIÓN : </strong><span t-esc="', '.join(filter(None, [o.partner_id.street, o.partner_id.street2, o.partner_id.city, o.partner_id.state_id.name, o.partner_id.zip, o.partner_id.country_id.name]))"/></td>
+                                </tr>
+                                <tr>
+                                    <td class="p-0"><strong>TELF : </strong><span t-field="o.partner_id.phone"/></td>
+                                </tr>
+                                <tr>
+                                    <td class="p-0"><strong>MONEDA : </strong><span t-field="o.currency_id"/></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="col-3">
+                        <table class="table table-borderless" style="margin-bottom: unset; width: 100%; table-layout: fixed; font-size: 11px;">
+                            <tbody>
+                                <tr>
+                                    <td class="p-0"><strong>FECHA EMISIÓN : </strong><time t-field="o.invoice_date" t-options="{'format': 'dd/MM/yyyy'}"/></td>
+                                </tr>
+                                <tr>
+                                    <td class="p-0">
+                                        <span t-if="is_invoice_or_boleta">
+                                            <strong>VENDEDOR : </strong><span t-field="o.invoice_user_id"/>
+                                        </span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="p-0">
+                                        <span t-if="is_invoice_or_boleta">
+                                            <strong>FECHA VENCIMIENTO : </strong><time t-field="o.invoice_date_due" t-options="{'format': 'dd/MM/yyyy'}"/>
+                                        </span>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <t t-raw="0"/>
+            </div>
+
+            <div class="footer o_background_footer">
+                <div class="text-center">
+                    <div t-if="report_type == 'pdf'" class="text-muted">
+                        Página: <span class="page"/> / <span class="topage"/>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </template>
+
+    <template id="report_invoice_document_custom">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="o">
+                <t t-call="flt_custom_report.flt_main_layout">
+                    <!-- Set up QR code variables -->
+                    <t t-set="extra_edi_vals" t-value="o._l10n_pe_edi_get_extra_report_values()"/>
+                    <t t-set="spot" t-value="o._l10n_pe_edi_get_spot()"/>
+                    <div class="page">
+                        <style>
+                            .details-table {
+                                font-size: 11px;
+                                width: 100%;
+                                table-layout: fixed;
+                                border-collapse: collapse;
+                            }
+                            .details-table td {
+                                padding: 1px 4px;
+                            }
+                            .section-header {
+                                background-color: #d3d3d3;
+                            }
+                            .items-table {
+                                font-size: 11px;
+                                width: 100%;
+                                table-layout: fixed;
+                                border: 2px solid black;
+                                margin-top: 20px;
+                                margin-bottom: 0;
+                            }
+                            .items-table tbody td {
+                                border-top-style: hidden;
+                            }
+                            .items-table th {
+                                padding: 2px 0;
+                                vertical-align: middle;
+                            }
+                        </style>
+                        <div class="oe_structure"/>
+                        <div class="row">
+                            <table class="table table-sm o_main_table items-table">
+                                <colgroup>
+                                    <col style="width: 8%;"/>
+                                    <col style="width: 52%;"/>
+                                    <col style="width: 10%;"/>
+                                    <col style="width: 10%;"/>
+                                    <col style="width: 10%;"/>
+                                    <col style="width: 10%;"/>
+                                </colgroup>
+                            <thead class="section-header">
+                                <tr>
+                                    <th name="th_codigo" class="text-center"><span>CÓDIGO</span></th>
+                                    <th name="th_descripcion" class="text-center"><span>DESCRIPCIÓN</span></th>
+                                    <th name="th_cantidad" class="text-center"><span>CANTIDAD</span></th>
+                                    <th name="th_unidad" class="text-center"><span>UNIDAD MEDIDA</span></th>
+                                    <th name="th_dscto_porc" class="text-center" t-if="not is_debit_note"><span>DSCTO %</span></th>
+                                    <th name="th_precio_unitario" class="text-center"><span>PRECIO UNITARIO</span></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <t t-set="current_subtotal" t-value="0"/>
+                                <t t-set="lines" t-value="o.invoice_line_ids.filtered(lambda line: line.display_type == 'product')"/>
+                                <t t-foreach="lines" t-as="line">
+                                    <t t-set="current_subtotal" t-value="current_subtotal + line.price_subtotal" groups="account.group_show_line_subtotals_tax_excluded"/>
+                                    <t t-set="current_subtotal" t-value="current_subtotal + line.price_total" groups="account.group_show_line_subtotals_tax_included"/>
+
+                                    <tr t-att-class="'bg-200 font-weight-bold o_line_section' if line.display_type == 'line_section' else 'font-normal o_line_note' if line.display_type == 'line_note' else ''">
+                                        <td><span t-field="line.product_id.default_code"/></td>
+                                        <td><span t-field="line.name"/></td>
+                                        <td class="text-center"><span t-esc="'{:,.2f}'.format(float(line.quantity or 0.0))"/></td>
+                                        <td class="text-center"><span t-field="line.product_uom_id.name"/></td>
+                                        <td class="text-center" t-if="not is_debit_note"><span t-esc="'{:,.2f}'.format(float(line.discount or 0.0))"/></td>
+                                        <td class="text-center"><span t-esc="'{:,.2f}'.format(float(line.price_unit or 0.0))"/></td>
+                                    </tr>
+                                </t>
+                                <!-- Add empty rows to ensure minimum height (approx 20 rows) -->
+                                <t t-foreach="range(max(0, 15 - len(lines)))" t-as="i">
+                                    <tr style="height: 20px;">
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td t-if="not is_debit_note"></td>
+                                        <td></td>
+                                    </tr>
+                                </t>
+                            </tbody>
+                        </table>
+                        </div>
+
+                        <div class="row justify-content-end" style="margin-bottom: 0.5rem; margin-top: 10px;">
+                            <div class="col-4">
+                                <table class="table table-sm o_main_table items-table">
+                                    <thead class="section-header">
+                                        <tr>
+                                            <th class="text-center" style="padding: 2px 0;">TOTAL IMPUESTOS</th>
+                                            <th class="text-center" style="padding: 2px 0;">TOTAL</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody style="text-align: right;">
+                                        <tr>
+                                            <td><span t-field="o.amount_tax"/></td>
+                                            <td><span t-field="o.amount_total"/></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <div class = "row" style="border: 2px solid black; padding: 10px; margin-bottom: 0.5rem; margin-top: 10px;font-size: 11px;">
+                            <strong>SON: </strong><span t-field="o.amount_total_words"/>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-6">
+                                <div t-if="o.l10n_latam_document_type_id.code in ['07', '08']" class="mt-2" style="font-size: 11px;">
+                                    <t t-set="origin_doc" t-value="o.reversed_entry_id if o.l10n_latam_document_type_id.code == '07' else o.debit_origin_id"/>
+                                    <strong>DOCUMENTO(S) DE REFERENCIA:</strong>
+                                    <table class="table table-sm" style="width: auto; border: 2px solid black;font-size: 11px;">
+                                        <thead>
+                                            <tr>
+                                                <th>TIPO DE DOCUMENTO</th>
+                                                <th>SERIE - NÚMERO</th>
+                                                <th>FECHA</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr t-if="origin_doc">
+                                                <td class="text-center"><span t-esc="{ '01': 'FACTURA', '03': 'BOLETA', '07': 'NOTA DE CRÉDITO', '08': 'NOTA DE DÉBITO' }.get(origin_doc.l10n_latam_document_type_id.code, origin_doc.l10n_latam_document_type_id.name)"/></td>
+                                                <td class="text-center"><span t-field="origin_doc.name"/></td>
+                                                <td class="text-center"><span t-field="origin_doc.invoice_date" t-options="{'format': 'dd/MM/yyyy'}"/></td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                    <strong>MOTIVO:</strong> <span t-field="o.ref"/>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div t-if="spot" class="mt-2" style="font-size: 11px;">
+                                    <strong>DETRACCIÓN:</strong>
+                                    <table class="table table-sm" style="width: 100%; border: 2px solid black; font-size: 11px;">
+                                        <tbody>
+                                            <tr>
+                                                <td><strong>Porcentaje de Detracción:</strong></td>
+                                                <td class="ps-2">
+                                                    <span><t t-esc="spot['payment_percent']"/> %</span>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td><strong>Monto de Detracción:</strong></td>
+                                                <td class="ps-2">
+                                                    <span t-esc="spot['amount']" t-options="{'widget': 'monetary', 'display_currency': spot['currency']}"/>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- QR Code Section -->
+                        <div class="row mt-4" id="qrcode_section">
+                            <div class="col-12 text-center" t-if="extra_edi_vals and extra_edi_vals.get('qr_str')" style="font-size: 9px;">
+                                <p style="margin-bottom: 0px;">Representación Impresa - <span t-esc="{ '01': 'Factura Electrónica', '03': 'Boleta de Venta Electrónica', '07': 'Nota de Crédito Electrónica', '08': 'Nota de Débito Electrónica', }.get(o.l10n_latam_document_type_id.code, '')"/></p>
+                                <p t-if="spot and spot.get('spot_message')" t-esc="spot['spot_message']" style="margin-bottom: 0px;"/>
+                                <img class="border border-dark rounded mt-2" t-att-src="'/report/barcode/?barcode_type=%s&amp;value=%s&amp;width=%s&amp;height=%s' % ('QR', extra_edi_vals['qr_str'], 100, 100)"/>
+                            </div>
+                        </div>
+                        <div class="oe_structure"/>
+                    </div>
+                </t>
+            </t>
+        </t>
+    </template>
+
+    <!-- 1. Define the Custom Paper Format -->
+    <record id="paperformat_invoice_custom" model="report.paperformat">
+        <field name="name">Custom Invoice Letter</field>
+        <field name="format">Letter</field>
+        <field name="orientation">Portrait</field>
+        <field name="margin_top">50</field>
+        <field name="margin_bottom">10</field>
+        <field name="margin_left">5</field>
+        <field name="margin_right">5</field>
+        <field name="header_line" eval="False" />
+        <field name="header_spacing">40</field>
+        <field name="dpi">90</field>
+    </record>
+
+    <record id="account.account_invoices" model="ir.actions.report">
+        <field name="report_name">flt_custom_report.report_invoice_document_custom</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="binding_model_id" ref="account.model_account_move"/>
+        <field name="binding_type">report</field>
+        <!-- 2. Link the Paper Format to the Report -->
+        <field name="paperformat_id" ref="paperformat_invoice_custom"/>
+    </record>
+
+</odoo>
