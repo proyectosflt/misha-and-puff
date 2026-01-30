@@ -251,19 +251,6 @@
         </t>
     </template>
 
-
-    <record id="action_resume_guide_report" model="ir.actions.report">
-        <field name="name">Guia de Remisión</field>
-        <field name="model">stock.picking</field>
-        <field name="report_type">qweb-pdf</field>
-        <field name="report_name">flt_custom_report.report_pe_guide_remission_local</field>
-        <field name="report_file">flt_custom_report.report_pe_guide_remission_local</field>
-        <field name="print_report_name">(object.l10n_latam_document_number)</field>
-        <field name="binding_model_id" ref="stock.model_stock_picking"/>
-        <field name="binding_type">report</field>
-        <field name="paperformat_id" ref="flt_custom_report.GR_invoice_format"/>
-    </record>
-
     <!-- Formato Letter para guia de remisión -->
     <record id="GR_invoice_format" model="report.paperformat">
         <field name="name">Letter-GR</field>
@@ -278,6 +265,19 @@
         <field name="header_spacing">40</field>
         <field name="dpi">90</field>
     </record>
+
+    <record id="action_resume_guide_report" model="ir.actions.report">
+        <field name="name">Guia de Remisión</field>
+        <field name="model">stock.picking</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">flt_custom_report.report_pe_guide_remission_local</field>
+        <field name="report_file">flt_custom_report.report_pe_guide_remission_local</field>
+        <field name="print_report_name">(object.l10n_latam_document_number)</field>
+        <field name="binding_model_id" ref="stock.model_stock_picking"/>
+        <field name="binding_type">report</field>
+        <field name="paperformat_id" ref="flt_custom_report.GR_invoice_format"/>
+    </record>
+
     <record id="dv_l10n_pe_edi_stock_template.action_resume_guide_report" model="ir.actions.report">
         <field name="binding_model_id" eval="False"/>
     </record>
