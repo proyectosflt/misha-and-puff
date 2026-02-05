@@ -12,7 +12,7 @@ class ProductProduct(models.Model):
         res = super(ProductProduct, self).write(vals)
         for product in self:
             if product.uom_id.name == 'kg' and product.weight != 1:
-                raise ValidationError("El peso del producto no puede ser 1 si la unidad de medida es kilogramos.")
+                raise ValidationError("El peso del producto no puede ser diferente de 1 si la unidad de medida es kilogramos.")
         return res
 
     @api.model_create_multi
