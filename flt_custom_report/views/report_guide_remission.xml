@@ -235,13 +235,6 @@
                                     <div t-if="qr_url" class="barcode col-auto">
                                         <img alt="Barcode" t-att-src="'/report/barcode/?barcode_type=QR&amp;value=%s&amp;width=100&amp;height=100' % quote_plus(qr_url)"/>
                                     </div>
-                                    <div class="col-6" t-if="o.l10n_pe_edi_related_document_type">
-                                        <strong>Related Documents:</strong>
-                                        <p>
-                                            <span t-field="o.l10n_pe_edi_related_document_type"/> -
-                                            <span t-field="o.l10n_pe_edi_document_number"/>
-                                        </p>
-                                    </div>
                                 </div>
                             </div>
                         </div>
