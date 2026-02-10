@@ -9,9 +9,9 @@ class StockMove(models.Model):
     x_studio_color_name = fields.Char(related='product_id.x_studio_color_name', string="Color Name", readonly=True)
     color_family_id = fields.Many2one(related='product_id.color_family_id', string="Familia de Color", readonly=True)
 
-    neto_prov = fields.Float(string="Neto Prov")
-    diferencia_prov = fields.Float(string="Diferencia Prov", compute="_compute_diferencias", store=True)
-    diferencia_demanda = fields.Float(string="Diferencia Demanda", compute="_compute_diferencias", store=True)
+    neto_prov = fields.Float(string="Neto prov")
+    diferencia_prov = fields.Float(string="Dif prov", compute="_compute_diferencias", store=True)
+    diferencia_demanda = fields.Float(string="Dif dem", compute="_compute_diferencias", store=True)
 
     paquetes = fields.Integer(string="Paquetes", compute="_compute_detailed_metrics", store=True)
     conos = fields.Integer(string="Conos", compute="_compute_detailed_metrics", store=True)

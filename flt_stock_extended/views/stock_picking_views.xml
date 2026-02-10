@@ -24,6 +24,18 @@
                 <field name="diferencia_demanda" optional="show" widget="badge" decoration-success="diferencia_demanda &gt; 0" decoration-danger="diferencia_demanda &lt;= 0"/>
                 <field name="diferencia_prov" optional="show" widget="badge" decoration-success="diferencia_prov &gt; 0" decoration-danger="diferencia_prov &lt;= 0"/>
             </xpath>
+            <xpath expr="//field[@name='move_ids_without_package']" position="after">
+                 <group class="oe_subtotal_footer oe_right" colspan="2" name="stock_total_values">
+                    <field name="total_paquetes"/>
+                    <field name="total_conos"/>
+                    <field name="total_cantidad_bruto"/>
+                    <field name="total_quantity" decoration-bf="1"/>
+                    <field name="total_neto_prov"/>
+                    <field name="total_diferencia_prov" decoration-danger="total_diferencia_prov &lt; 0" decoration-success="total_diferencia_prov &gt; 0"/>
+                    <field name="total_diferencia_demanda" decoration-danger="total_diferencia_demanda &lt; 0" decoration-success="total_diferencia_demanda &gt; 0"/>
+                </group>
+                <div class="clearfix"/>
+            </xpath>
         </field>
     </record>
 </odoo>
