@@ -8,12 +8,12 @@ class ProductProduct(models.Model):
 
     product_type_id = fields.Many2one('product.type', string='Clasificación de producto')
     tara_cono = fields.Float(string='Tara Cono')
-    color_family_id = fields.Many2one('color.family', string='Familia de Color', compute='_compute_studio_fields', store=True)
     weight = fields.Float(default=1.0)
 
     x_studio_title = fields.Char(string='Title', compute='_compute_studio_fields', store=True)
     x_studio_color_code = fields.Char(string='Color Code', compute='_compute_studio_fields', store=True)
     x_studio_color_name = fields.Char(string='Color Name', compute='_compute_studio_fields', store=True)
+    color_family_id = fields.Many2one('color.family', string='Familia de Color', compute='_compute_studio_fields', store=True)
     default_code = fields.Char(compute='_compute_studio_fields', store=True)
 
     @api.depends('product_template_variant_value_ids',

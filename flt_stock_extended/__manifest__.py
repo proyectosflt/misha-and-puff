@@ -7,6 +7,7 @@
     'data': [
         'security/ir.model.access.csv',
         'views/stock_move_line.xml',
+        'views/stock_picking_views.xml',
         'views/product_product.xml',
         'views/report_package_barcode.xml',
         'views/stock_quant.xml',

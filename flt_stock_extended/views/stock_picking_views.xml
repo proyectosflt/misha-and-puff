@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_picking_form_inherit_flt_stock_extended" model="ir.ui.view">
+        <field name="name">stock.picking.form.inherit.flt.stock.extended</field>
+        <field name="model">stock.picking</field>
+        <field name="inherit_id" ref="stock.view_picking_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='move_ids_without_package']/list/field[@name='product_id']" position="after">
+                <field name="x_studio_title" optional="show"/>
+                <field name="x_studio_color_code" optional="show"/>
+                <field name="x_studio_color_name" optional="show"/>
+                <field name="color_family_id" optional="show"/>
+            </xpath>
+            <xpath expr="//field[@name='move_ids_without_package']/list/field[@name='quantity']" position="before">
+                <field name="paquetes" optional="show"/>
+                <field name="conos" optional="show"/>
+                <field name="cantidad_bruto" optional="show"/>
+            </xpath>
+            <xpath expr="//field[@name='move_ids_without_package']/list/field[@name='quantity']" position="attributes">
+                <attribute name="string">Cantidad neto</attribute>
+            </xpath>
+            <xpath expr="//field[@name='move_ids_without_package']/list/field[@name='quantity']" position="after">
+                <field name="neto_prov" optional="show"/>
+                <field name="diferencia_demanda" optional="show" widget="badge" decoration-success="diferencia_demanda &gt; 0" decoration-danger="diferencia_demanda &lt;= 0"/>
+                <field name="diferencia_prov" optional="show" widget="badge" decoration-success="diferencia_prov &gt; 0" decoration-danger="diferencia_prov &lt;= 0"/>
+            </xpath>
+        </field>
+    </record>
+</odoo>
