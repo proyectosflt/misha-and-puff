@@ -3,7 +3,7 @@
     'name': 'Stock Extended',
     'category': 'Stock',
     'summary': 'Add new features to stock module',
-    'depends': ['stock'],
+    'depends': ['stock', 'purchase'],
     'data': [
         'security/ir.model.access.csv',
         'views/stock_move_line.xml',
