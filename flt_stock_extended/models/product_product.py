@@ -18,9 +18,11 @@ class ProductProduct(models.Model):
     @api.depends('product_template_variant_value_ids',
                  'product_template_variant_value_ids.attribute_id.name',
                  'product_template_variant_value_ids.product_attribute_value_id.name',
+                 'product_template_variant_value_ids.product_attribute_value_id.nombre',
                  'product_template_variant_value_ids.product_attribute_value_id.color_family_id',
                  'product_tmpl_id.attribute_line_ids',
                  'product_tmpl_id.attribute_line_ids.value_ids',
+                 'product_tmpl_id.attribute_line_ids.value_ids.nombre',
                  'product_tmpl_id.attribute_line_ids.value_ids.color_family_id',
                  'product_tmpl_id.attribute_line_ids.attribute_id.name',
                  'name',
@@ -39,13 +41,10 @@ class ProductProduct(models.Model):
                 if attr_name == 'Title':
                     title = ptav.product_attribute_value_id.name
                 elif attr_name == 'Color':
-                    val = ptav.product_attribute_value_id.name
-                    color_family = ptav.product_attribute_value_id.color_family_id
-                    if val:
-                        parts = val.split('-', 1)
-                        color_code = parts[0].strip()
-                        if len(parts) > 1:
-                            color_name = parts[1].strip()
+                    val = ptav.product_attribute_value_id
+                    color_family = val.color_family_id
+                    color_code = val.name
+                    color_name = val.nombre
             
             # Second, check template attribute lines for single-value attributes
             # (when there's only one value for an attribute, it's not in variant values)
@@ -56,13 +55,10 @@ class ProductProduct(models.Model):
                     if attr_name == 'Title' and not title and len(attr_line.value_ids) == 1:
                         title = attr_line.value_ids[0].name
                     elif attr_name == 'Color' and not color_code and len(attr_line.value_ids) == 1:
-                        val = attr_line.value_ids[0].name
-                        color_family = attr_line.value_ids[0].color_family_id
-                        if val:
-                            parts = val.split('-', 1)
-                            color_code = parts[0].strip()
-                            if len(parts) > 1:
-                                color_name = parts[1].strip()
+                        val = attr_line.value_ids[0]
+                        color_family = val.color_family_id
+                        color_code = val.name
+                        color_name = val.nombre
             
             product.x_studio_title = title
             product.x_studio_color_code = color_code

@@ -6,7 +6,8 @@
         <field name="model">product.attribute.value</field>
         <field name="arch" type="xml">
             <list string="Colors" editable="bottom">
-                <field name="name"/>
+                <field name="name" string="Código"/>
+                <field name="nombre"/>
                 <field name="color_family_id"/>
             </list>
         </field>
@@ -20,6 +21,7 @@
                 <sheet>
                     <group>
                         <field name="name"/>
+                        <field name="nombre"/>
                         <field name="color_family_id"/>
                     </group>
                 </sheet>
