@@ -6,6 +6,7 @@
         <field name="model">product.attribute.value</field>
         <field name="arch" type="xml">
             <list string="Colors" editable="bottom">
+                <field name="attribute_id" string="Atributo" column_invisible="1"/>
                 <field name="name" string="Código"/>
                 <field name="nombre"/>
                 <field name="color_family_id"/>
@@ -20,6 +21,7 @@
             <form string="Color">
                 <sheet>
                     <group>
+                        <field name="attribute_id" string="Atributo" invisible="1"/>
                         <field name="name"/>
                         <field name="nombre"/>
                         <field name="color_family_id"/>
@@ -35,6 +37,7 @@
         <field name="res_model">product.attribute.value</field>
         <field name="view_mode">list,form</field>
         <field name="domain">[('attribute_id.name', '=', 'Color')]</field>
+        <field name="context">{'default_color_attribute': True}</field>
         <field name="view_ids" eval="[(5, 0, 0),
             (0, 0, {'view_mode': 'list', 'view_id': ref('view_product_attribute_value_color_list')}),
             (0, 0, {'view_mode': 'form', 'view_id': ref('view_product_attribute_value_color_form')})]"/>
