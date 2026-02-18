@@ -17,10 +17,9 @@ class StockPicking(models.Model):
     def _compute_barcode_html(self):
         for picking in self:
             if picking.name:
-                # Generates a barcode image URL using the standard report controller
                 encoded_name = quote(picking.name)
-                url = "/report/barcode/?type=%s&value=%s&width=%s&height=%s&humanreadable=1" % ('Code128', encoded_name, 600, 100)
-                picking.barcode_html = '<img src="%s" alt="%s" style="max-height: 50px;"/>' % (url, picking.name)
+                url = "/report/barcode/?type=Code128&amp;value=%s&amp;width=600&amp;height=100&amp;humanreadable=1" % encoded_name
+                picking.barcode_html = '<img src="%s" alt="%s" style="max-height: 60px;"/>' % (url, picking.name)
             else:
                 picking.barcode_html = False
 
