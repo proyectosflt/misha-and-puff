@@ -12,6 +12,7 @@
             <xpath expr="//group//group[1]" position="inside">
                 <field name="orden_compra"/>
 				<field name="sale_order_notes"  widget="html"/>
+				<field name="name" widget="barcode" string="Código de barras"/>
             </xpath>
         </field>
     </record>
