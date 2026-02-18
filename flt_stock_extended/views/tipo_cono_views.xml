@@ -5,10 +5,10 @@
         <field name="name">tipo.cono.tree</field>
         <field name="model">tipo.cono</field>
         <field name="arch" type="xml">
-            <tree>
+            <list>
                 <field name="name"/>
                 <field name="tara_cono"/>
-            </tree>
+            </list>
         </field>
     </record>
 
