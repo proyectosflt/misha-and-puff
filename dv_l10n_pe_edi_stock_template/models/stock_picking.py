@@ -1,4 +1,5 @@
 from odoo import api, fields, models, _
+from urllib.parse import quote
 
 class StockPicking(models.Model):
     _inherit = 'stock.picking'
@@ -17,7 +18,8 @@ class StockPicking(models.Model):
         for picking in self:
             if picking.name:
                 # Generates a barcode image URL using the standard report controller
-                url = "/report/barcode/?type=%s&value=%s&width=%s&height=%s" % ('Code128', picking.name, 600, 100)
+                encoded_name = quote(picking.name)
+                url = "/report/barcode/?type=%s&value=%s&width=%s&height=%s&humanreadable=1" % ('Code128', encoded_name, 600, 100)
                 picking.barcode_html = '<img src="%s" alt="%s" style="max-height: 50px;"/>' % (url, picking.name)
             else:
                 picking.barcode_html = False
