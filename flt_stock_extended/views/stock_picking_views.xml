@@ -5,12 +5,21 @@
         <field name="model">stock.picking</field>
         <field name="inherit_id" ref="stock.view_picking_form"/>
         <field name="arch" type="xml">
+            <xpath expr="//field[@name='origin']" position="after">
+                <field name="numero_guia_remision"/>
+            </xpath>
             <xpath expr="//field[@name='move_ids_without_package']/list/field[@name='product_id']" position="after">
                 <field name="x_studio_title" optional="show"/>
                 <field name="x_studio_color_code" optional="show"/>
                 <field name="x_studio_color_name" optional="show"/>
                 <field name="color_family_id" optional="show"/>
             </xpath>
+            
+            <!-- Added sum to Demanda (product_uom_qty) -->
+            <xpath expr="//field[@name='move_ids_without_package']/list/field[@name='product_uom_qty']" position="attributes">
+                <attribute name="sum">Total Demanda</attribute>
+            </xpath>
+
             <xpath expr="//field[@name='move_ids_without_package']/list/field[@name='quantity']" position="before">
                 <field name="paquetes" optional="show" sum="Total Paquetes"/>
                 <field name="conos" optional="show" sum="Total Conos"/>
