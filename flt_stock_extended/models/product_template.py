@@ -1,9 +1,14 @@
 # -*- coding: utf-8 -*-
-from odoo import models, api
+from odoo import models, fields, api
 from odoo.exceptions import ValidationError
 
 class ProductTemplate(models.Model):
     _inherit = 'product.template'
+    
+    descripcion = fields.Text(
+        string='Descripción',
+        help='Descripción del producto'
+    )
 
     @api.model_create_multi
     def create(self, vals_list):
