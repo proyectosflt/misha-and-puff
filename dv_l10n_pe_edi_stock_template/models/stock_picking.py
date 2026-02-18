@@ -10,6 +10,17 @@ class StockPicking(models.Model):
     vendedor = fields.Char(string="Vendedor", compute="_compute_sale_order", store=True)
 
     sale_order_notes = fields.Text(string="Notas de la Orden de Venta",compute="_compute_sale_order", store=True)
+    barcode_html = fields.Html(string="Código de Barras", compute="_compute_barcode_html", sanitize=False)
+
+    @api.depends('name')
+    def _compute_barcode_html(self):
+        for picking in self:
+            if picking.name:
+                # Generates a barcode image URL using the standard report controller
+                url = "/report/barcode/?type=%s&value=%s&width=%s&height=%s" % ('Code128', picking.name, 600, 100)
+                picking.barcode_html = '<img src="%s" alt="%s" style="max-height: 50px;"/>' % (url, picking.name)
+            else:
+                picking.barcode_html = False
 
     @api.depends('origin')
     def _compute_sale_order(self):
