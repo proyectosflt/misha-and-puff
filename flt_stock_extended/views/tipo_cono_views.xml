@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Tree View -->
+    <record id="view_tipo_cono_tree" model="ir.ui.view">
+        <field name="name">tipo.cono.tree</field>
+        <field name="model">tipo.cono</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="name"/>
+                <field name="tara_cono"/>
+            </tree>
+        </field>
+    </record>
+
+    <!-- Form View -->
+    <record id="view_tipo_cono_form" model="ir.ui.view">
+        <field name="name">tipo.cono.form</field>
+        <field name="model">tipo.cono</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <group>
+                        <field name="name"/>
+                        <field name="tara_cono"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- Action -->
+    <record id="action_tipo_cono" model="ir.actions.act_window">
+        <field name="name">Tipos de Cono</field>
+        <field name="res_model">tipo.cono</field>
+        <field name="view_mode">tree,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Crear un nuevo tipo de cono
+            </p>
+        </field>
+    </record>
+
+    <!-- Menu Item -->
+    <menuitem id="menu_tipo_cono"
+        name="Conos"
+        parent="stock.menu_product_in_config_stock"
+        action="action_tipo_cono"
+        sequence="52"/>
+</odoo>

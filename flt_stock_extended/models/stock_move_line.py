@@ -5,6 +5,7 @@ from odoo import api, models, fields
 class StockMoveLine(models.Model):
     _inherit = 'stock.move.line'
     cantidad_conos = fields.Integer(string="Conos")
+    cono_id = fields.Many2one('tipo.cono', string='Tipo de Cono')
     tara_bolsa = fields.Float(string="Tara bolsa", compute='_compute_tara_bolsa', store=True, readonly=False)
     tara_cono = fields.Float(string="Tara cono", compute='_compute_tara_cono', store=True, readonly=False)
     peso_bruto = fields.Float(string="Peso bruto")
@@ -16,11 +17,11 @@ class StockMoveLine(models.Model):
             if not record.tara_bolsa:
                 record.tara_bolsa = record.result_package_id.package_type_id.base_weight or 0.0
 
-    @api.depends('product_id.tara_cono')
+    @api.depends('cono_id.tara_cono')
     def _compute_tara_cono(self):
         for record in self:
             if not record.tara_cono:
-                record.tara_cono = record.product_id.tara_cono or 0.0
+                record.tara_cono = record.cono_id.tara_cono or 0.0
 
     def action_calcular(self):
         for record in self:

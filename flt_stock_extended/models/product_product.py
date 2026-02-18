@@ -7,7 +7,6 @@ class ProductProduct(models.Model):
     _inherit = 'product.product'
 
     product_type_id = fields.Many2one('product.type', string='Clasificación de producto')
-    tara_cono = fields.Float(string='Tara Cono')
     weight = fields.Float(default=1.0)
 
     x_studio_title = fields.Char(string='Title', compute='_compute_studio_fields', store=True)

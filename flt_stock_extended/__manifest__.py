@@ -15,6 +15,7 @@
         'views/stock_quant_package.xml',
         'views/color_family_views.xml',
         'views/product_attribute_value_views.xml',
+        'views/tipo_cono_views.xml',
     ],
     'installable': True,
     'application': False,
