@@ -30,6 +30,15 @@ class StockMoveLine(models.Model):
             record.peso_neto = value
             record.quantity = value
 
+    def action_duplicar(self):
+        for record in self:
+            record.copy({
+                'result_package_id': False,
+                'peso_bruto': 0.0,
+                'peso_neto': 0.0,
+                'quantity': 0.0,
+            })
+
     def _action_done(self):
         """Override to pass custom fields in context for stock.quant updates"""
         for ml in self:
