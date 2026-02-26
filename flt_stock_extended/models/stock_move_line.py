@@ -9,7 +9,7 @@ class StockMoveLine(models.Model):
     tara_bolsa = fields.Float(string="Tara bolsa", compute='_compute_tara_bolsa', store=True, readonly=False)
     tara_cono = fields.Float(string="Tara cono", compute='_compute_tara_cono', store=True, readonly=False)
     peso_bruto = fields.Float(string="Peso bruto")
-    peso_neto = fields.Float(string="Peso neto")
+    peso_neto = fields.Float(string="Peso neto", compute='_compute_peso_neto', store=True, readonly=False)
 
     @api.depends('result_package_id.package_type_id.base_weight')
     def _compute_tara_bolsa(self):
@@ -23,7 +23,8 @@ class StockMoveLine(models.Model):
             if not record.tara_cono:
                 record.tara_cono = record.cono_id.tara_cono or 0.0
 
-    def action_calcular(self):
+    @api.depends('peso_bruto', 'tara_bolsa', 'tara_cono', 'cantidad_conos')
+    def _compute_peso_neto(self):
         for record in self:
             value = (record.peso_bruto or 0.0) - (record.tara_bolsa or 0.0) - ((record.tara_cono or 0.0) * (record.cantidad_conos or 0))
             record.peso_neto = value

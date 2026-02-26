@@ -21,12 +21,7 @@
                 <field name="peso_bruto"/>
                 <field name="peso_neto"/>
             </xpath> 
-            <xpath expr="//list" position="inside">
-                <button name="action_calcular" string="Calcular" type="object" 
-                        column_invisible="parent.state in ('done', 'cancel')"/>
-                <!-- <button name="action_calcular" string="Calcular" type="object" 
-                        column_invisible="parent.state in ('done', 'cancel') or parent.picking_type_id != 1"/> -->
-            </xpath>
+
         </field>
     </record>
 
