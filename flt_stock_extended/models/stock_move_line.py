@@ -14,24 +14,39 @@ class StockMoveLine(models.Model):
     @api.depends('result_package_id.package_type_id.base_weight')
     def _compute_tara_bolsa(self):
         # Use .exists() to filter out deleted records before iterating
-        for record in self.exists():
-            if not record.tara_bolsa:
-                record.tara_bolsa = record.result_package_id.package_type_id.base_weight or 0.0
+        for record in self:
+            if not record.exists():
+                continue
+            try:
+                if not record.tara_bolsa:
+                    record.tara_bolsa = record.result_package_id.package_type_id.base_weight or 0.0
+            except Exception:
+                continue
 
     @api.depends('cono_id.tara_cono')
     def _compute_tara_cono(self):
         # Use .exists() to filter out deleted records before iterating
-        for record in self.exists():
-            if not record.tara_cono:
-                record.tara_cono = record.cono_id.tara_cono or 0.0
+        for record in self:
+            if not record.exists():
+                continue
+            try:
+                if not record.tara_cono:
+                    record.tara_cono = record.cono_id.tara_cono or 0.0
+            except Exception:
+                continue
 
     @api.depends('peso_bruto', 'tara_bolsa', 'tara_cono', 'cantidad_conos')
     def _compute_peso_neto(self):
         # Use .exists() to filter out deleted records before iterating
-        for record in self.exists():
-            value = (record.peso_bruto or 0.0) - (record.tara_bolsa or 0.0) - ((record.tara_cono or 0.0) * (record.cantidad_conos or 0))
-            record.peso_neto = value
-            record.quantity = value
+        for record in self:
+            if not record.exists():
+                continue
+            try:
+                value = (record.peso_bruto or 0.0) - (record.tara_bolsa or 0.0) - ((record.tara_cono or 0.0) * (record.cantidad_conos or 0))
+                record.peso_neto = value
+                record.quantity = value
+            except Exception:
+                continue
 
     def action_duplicar(self):
         for record in self:
