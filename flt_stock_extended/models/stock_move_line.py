@@ -13,19 +13,22 @@ class StockMoveLine(models.Model):
 
     @api.depends('result_package_id.package_type_id.base_weight')
     def _compute_tara_bolsa(self):
-        for record in self:
+        # Use .exists() to filter out deleted records before iterating
+        for record in self.exists():
             if not record.tara_bolsa:
                 record.tara_bolsa = record.result_package_id.package_type_id.base_weight or 0.0
 
     @api.depends('cono_id.tara_cono')
     def _compute_tara_cono(self):
-        for record in self:
+        # Use .exists() to filter out deleted records before iterating
+        for record in self.exists():
             if not record.tara_cono:
                 record.tara_cono = record.cono_id.tara_cono or 0.0
 
     @api.depends('peso_bruto', 'tara_bolsa', 'tara_cono', 'cantidad_conos')
     def _compute_peso_neto(self):
-        for record in self:
+        # Use .exists() to filter out deleted records before iterating
+        for record in self.exists():
             value = (record.peso_bruto or 0.0) - (record.tara_bolsa or 0.0) - ((record.tara_cono or 0.0) * (record.cantidad_conos or 0))
             record.peso_neto = value
             record.quantity = value
