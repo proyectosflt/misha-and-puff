@@ -1,0 +1,277 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <template id="report_pe_guide_remission_local">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="o">
+                <t t-call="flt_custom_report.external_layout_guide_remission_local_letter">
+                    <div class="page">
+                        <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+                        <style>
+                            .details-table {
+                                font-size: 11px;
+                                width: 100%;
+                                table-layout: fixed;
+                                border-collapse: collapse;
+                            }
+                            .details-table td {
+                                padding: 1px 4px;
+                            }
+                            .transport-container {
+                                padding: 0;
+                            }
+                            .transport-table {
+                                font-size: 12px;
+                                margin-bottom: 0;
+                                width: 100%;
+                            }
+                            .transport-table td, .transport-table th {
+                                padding: 2px 5px;
+                            }
+                            .transport-table tbody tr:first-child td {
+                                padding-top: 10px;
+                            }
+                            .transport-table tbody tr:last-child td {
+                                padding-bottom: 10px;
+                            }
+                            .section-header {
+                                background-color: #d3d3d3;
+                            }
+                            .items-table {
+                                font-size: 11px;
+                                width: 100%;
+                                table-layout: fixed;
+                                border: 2px solid black;
+                                margin-top: 0.5rem;
+                                margin-bottom: 0;
+                            }
+                            .items-table tbody td {
+                                border-top-style: hidden;
+                            }
+                        </style>
+
+                        <div class="oe_structure"/>
+                        <div class="row" style="border: 2px solid black; padding: 10px; margin-bottom: 0.5rem;">
+                            <div class="col-8" style="padding: 0;">
+                                <table class="table table-borderless details-table">
+                                    <colgroup>
+                                        <col style="width: 20%;"/>
+                                        <col style="width: 80%;"/>
+                                    </colgroup>
+                                    <tbody>
+                                        <tr>
+                                            <td><strong>Cliente</strong></td>
+                                            <td>: <span t-field="o.partner_id.name"/></td>
+                                        </tr>
+                                        <tr>
+                                            <td><strong t-if="o.partner_id.l10n_latam_identification_type_id.l10n_pe_vat_code == '6'">R.U.C.</strong><strong t-elif="o.partner_id.l10n_latam_identification_type_id.l10n_pe_vat_code == '1'">D.N.I.</strong><strong t-else="">R.U.C.</strong></td>
+                                            <td>: <span t-field="o.partner_id.vat"/></td>
+                                        </tr>
+                                        <tr>
+                                            <td><strong>Dirección</strong></td>
+                                            <td>: <span t-esc="', '.join(filter(None, [o.partner_id.street, o.partner_id.street2, o.partner_id.city, o.partner_id.state_id.name, o.partner_id.zip, o.partner_id.country_id.name]))"/></td>
+                                        </tr>
+                                        <tr>
+                                            <td><strong>Dom.Pto Partida</strong></td>
+                                            <td>: <span t-esc="', '.join(filter(None, [o.company_id.street, o.company_id.street2, o.company_id.city, o.company_id.state_id.name, o.company_id.zip, o.company_id.country_id.name]))"/></td>
+                                        </tr>
+                                        <tr>
+                                            <td><strong>Dom.Pto Llegada</strong></td>
+                                            <td>: <span t-esc="', '.join(filter(None, [o.partner_id.street, o.partner_id.street2, o.partner_id.city, o.partner_id.state_id.name, o.partner_id.zip, o.partner_id.country_id.name]))"/></td>
+                                        </tr>
+                                        <tr>
+                                            <td><strong>Fecha Emisión</strong></td>
+                                            <td>: <span t-field="o.scheduled_date" t-options='{"widget": "date", "format": "dd-MM-yyyy"}'/></td>
+                                        </tr>
+                                        <tr>
+                                            <td><strong>Fecha Traslado</strong></td>
+                                            <td>: <span t-field="o.l10n_pe_edi_departure_start_date" t-options='{"widget": "date", "format": "dd-MM-yyyy"}'/></td>
+                                        </tr>
+                                        <tr t-if="o.l10n_pe_edi_related_document_type">
+                                            <td><strong><span t-field="o.l10n_pe_edi_related_document_type"/></strong></td>
+                                            <td>: <span t-field="o.l10n_pe_edi_document_number"/></td>
+                                        </tr>
+                                        <tr>
+                                            <td><strong>Motivo Traslado</strong></td>
+                                            <td>: <span t-field="o.l10n_pe_edi_reason_for_transfer"/></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div class="col-4" style="padding: 0;">
+                                <table class="table table-borderless details-table">
+                                    <colgroup>
+                                        <col style="width: 30%;"/>
+                                        <col style="width: 70%;"/>
+                                    </colgroup>
+                                    <tbody>
+                                        <tr>
+                                            <td><strong>Hora</strong></td>
+                                            <td>: <span t-field="o.scheduled_date" t-options='{"widget": "datetime", "format": "HH:mm"}'/></td>
+                                        </tr>
+                                        <tr>
+                                            <td><strong>Orden Compra</strong></td>
+                                            <td>: <span t-field="o.orden_compra"/></td>
+                                        </tr>
+                                        <tr>
+                                            <td><strong>Vendedor</strong></td>
+                                            <td>: <span t-field="o.user_id"/></td>
+                                        </tr>
+                                        <tr>
+                                            <td><strong>Peso</strong></td>
+                                            <td>: <span t-field="o.weight"/> <span>kg</span></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        
+                        <div class="row" style="margin-bottom: 0.5rem;">
+                            <div class="col-12" style="padding: 0;">
+                                <table class="table table-borderless transport-table" style="border: 2px solid black; margin-bottom: 0;">
+                                    <thead class="section-header">
+                                        <tr>
+                                            <th class="text-center" colspan="4"><strong>TRANSPORTE <span t-if="o.l10n_pe_edi_transport_type == '01'">PUBLICO</span><span t-elif="o.l10n_pe_edi_transport_type == '02'">PRIVADO</span><span t-else="" t-field="o.l10n_pe_edi_transport_type"/></strong></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td style="width: 15%;"><strong>Placa</strong></td>
+                                            <td style="width: 35%;">: <span t-field="o.l10n_pe_edi_vehicle_id.license_plate"/></td>
+                                            <td style="width: 15%;"><strong>D.N.I.</strong></td>
+                                            <td style="width: 35%;">: <span t-field="o.l10n_pe_edi_operator_id.vat"/></td>
+                                        </tr>
+                                        <tr>
+                                            <td><strong>Licencia</strong></td>
+                                            <td>: <span t-field="o.l10n_pe_edi_operator_id.l10n_pe_edi_operator_license"/></td>
+                                            <td><strong>Conductor</strong></td>
+                                            <td>: <span t-field="o.l10n_pe_edi_operator_id.name"/></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <div class="row" style="margin-top: 20px;">
+                            <div class="col-12" style="padding: 10;">
+                                <table class="table table-sm o_main_table items-table">
+                                    <thead class="section-header">
+                                        <tr>
+                                            <th class="text-center" style="width: 5%;">IT</th>
+                                            <th class="text-center" style="width: 15%;">CODIGO</th>
+                                            <th class="text-center" style="width: 10%;">CANTIDAD</th>
+                                            <th class="text-center" style="width: 15%;">UNID. DE MEDIDA</th>
+                                            <th class="text-center">DESCRIPCIÓN</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <t t-set="lines" t-value="o.move_ids_without_package"/>
+                                        <t t-foreach="lines" t-as="line">
+                                            <tr>
+                                                <td class="text-center"><span t-esc="line_index + 1"/></td>
+                                                <td><span t-field="line.product_id.default_code"/></td>
+                                                <td class="text-right"><span t-field="line.product_uom_qty"/></td>
+                                                <td class="text-center"><span t-field="line.product_uom.name"/></td>
+                                                <td><span t-field="line.name"/></td>
+                                            </tr>
+                                        </t>
+                                        <t t-foreach="range(max(0, 10 - len(lines)))" t-as="i">
+                                            <tr style="height: 20px;">
+                                                <td></td>
+                                                <td></td>
+                                                <td></td>
+                                                <td></td>
+                                                <td></td>
+                                            </tr>
+                                        </t>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <div class = "row" style="border: 2px solid black; padding: 10px; margin-bottom: 0.5rem; margin-top: 20px; font-size: 11px;">
+                            <strong>Observaciones: </strong><span t-field="o.l10n_pe_edi_observation"/>
+                        </div>
+                        <div class="row">
+                            <div class="col-6 offset-6" >
+                                <table class="table items-table">
+                                    <colgroup>
+                                    <col style="width: 50%;"/>
+                                    <col style="width: 50%;"/>
+                                    </colgroup>
+                                    <thead class="section-header">
+                                        <tr>
+                                            <th class="text-center"><strong>V°B°</strong></th>
+                                            <th class="text-center"><strong>RECIBI CONFORME</strong></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td></td>
+                                            <td><strong>Apellidos y Nombres:</strong></td>
+
+                                        </tr>
+                                        <tr style="height: 50px;">
+                                             <td></td>
+                                             <td></td>
+                                         </tr>
+
+                                        <tr>
+                                            <td></td>
+                                            <td><strong>D.N.I.:</strong></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+
+                        </div>
+                        <div style="padding: 10px; font-size: 10px; text-align: center;">
+                            <span>Representación Impresa - Guía de Remisión Electrónica</span>
+                        </div>
+
+                        <div class="row avoid-page-break-inside mt-3" id="delivery_guide_20_qr">
+                            <div class="col-12">
+                                <div class="row avoid-page-break-inside mt-3 justify-content-center">
+                                    <t t-set="qr_url" t-value="o._l10n_pe_edi_get_qr()"/>
+                                    <div t-if="qr_url" class="barcode col-auto">
+                                        <img alt="Barcode" t-att-src="'/report/barcode/?barcode_type=QR&amp;value=%s&amp;width=100&amp;height=100' % quote_plus(qr_url)"/>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </t>
+            </t>
+        </t>
+    </template>
+
+    <!-- Formato Letter para guia de remisión -->
+    <record id="GR_invoice_format" model="report.paperformat">
+        <field name="name">Letter-GR</field>
+        <field name="default" eval="True" />
+        <field name="format">Letter</field>
+        <field name="orientation">Portrait</field>
+        <field name="margin_top">45</field>
+        <field name="margin_bottom">5.00</field>
+        <field name="margin_left">7.0</field>
+        <field name="margin_right">7.0</field>
+        <field name="header_line" eval="False" />
+        <field name="header_spacing">40</field>
+        <field name="dpi">90</field>
+    </record>
+
+    <record id="action_resume_guide_report" model="ir.actions.report">
+        <field name="name">Guia de Remisión</field>
+        <field name="model">stock.picking</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">flt_custom_report.report_pe_guide_remission_local</field>
+        <field name="report_file">flt_custom_report.report_pe_guide_remission_local</field>
+        <field name="print_report_name">(object.l10n_latam_document_number)</field>
+        <field name="binding_model_id" ref="stock.model_stock_picking"/>
+        <field name="binding_type">report</field>
+        <field name="paperformat_id" ref="flt_custom_report.GR_invoice_format"/>
+    </record>
+
+    <record id="dv_l10n_pe_edi_stock_template.action_resume_guide_report" model="ir.actions.report">
+        <field name="binding_model_id" eval="False"/>
+    </record>
+</odoo>

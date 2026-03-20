@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_picking_form_inherit_flt_stock_extended" model="ir.ui.view">
+        <field name="name">stock.picking.form.inherit.flt.stock.extended</field>
+        <field name="model">stock.picking</field>
+        <field name="inherit_id" ref="stock.view_picking_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='origin']" position="after">
+                <field name="numero_guia_remision"/>
+            </xpath>
+            <xpath expr="//field[@name='move_ids_without_package']/list/field[@name='product_id']" position="attributes">
+                <attribute name="domain">[('id', 'in', allowed_product_ids)]</attribute>
+            </xpath>
+            <xpath expr="//field[@name='move_ids_without_package']/list/field[@name='product_id']" position="before">
+                <field name="allowed_product_ids" column_invisible="1"/>
+            </xpath>
+            <xpath expr="//field[@name='move_ids_without_package']/list/field[@name='product_id']" position="after">
+                <field name="descripcion" optional="show"/>
+                <field name="x_studio_title" optional="show"/>
+                <field name="x_studio_color_code" optional="show"/>
+                <field name="x_studio_color_name" optional="show"/>
+                <field name="color_family_id" optional="show"/>
+            </xpath>
+            
+            <!-- Added sum to Demanda (product_uom_qty) -->
+            <xpath expr="//field[@name='move_ids_without_package']/list/field[@name='product_uom_qty']" position="attributes">
+                <attribute name="sum">Total Demanda</attribute>
+            </xpath>
+
+            <xpath expr="//field[@name='move_ids_without_package']/list/field[@name='quantity']" position="before">
+                <field name="paquetes" optional="show" sum="Total Paquetes"/>
+                <field name="conos" optional="show" sum="Total Conos"/>
+                <field name="cantidad_bruto" optional="show" sum="Total Cantidad Bruto"/>
+            </xpath>
+            <xpath expr="//field[@name='move_ids_without_package']/list/field[@name='quantity']" position="attributes">
+                <attribute name="string">Cantidad neto</attribute>
+                <attribute name="sum">Total Cantidad Neto</attribute>
+            </xpath>
+            <xpath expr="//field[@name='move_ids_without_package']/list/field[@name='quantity']" position="after">
+                <field name="neto_prov" optional="show" sum="Total Neto Prov"/>
+                <field name="diferencia_demanda" optional="show" widget="badge" decoration-success="diferencia_demanda &gt; 0" decoration-danger="diferencia_demanda &lt;= 0" sum="Total Dif. Demanda"/>
+                <field name="diferencia_prov" optional="show" widget="badge" decoration-success="diferencia_prov &gt; 0" decoration-danger="diferencia_prov &lt;= 0" sum="Total Dif. Prov"/>
+            </xpath>
+        </field>
+    </record>
+</odoo>

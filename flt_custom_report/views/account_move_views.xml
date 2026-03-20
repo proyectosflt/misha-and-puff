@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_invoice_tree_inherit_print_button" model="ir.ui.view">
+        <field name="name">account.move.tree.inherit.print.button</field>
+        <field name="model">account.move</field>
+        <field name="inherit_id" ref="account.view_invoice_tree"/>
+        <field name="arch" type="xml">
+            <xpath expr="//list" position="attributes">
+                <attribute name="default_order">create_date desc</attribute>
+            </xpath>
+            <xpath expr="//field[@name='status_in_payment']" position="after">
+                <field name="edi_state" widget="badge" class="text-center" decoration-muted="edi_state not in ('sent', 'to_send')" decoration-success="edi_state == 'sent'" decoration-danger="edi_state == 'to_send'"/>
+                <button name="action_open_edi_status_wizard" type="object" icon="fa-info-circle" aria-label="Estado EDI" title="Estado EDI" class="text-info"/>
+                <button name="%(account.account_invoices)d" type="action" icon="fa-file-pdf-o" aria-label="Imprimir" title="Imprimir" class="text-danger"/>
+                <button name="action_post_or_process_edi" type="object" icon="fa-file-text" aria-label="Procesar factura electrónica" title="Procesar factura electrónica" invisible="edi_state == 'sent'"/>
+                <button name="action_export_edi_xml" type="object" icon="fa-download" aria-label="Descargar XML" title="Descargar XML" invisible="edi_state != 'sent'"/>
+            </xpath>
+        </field>
+    </record>
+</odoo>

@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_edi_status_wizard_form" model="ir.ui.view">
+        <field name="name">edi.status.wizard.form</field>
+        <field name="model">edi.status.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Estado Factura Electrónica">
+                <sheet>
+                    <div class="alert alert-info" role="alert" invisible="edi_web_services_to_process in ['', False] or state == 'draft'">
+                        <div>La(s) factura(s) serán enviadas pronto a
+                            <field name="edi_web_services_to_process" class="w-auto"/> -
+                            <button name="button_process_edi_web_services" type="object" class="oe_link ps-0 text-decoration-underline" string="Procesar ahora"/>
+                        </div>
+                    </div>
+                    <div class="alert alert-danger" role="alert" invisible="edi_error_count == 0 or edi_blocking_level != 'error'">
+                        <div class="o_row">
+                            <field name="edi_error_message"/>
+                            <button name="action_retry_edi_documents_error" type="object" class="oe_link oe_inline" string="Reintentar"/>
+                        </div>
+                    </div>
+                    <div class="alert alert-warning" role="alert" invisible="edi_error_count == 0 or edi_blocking_level != 'warning'">
+                        <div class="o_row">
+                            <field name="edi_error_message"/>
+                        </div>
+                    </div>
+                    <div class="alert alert-info" role="alert" invisible="edi_error_count == 0 or edi_blocking_level != 'info'">
+                        <div class="o_row">
+                            <field name="edi_error_message"/>
+                        </div>
+                    </div>
+                    <div class="alert alert-success" role="alert" invisible="edi_error_count != 0 or edi_web_services_to_process not in ['', False]">
+                        <div>
+                            No hay errores EDI ni procesos pendientes para la(s) factura(s) seleccionada(s).
+                        </div>
+                    </div>
+                    <field name="move_ids" invisible="1"/>
+                    <field name="edi_error_count" invisible="1"/>
+                    <field name="edi_blocking_level" invisible="1"/>
+                    <field name="state" invisible="1"/>
+                </sheet>
+                <footer>
+                    <button string="Cerrar" class="btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_edi_status_wizard" model="ir.actions.act_window">
+        <field name="name">Estado Factura Electrónica</field>
+        <field name="res_model">edi.status.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+        <field name="binding_model_id" ref="account.model_account_move"/>
+    </record>
+</odoo>

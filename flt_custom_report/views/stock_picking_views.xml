@@ -1,0 +1,22 @@
+<odoo>
+    <record id="view_picking_tree_inherit_print_button" model="ir.ui.view">
+        <field name="name">stock.picking.tree.inherit.print.button</field>
+        <field name="model">stock.picking</field>
+        <field name="inherit_id" ref="stock.vpicktree"/>
+        <field name="arch" type="xml">
+            <xpath expr="//list" position="attributes">
+                <attribute name="default_order">create_date desc</attribute>
+            </xpath>
+            <xpath expr="//field[@name='state']" position="attributes">
+                <attribute name="optional">hide</attribute>
+            </xpath>
+            <xpath expr="//field[@name='state']" position="after">
+                <field name="l10n_pe_edi_status" widget="badge" class="text-center" decoration-muted="l10n_pe_edi_status not in ('sent', 'to_send')" decoration-success="l10n_pe_edi_status == 'sent'" decoration-danger="l10n_pe_edi_status == 'to_send'" string="Guía de Remisión Electrónica"/>
+                <button name="action_open_edi_status_wizard" type="object" icon="fa-info-circle" aria-label="Estado EDI" title="Estado EDI" class="text-info"/>
+                <button name="%(flt_custom_report.action_resume_guide_report)d" type="action" icon="fa-file-pdf-o" aria-label="Imprimir Guía" title="Imprimir Guía" class="text-danger"/>
+                <button name="action_validate_or_process_edi" type="object" icon="fa-file-text" aria-label="Enviar Guía" title="Enviar Guía" invisible="l10n_pe_edi_status == 'sent'"/>
+                <button name="l10n_pe_edi_action_download" type="object" icon="fa-download" aria-label="Descargar XML" title="Descargar XML" invisible="l10n_pe_edi_status != 'sent'"/>
+            </xpath>
+        </field>
+    </record>
+</odoo>
