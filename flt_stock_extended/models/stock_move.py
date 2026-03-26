@@ -41,10 +41,10 @@ class StockMove(models.Model):
                     move.allowed_product_ids = [(6, 0, product_ids)]
                 else:
                     # If PO not found, allow all products
-                    move.allowed_product_ids = [(6, 0, [])]
+                    move.allowed_product_ids = [(6, 0, self.env['product.product'].search([]).ids)]
             else:
                 # Not from a purchase order, allow all products
-                move.allowed_product_ids = [(6, 0, [])]
+                move.allowed_product_ids = [(6, 0, self.env['product.product'].search([]).ids)]
 
     @api.depends('move_line_ids', 'move_line_ids.cantidad_conos', 'move_line_ids.peso_bruto')
     def _compute_detailed_metrics(self):
