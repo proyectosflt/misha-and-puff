@@ -1,0 +1,4 @@
+**/*.cpython-39.pyc
+.vscode
+flt_stock_extended/odoo_native
+flt_custom_report/views/odoo_nativo

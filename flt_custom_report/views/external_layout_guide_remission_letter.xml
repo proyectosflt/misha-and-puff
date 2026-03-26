@@ -1,0 +1,52 @@
+<?xml version='1.0' encoding='utf-8'?>
+<odoo>
+    <template id="external_layout_guide_remission_local_letter">
+        <div class="container-fluid" style="margin: 0; padding: 0;">
+            <div class="header">
+            <div class="row">
+                <div style="width: 60%;">
+                        <img t-if="o.company_id.logo" t-att-src="image_data_uri(o.company_id.logo)" style="max-height: 80px; margin-bottom: 10px;" alt="Logo"/>
+                        <div style="padding: 0px; margin: 0px; font-size: 11px;">
+                            <div name="address">
+                                <strong>
+                                    <span t-esc="', '.join(filter(None, [
+                                        o.company_id.street or '',
+                                        o.company_id.street2 or '',
+                                        o.company_id.city or '',
+                                        o.company_id.state_id and o.company_id.state_id.name or '',
+                                        o.company_id.zip or '',
+                                        o.company_id.country_id and o.company_id.country_id.name or ''
+                                    ]))"/>
+                                </strong>
+                            </div>
+                            <div t-if="o.company_id.phone">
+                                <span>Tel:</span> <span t-field="o.company_id.phone"/>
+                            </div>
+                            <div t-if="o.company_id.email">
+                                <strong><span>E-mail:</span> <span t-field="o.company_id.email"/></strong>
+                            </div>
+                            <div t-if="o.company_id.website">
+                                <a t-att-href="o.company_id.website"><span t-field="o.company_id.website"/></a>
+                            </div>
+                        </div>
+                    </div>
+                    <div style="width: 40%;">
+                        <div style="border: 2px solid black; padding: 10px; text-align: center;">
+                            <div class="h6 mt-1 mb-1"><strong>R.U.C.N°<span t-field="o.company_id.vat"/></strong></div>
+                            <div class="h5 mb-0" style="font-weight: bold;">
+                                <strong>
+                                GUÍA DE REMISIÓN ELECTRÓNICA
+                                </strong>
+                            </div>
+                            <div class="h6 mt-1 mb-1"><strong>Nº <span t-field="o.l10n_latam_document_number"/></strong></div>
+                        </div>
+                </div>
+            </div>
+        </div>
+            <div class="article" style="margin-top: 0px;">
+                <t t-raw="0"/>
+            </div>
+
+        </div>
+    </template>
+</odoo>
