@@ -44,7 +44,8 @@ class StockMoveLine(models.Model):
             try:
                 value = (record.peso_bruto or 0.0) - (record.tara_bolsa or 0.0) - ((record.tara_cono or 0.0) * (record.cantidad_conos or 0))
                 record.peso_neto = value
-                record.quantity = value
+                if value != 0:
+                    record.quantity = value
             except Exception:
                 continue
 
