@@ -26,9 +26,15 @@ class StockMoveLine(models.Model):
     @api.depends('peso_bruto', 'tara_bolsa', 'tara_cono', 'cantidad_conos')
     def _compute_peso_neto(self):
         for record in self:
-            value = (record.peso_bruto or 0.0) - (record.tara_bolsa or 0.0) - ((record.tara_cono or 0.0) * (record.cantidad_conos or 0))
-            record.peso_neto = value
-            record.quantity = value
+            if not record.exists():
+                continue
+            try:
+                value = (record.peso_bruto or 0.0) - (record.tara_bolsa or 0.0) - ((record.tara_cono or 0.0) * (record.cantidad_conos or 0))
+                record.peso_neto = value
+                if value != 0:
+                    record.quantity = value
+            except Exception:
+                continue
 
     def action_duplicar(self):
         for record in self:
