@@ -6,10 +6,10 @@ class StockMoveLine(models.Model):
     _inherit = 'stock.move.line'
     cantidad_conos = fields.Integer(string="Conos")
     cono_id = fields.Many2one('tipo.cono', string='Tipo de Cono')
-    tara_bolsa = fields.Float(string="Tara bolsa", compute='_compute_tara_bolsa', store=True, readonly=False)
-    tara_cono = fields.Float(string="Tara cono", compute='_compute_tara_cono', store=True, readonly=False)
-    peso_bruto = fields.Float(string="Peso bruto")
-    peso_neto = fields.Float(string="Peso neto", compute='_compute_peso_neto', store=True, readonly=False)
+    tara_bolsa = fields.Float(string="Tara bolsa", compute='_compute_tara_bolsa', store=True, readonly=False, digits='Stock Weight')
+    tara_cono = fields.Float(string="Tara cono", compute='_compute_tara_cono', store=True, readonly=False, digits='Stock Weight')
+    peso_bruto = fields.Float(string="Peso bruto", digits='Stock Weight')
+    peso_neto = fields.Float(string="Peso neto", compute='_compute_peso_neto', store=True, readonly=False, digits='Stock Weight')
 
     @api.depends('result_package_id.package_type_id.base_weight')
     def _compute_tara_bolsa(self):
