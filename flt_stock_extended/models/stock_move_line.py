@@ -7,7 +7,8 @@ class StockMoveLine(models.Model):
     cantidad_conos = fields.Integer(string="Conos")
     cono_id = fields.Many2one('tipo.cono', string='Tipo de Cono')
     tara_bolsa = fields.Float(string="Tara bolsa", compute='_compute_tara_bolsa', store=True, readonly=False, digits='Stock Weight')
-    tara_cono = fields.Float(string="Tara cono", compute='_compute_tara_cono', store=True, readonly=False, digits='Stock Weight')
+    tara_cono = fields.Float(string="Tara cono unitaria", compute='_compute_tara_cono', store=True, readonly=False, digits='Stock Weight')
+    tara_cono_total = fields.Float(string="Tara cono total", compute='_compute_tara_cono', store=True, readonly=False, digits='Stock Weight')
     peso_bruto = fields.Float(string="Peso bruto", digits='Stock Weight')
     peso_neto = fields.Float(string="Peso neto", compute='_compute_peso_neto', store=True, readonly=False, digits='Stock Weight')
 
@@ -22,6 +23,7 @@ class StockMoveLine(models.Model):
         for record in self:
             if not record.tara_cono:
                 record.tara_cono = record.cono_id.tara_cono or 0.0
+            record.tara_cono_total = (record.tara_cono or 0.0) * (record.cantidad_conos or 0)
 
     @api.depends('peso_bruto', 'tara_bolsa', 'tara_cono', 'cantidad_conos')
     def _compute_peso_neto(self):

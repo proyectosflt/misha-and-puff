@@ -18,6 +18,7 @@
                 <field name="cono_id"/>
                 <field name="cantidad_conos"/>
                 <field name="tara_cono"/>
+                <field name="tara_cono_total"/>
                 <field name="peso_bruto"/>
                 <field name="peso_neto"/>
             </xpath>
@@ -46,6 +47,7 @@
                 <field name="cono_id"/>
                 <field name="cantidad_conos"/>
                 <field name="tara_cono"/>
+                <field name="tara_cono_total"/>
                 <field name="peso_bruto"/>
                 <field name="peso_neto"/>
             </xpath>

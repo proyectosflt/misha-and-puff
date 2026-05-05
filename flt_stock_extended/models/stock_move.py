@@ -9,6 +9,7 @@ class StockMove(models.Model):
     x_studio_color_code = fields.Char(related='product_id.x_studio_color_code', string="Color Code", readonly=True)
     x_studio_color_name = fields.Char(related='product_id.x_studio_color_name', string="Color Name", readonly=True)
     color_family_id = fields.Many2one(related='product_id.color_family_id', string="Familia de Color", readonly=True)
+    item_number = fields.Integer(string="Item", readonly=True)
 
     allowed_product_ids = fields.Many2many(
         'product.product',
