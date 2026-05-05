@@ -9,6 +9,7 @@ class StockMove(models.Model):
     x_studio_color_code = fields.Char(related='product_id.x_studio_color_code', string="Color Code", readonly=True)
     x_studio_color_name = fields.Char(related='product_id.x_studio_color_name', string="Color Name", readonly=True)
     color_family_id = fields.Many2one(related='product_id.color_family_id', string="Familia de Color", readonly=True)
+    item_number = fields.Integer(string="Item", compute='_compute_item_number')
 
     allowed_product_ids = fields.Many2many(
         'product.product',
@@ -23,6 +24,18 @@ class StockMove(models.Model):
     paquetes = fields.Integer(string="Paquetes", compute="_compute_detailed_metrics", store=True)
     conos = fields.Integer(string="Conos", compute="_compute_detailed_metrics", store=True)
     cantidad_bruto = fields.Float(string="Cantidad bruto", compute="_compute_detailed_metrics", store=True)
+
+    @api.depends('picking_id', 'picking_id.move_ids_without_package')
+    def _compute_item_number(self):
+        for move in self:
+            if move.picking_id and move.picking_id.move_ids_without_package:
+                moves = move.picking_id.move_ids_without_package
+                if move in moves:
+                    move.item_number = list(moves).index(move) + 1
+                else:
+                    move.item_number = 0
+            else:
+                move.item_number = 0
 
     @api.depends('picking_id', 'picking_id.origin', 'origin')
     def _compute_allowed_product_ids(self):

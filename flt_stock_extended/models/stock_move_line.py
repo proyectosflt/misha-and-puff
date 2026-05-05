@@ -6,10 +6,11 @@ class StockMoveLine(models.Model):
     _inherit = 'stock.move.line'
     cantidad_conos = fields.Integer(string="Conos")
     cono_id = fields.Many2one('tipo.cono', string='Tipo de Cono')
-    tara_bolsa = fields.Float(string="Tara bolsa", compute='_compute_tara_bolsa', store=True, readonly=False)
-    tara_cono = fields.Float(string="Tara cono", compute='_compute_tara_cono', store=True, readonly=False)
-    peso_bruto = fields.Float(string="Peso bruto")
-    peso_neto = fields.Float(string="Peso neto", compute='_compute_peso_neto', store=True, readonly=False)
+    tara_bolsa = fields.Float(string="Tara bolsa", compute='_compute_tara_bolsa', store=True, readonly=False, digits='Stock Weight')
+    tara_cono = fields.Float(string="Tara cono unitaria", compute='_compute_tara_cono', store=True, readonly=False, digits='Stock Weight')
+    tara_cono_total = fields.Float(string="Tara cono total", compute='_compute_tara_cono', store=True, readonly=False, digits='Stock Weight')
+    peso_bruto = fields.Float(string="Peso bruto", digits='Stock Weight')
+    peso_neto = fields.Float(string="Peso neto", compute='_compute_peso_neto', store=True, readonly=False, digits='Stock Weight')
 
     @api.depends('result_package_id.package_type_id.base_weight')
     def _compute_tara_bolsa(self):
@@ -27,13 +28,9 @@ class StockMoveLine(models.Model):
     def _compute_tara_cono(self):
         # Use .exists() to filter out deleted records before iterating
         for record in self:
-            if not record.exists():
-                continue
-            try:
-                if not record.tara_cono:
-                    record.tara_cono = record.cono_id.tara_cono or 0.0
-            except Exception:
-                continue
+            if not record.tara_cono:
+                record.tara_cono = record.cono_id.tara_cono or 0.0
+            record.tara_cono_total = (record.tara_cono or 0.0) * (record.cantidad_conos or 0)
 
     @api.depends('peso_bruto', 'tara_bolsa', 'tara_cono', 'cantidad_conos')
     def _compute_peso_neto(self):

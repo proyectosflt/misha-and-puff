@@ -5,8 +5,8 @@ class StockQuant(models.Model):
     _inherit = 'stock.quant'
     
     cantidad_conos = fields.Integer(string="Conos")
-    peso_bruto = fields.Float(string="Peso bruto")
-    peso_neto = fields.Float(string="Peso neto")
+    peso_bruto = fields.Float(string="Peso bruto", digits='Stock Weight')
+    peso_neto = fields.Float(string="Peso neto", digits='Stock Weight')
 
     def _update_available_quantity(self, product_id, location_id, quantity=0, lot_id=None, package_id=None, owner_id=None, in_date=None, **kwargs):
         """Override to retrieve custom fields from context and update quant accordingly"""

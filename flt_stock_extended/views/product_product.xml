@@ -16,8 +16,8 @@
         <field name="model">product.product</field>
         <field name="inherit_id" ref="product.product_product_tree_view"/>
         <field name="arch" type="xml">
-            <xpath expr="//field[@name='product_template_variant_value_ids']" position="after">
-                <field name="color_family_id" optional="show"/>
+            <xpath expr="//field[@name='product_template_variant_value_ids']" position="attributes">
+                <attribute name='invisible'>1</attribute>
             </xpath>
         </field>
     </record>

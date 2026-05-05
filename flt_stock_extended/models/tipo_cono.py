@@ -7,4 +7,4 @@ class TipoCono(models.Model):
     _description = 'Tipo de Cono'
 
     name = fields.Char(string='Nombre', required=True)
-    tara_cono = fields.Float(string='Tara Cono', required=True, default=0.0)
+    tara_cono = fields.Float(string='Tara Cono', required=True, default=0.0, digits='Stock Weight')
