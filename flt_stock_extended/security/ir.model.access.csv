@@ -2,3 +2,15 @@ id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
 access_product_type_user,product.type user,model_product_type,base.group_user,1,1,1,1
 access_color_family_user,color.family user,model_color_family,base.group_user,1,1,1,1
 access_tipo_cono_user,tipo.cono user,model_tipo_cono,base.group_user,1,1,1,1
+access_product_rubro_user,product.rubro user,model_product_rubro,base.group_user,1,1,1,1
+access_product_familia_user,product.familia user,model_product_familia,base.group_user,1,1,1,1
+access_product_material_user,product.material user,model_product_material,base.group_user,1,1,1,1
+access_product_detalle_user,product.detalle user,model_product_detalle,base.group_user,1,1,1,1
+access_product_titulo_user,product.titulo user,model_product_titulo,base.group_user,1,1,1,1
+access_product_otros_user,product.otros user,model_product_otros,base.group_user,1,1,1,1
+access_product_model_user,product.model user,model_product_model,base.group_user,1,1,1,1
+access_product_tenido_user,product.tenido user,model_product_tenido,base.group_user,1,1,1,1
+access_product_color_user,product.color user,model_product_color,base.group_user,1,1,1,1
+access_product_medida_user,product.medida user,model_product_medida,base.group_user,1,1,1,1
+access_product_texto_user,product.texto user,model_product_texto,base.group_user,1,1,1,1
+access_product_talla_user,product.talla user,model_product_talla,base.group_user,1,1,1,1,1

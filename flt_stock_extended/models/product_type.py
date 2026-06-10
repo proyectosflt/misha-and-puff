@@ -6,4 +6,4 @@ class ProductType(models.Model):
     _description = 'Tipo de Producto'
 
     name = fields.Char(string='Nombre', required=True)
-    code = fields.Char(string='Código', required=True)
+    codigo = fields.Char(string='Código', required=True)
