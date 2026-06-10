@@ -15,3 +15,12 @@ from . import product_attribute_value
 from . import product_rubro
 from . import product_familia
 from . import product_material
+from . import product_detalle
+from . import product_title
+from . import product_model
+from . import product_tenido
+from . import product_color
+from . import product_medida
+from . import product_texto
+from . import product_talla
+from . import product_otros
