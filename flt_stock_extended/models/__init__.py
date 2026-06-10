@@ -12,4 +12,6 @@ from . import tipo_cono
 
 from . import color_family
 from . import product_attribute_value
-
+from . import product_rubro
+from . import product_familia
+from . import product_material

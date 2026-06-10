@@ -8,6 +8,25 @@
             <xpath expr="//field[@name='categ_id']" position="after">
                 <field name="descripcion"/>
             </xpath>
+            <xpath expr="//group[@name='group_general']" position="inside">
+                <field name="product_category"/>
+                <field name="product_rubro_id"/>
+                <field name="product_familia_id"/>
+                <field name="product_material_id"/>
+                <field name="product_detalle_id" invisible="product_category != 'hilo'"/>
+                <field name="product_titulo_id" invisible="product_category != 'hilo'"/>
+                <field name="product_otros_id"/>
+            </xpath>
+            <xpath expr="//group[@name='group_standard_price']" position="inside">
+                <field name="product_type_id" invisible="product_category != 'avio'"/>
+                <field name="product_model_id" invisible="product_category != 'avio'"/>
+                <field name="product_tenido_id" invisible="product_category != 'hilo'"/>
+                <field name="product_color_id"/>
+                <field name="product_medida_id" invisible="product_category != 'avio'"/>
+                <field name="product_texto_id" invisible="product_category != 'avio'"/>
+                <field name="product_talla_id" invisible="product_category != 'avio'"/>
+                <field name = "codificacion"/>  
+            </xpath>
         </field>
     </record>
 </odoo>
