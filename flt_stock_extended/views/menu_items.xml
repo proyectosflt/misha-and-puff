@@ -1,16 +1,201 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <menuitem id="menu_product_rubro" name="Rubros" parent="stock.menu_product_in_config_stock" sequence="53"/>
-    <menuitem id="menu_product_familia" name="Familias" parent="stock.menu_product_in_config_stock" sequence="54"/>
-    <menuitem id="menu_product_type" name="Tipos" parent="stock.menu_product_in_config_stock" sequence="55"/>
-    <menuitem id="menu_product_model" name="Modelos" parent="stock.menu_product_in_config_stock" sequence="56"/>
-    <menuitem id="menu_product_color" name="Colores" parent="stock.menu_product_in_config_stock" sequence="57"/>
-    <menuitem id="menu_product_medida" name="Medidas" parent="stock.menu_product_in_config_stock" sequence="58"/>
-    <menuitem id="menu_product_tenido" name="Teñidos" parent="stock.menu_product_in_config_stock" sequence="59"/>
-    <menuitem id="menu_product_texto" name="Textos" parent="stock.menu_product_in_config_stock" sequence="61"/>
-    <menuitem id="menu_product_material" name="Materiales" parent="stock.menu_product_in_config_stock" sequence="62"/>
-    <menuitem id="menu_product_detalle" name="Detalles" parent="stock.menu_product_in_config_stock" sequence="63"/>
-    <menuitem id="menu_product_titulo" name="Títulos" parent="stock.menu_product_in_config_stock" sequence="64"/>
-    <menuitem id="menu_product_talla" name="Tallas" parent="stock.menu_product_in_config_stock" sequence="65"/>
-    <menuitem id="menu_product_otros" name="Otros Atributos" parent="stock.menu_product_in_config_stock" sequence="66"/>
+
+    <!-- ======================================================== -->
+    <!-- 1. VIEWS DEFINITIONS (List & Form)                       -->
+    <!-- ======================================================== -->
+    
+    <record id="view_product_rubro_tree" model="ir.ui.view">
+        <field name="name">product.rubro.tree</field>
+        <field name="model">product.rubro</field>
+        <field name="arch" type="xml">
+            <list string="Rubros">
+                <field name="codigo"/>
+                <field name="name"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_product_rubro_form" model="ir.ui.view">
+        <field name="name">product.rubro.form</field>
+        <field name="model">product.rubro</field>
+        <field name="arch" type="xml">
+            <form string="Rubro">
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="name" placeholder="e.g. Hilados"/>
+                        </group>
+                        <group>
+                            <field name="codigo" placeholder="e.g. RUB-01"/>
+                        </group>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_product_familia_tree" model="ir.ui.view">
+        <field name="name">product.familia.tree</field>
+        <field name="model">product.familia</field>
+        <field name="arch" type="xml">
+            <list string="Familias">
+                <field name="codigo"/>
+                <field name="name"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_product_familia_form" model="ir.ui.view">
+        <field name="name">product.familia.form</field>
+        <field name="model">product.familia</field>
+        <field name="arch" type="xml">
+            <form string="Familia">
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="name" placeholder="e.g. Algodón"/>
+                        </group>
+                        <group>
+                            <field name="codigo" placeholder="e.g. FAM-01"/>
+                        </group>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_product_type_tree" model="ir.ui.view">
+        <field name="name">product.type.tree</field>
+        <field name="model">product.type</field>
+        <field name="arch" type="xml">
+            <list string="Tipos">
+                <field name="codigo"/>
+                <field name="name"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_product_type_form" model="ir.ui.view">
+        <field name="name">product.type.form</field>
+        <field name="model">product.type</field>
+        <field name="arch" type="xml">
+            <form string="Tipo">
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="name" placeholder="e.g. Cono"/>
+                        </group>
+                        <group>
+                            <field name="codigo" placeholder="e.g. TYP-01"/>
+                        </group>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    
+
+    <!-- ======================================================== -->
+    <!-- 2. ACTIONS DEFINITIONS                                   -->
+    <!-- ======================================================== -->
+    <record id="action_product_rubro" model="ir.ui.actions.act_window">
+        <field name="name">Rubros</field>
+        <field name="res_model">product.rubro</field>
+        <field name="view_mode">list,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">Create your first Rubro!</p>
+        </field>
+    </record>
+
+    <record id="action_product_familia" model="ir.ui.actions.act_window">
+        <field name="name">Familias</field>
+        <field name="res_model">product.familia</field>
+        <field name="view_mode">list,form</field>
+    </record>
+
+    <record id="action_product_type" model="ir.ui.actions.act_window">
+        <field name="name">Tipos</field>
+        <field name="res_model">product.type</field>
+        <field name="view_mode">list,form</field>
+    </record>
+
+    <record id="action_product_model" model="ir.ui.actions.act_window">
+        <field name="name">Modelos</field>
+        <field name="res_model">product.model</field>
+        <field name="view_mode">list,form</field>
+    </record>
+
+    <record id="action_product_color" model="ir.ui.actions.act_window">
+        <field name="name">Colores</field>
+        <field name="res_model">product.color</field>
+        <field name="view_mode">list,form</field>
+    </record>
+
+    <record id="action_product_medida" model="ir.ui.actions.act_window">
+        <field name="name">Medidas</field>
+        <field name="res_model">product.medida</field>
+        <field name="view_mode">list,form</field>
+    </record>
+
+    <record id="action_product_tenido" model="ir.ui.actions.act_window">
+        <field name="name">Teñidos</field>
+        <field name="res_model">product.tenido</field>
+        <field name="view_mode">list,form</field>
+    </record>
+
+    <record id="action_product_texto" model="ir.ui.actions.act_window">
+        <field name="name">Textos</field>
+        <field name="res_model">product.texto</field>
+        <field name="view_mode">list,form</field>
+    </record>
+
+    <record id="action_product_material" model="ir.ui.actions.act_window">
+        <field name="name">Materiales</field>
+        <field name="res_model">product.material</field>
+        <field name="view_mode">list,form</field>
+    </record>
+
+    <record id="action_product_detalle" model="ir.ui.actions.act_window">
+        <field name="name">Detalles</field>
+        <field name="res_model">product.detalle</field>
+        <field name="view_mode">list,form</field>
+    </record>
+
+    <record id="action_product_titulo" model="ir.ui.actions.act_window">
+        <field name="name">Títulos</field>
+        <field name="res_model">product.titulo</field>
+        <field name="view_mode">list,form</field>
+    </record>
+
+    <record id="action_product_talla" model="ir.ui.actions.act_window">
+        <field name="name">Tallas</field>
+        <field name="res_model">product.talla</field>
+        <field name="view_mode">list,form</field>
+    </record>
+
+    <record id="action_product_otros" model="ir.ui.actions.act_window">
+        <field name="name">Otros Atributos</field>
+        <field name="res_model">product.otros</field>
+        <field name="view_mode">list,form</field>
+    </record>
+
+    <!-- ======================================================== -->
+    <!-- 3. MENUS DEFINITIONS (With Actions Linked)               -->
+    <!-- ======================================================== -->
+    <menuitem id="menu_product_rubro" name="Rubros" parent="stock.menu_product_in_config_stock" action="action_product_rubro" sequence="53"/>
+    <menuitem id="menu_product_familia" name="Familias" parent="stock.menu_product_in_config_stock" action="action_product_familia" sequence="54"/>
+    <menuitem id="menu_product_type" name="Tipos" parent="stock.menu_product_in_config_stock" action="action_product_type" sequence="55"/>
+    <menuitem id="menu_product_model" name="Modelos" parent="stock.menu_product_in_config_stock" action="action_product_model" sequence="56"/>
+    <menuitem id="menu_product_color" name="Colores" parent="stock.menu_product_in_config_stock" action="action_product_color" sequence="57"/>
+    <menuitem id="menu_product_medida" name="Medidas" parent="stock.menu_product_in_config_stock" action="action_product_medida" sequence="58"/>
+    <menuitem id="menu_product_tenido" name="Teñidos" parent="stock.menu_product_in_config_stock" action="action_product_tenido" sequence="59"/>
+    <menuitem id="menu_product_texto" name="Textos" parent="stock.menu_product_in_config_stock" action="action_product_texto" sequence="61"/>
+    <menuitem id="menu_product_material" name="Materiales" parent="stock.menu_product_in_config_stock" action="action_product_material" sequence="62"/>
+    <menuitem id="menu_product_detalle" name="Detalles" parent="stock.menu_product_in_config_stock" action="action_product_detalle" sequence="63"/>
+    <menuitem id="menu_product_titulo" name="Títulos" parent="stock.menu_product_in_config_stock" action="action_product_titulo" sequence="64"/>
+    <menuitem id="menu_product_talla" name="Tallas" parent="stock.menu_product_in_config_stock" action="action_product_talla" sequence="65"/>
+    <menuitem id="menu_product_otros" name="Otros Atributos" parent="stock.menu_product_in_config_stock" action="action_product_otros" sequence="66"/>
+
 </odoo>
