@@ -19,7 +19,7 @@ class ProductTemplate(models.Model):
     product_familia_id = fields.Many2one('product.familia', string='Familia')
     product_material_id = fields.Many2one('product.material', string='Material')
     product_detalle_id = fields.Many2one('product.detalle', string='Detalle')
-    product_titulo_id = fields.Many2one('product.titulo', string='Título')
+    product_titulo_id = fields.Many2one('product.title', string='Título')
     product_type_id = fields.Many2one('product.type', string='Tipo')
     product_model_id = fields.Many2one('product.model', string='Modelo')
     product_tenido_id = fields.Many2one('product.tenido', string='Teñido')
