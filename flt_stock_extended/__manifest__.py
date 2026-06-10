@@ -16,6 +16,7 @@
         'views/color_family_views.xml',
         'views/product_attribute_value_views.xml',
         'views/tipo_cono_views.xml',
+        'views/menu_items.xml',
     ],
     'installable': True,
     'application': False,
