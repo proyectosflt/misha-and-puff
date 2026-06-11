@@ -307,7 +307,7 @@
 
     <record id="view_product_titulo_tree" model="ir.ui.view">
         <field name="name">product.titulo.tree</field>
-        <field name="model">product.titulo</field>
+        <field name="model">product.title</field>
         <field name="arch" type="xml">
             <list string="Títulos">
                 <field name="codigo"/>
