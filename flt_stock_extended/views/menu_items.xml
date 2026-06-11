@@ -24,10 +24,10 @@
                 <sheet>
                     <group>
                         <group>
-                            <field name="name" placeholder="e.g. Hilados"/>
+                            <field name="name"/>
                         </group>
                         <group>
-                            <field name="codigo" placeholder="e.g. RUB-01"/>
+                            <field name="codigo"/>
                         </group>
                     </group>
                 </sheet>
@@ -54,10 +54,10 @@
                 <sheet>
                     <group>
                         <group>
-                            <field name="name" placeholder="e.g. Algodón"/>
+                            <field name="name"/>
                         </group>
                         <group>
-                            <field name="codigo" placeholder="e.g. FAM-01"/>
+                            <field name="codigo"/>
                         </group>
                     </group>
                 </sheet>
@@ -84,10 +84,10 @@
                 <sheet>
                     <group>
                         <group>
-                            <field name="name" placeholder="e.g. Cono"/>
+                            <field name="name"/>
                         </group>
                         <group>
-                            <field name="codigo" placeholder="e.g. TYP-01"/>
+                            <field name="codigo"/>
                         </group>
                     </group>
                 </sheet>
@@ -95,12 +95,309 @@
         </field>
     </record>
 
-    
+    <record id="view_product_model_tree" model="ir.ui.view">
+        <field name="name">product.model.tree</field>
+        <field name="model">product.model</field>
+        <field name="arch" type="xml">
+            <list string="Modelos">
+                <field name="codigo"/>
+                <field name="name"/>
+            </list>
+        </field>
+    </record>
 
+    <record id="view_product_model_form" model="ir.ui.view">
+        <field name="name">product.model.form</field>
+        <field name="model">product.model</field>
+        <field name="arch" type="xml">
+            <form string="Modelo">
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="name"/>
+                        </group>
+                        <group>
+                            <field name="codigo"/>
+                        </group>
+                    </group>
+                </sheet>
+            </form>
+        </field>        
+    </record>
+
+    <record id="view_product_color_tree" model="ir.ui.view">
+        <field name="name">product.color.tree</field>
+        <field name="model">product.color</field>
+        <field name="arch" type="xml">
+            <list string="Colores">
+                <field name="codigo"/>
+                <field name="name"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_product_color_form" model="ir.ui.view">
+        <field name="name">product.color.form</field>
+        <field name="model">product.color</field>
+        <field name="arch" type="xml">
+            <form string="Color">
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="name"/>
+                        </group>
+                        <group>
+                            <field name="codigo"/>
+                        </group>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_product_medida_tree" model="ir.ui.view">
+        <field name="name">product.medida.tree</field>
+        <field name="model">product.medida</field>
+        <field name="arch" type="xml">
+            <list string="Medidas">
+                <field name="codigo"/>
+                <field name="name"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_product_medida_form" model="ir.ui.view">
+        <field name="name">product.medida.form</field>
+        <field name="model">product.medida</field>
+        <field name="arch" type="xml">
+            <form string="Medida">
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="name"/>
+                        </group>
+                        <group>
+                            <field name="codigo"/>
+                        </group>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_product_tenido_tree" model="ir.ui.view">
+        <field name="name">product.tenido.tree</field>
+        <field name="model">product.tenido</field>
+        <field name="arch" type="xml">
+            <list string="Teñidos">
+                <field name="codigo"/>
+                <field name="name"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_product_tenido_form" model="ir.ui.view">
+        <field name="name">product.tenido.form</field>
+        <field name="model">product.tenido</field>
+        <field name="arch" type="xml">
+            <form string="Teñido">
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="name"/>
+                        </group>
+                        <group>
+                            <field name="codigo"/>
+                        </group>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_product_texto_tree" model="ir.ui.view">
+        <field name="name">product.texto.tree</field>
+        <field name="model">product.texto</field>
+        <field name="arch" type="xml">
+            <list string="Textos">
+                <field name="codigo"/>
+                <field name="name"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_product_texto_form" model="ir.ui.view">
+        <field name="name">product.texto.form</field>
+        <field name="model">product.texto</field>
+        <field name="arch" type="xml">
+            <form string="Texto">
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="name"/>
+                        </group>
+                        <group>
+                            <field name="codigo"/>
+                        </group>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_product_material_tree" model="ir.ui.view">
+        <field name="name">product.material.tree</field>
+        <field name="model">product.material</field>
+        <field name="arch" type="xml">
+            <list string="Materiales">
+                <field name="codigo"/>
+                <field name="name"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_product_material_form" model="ir.ui.view">
+        <field name="name">product.material.form</field>
+        <field name="model">product.material</field>
+        <field name="arch" type="xml">
+            <form string="Material">
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="name"/>
+                        </group>
+                        <group>
+                            <field name="codigo"/>
+                        </group>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_product_detalle_tree" model="ir.ui.view">
+        <field name="name">product.detalle.tree</field>
+        <field name="model">product.detalle</field>
+        <field name="arch" type="xml">
+            <list string="Detalles">
+                <field name="codigo"/>
+                <field name="name"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_product_detalle_form" model="ir.ui.view">
+        <field name="name">product.detalle.form</field>
+        <field name="model">product.detalle</field>
+        <field name="arch" type="xml">
+            <form string="Detalle">
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="name"/>
+                        </group>
+                        <group>
+                            <field name="codigo"/>
+                        </group>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_product_titulo_tree" model="ir.ui.view">
+        <field name="name">product.titulo.tree</field>
+        <field name="model">product.titulo</field>
+        <field name="arch" type="xml">
+            <list string="Títulos">
+                <field name="codigo"/>
+                <field name="name"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_product_titulo_form" model="ir.ui.view">
+        <field name="name">product.titulo.form</field>
+        <field name="model">product.titulo</field>
+        <field name="arch" type="xml">
+            <form string="Título">
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="name"/>
+                        </group>
+                        <group>
+                            <field name="codigo"/>
+                        </group>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_product_talla_tree" model="ir.ui.view">
+        <field name="name">product.talla.tree</field>
+        <field name="model">product.talla</field>
+        <field name="arch" type="xml">
+            <list string="Tallas">
+                <field name="codigo"/>
+                <field name="name"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_product_talla_form" model="ir.ui.view">
+        <field name="name">product.talla.form</field>
+        <field name="model">product.talla</field>
+        <field name="arch" type="xml">
+            <form string="Talla">
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="name"/>
+                        </group>
+                        <group>
+                            <field name="codigo"/>
+                        </group>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_product_otros_tree" model="ir.ui.view">
+        <field name="name">product.otros.tree</field>
+        <field name="model">product.otros</field>
+        <field name="arch" type="xml">
+            <list string="Otros Atributos">
+                <field name="codigo"/>
+                <field name="name"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_product_otros_form" model="ir.ui.view">
+        <field name="name">product.otros.form</field>
+        <field name="model">product.otros</field>
+        <field name="arch" type="xml">
+            <form string="Otro Atributo">
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="name"/>
+                        </group>
+                        <group>
+                            <field name="codigo"/>
+                        </group>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
     <!-- ======================================================== -->
     <!-- 2. ACTIONS DEFINITIONS                                   -->
     <!-- ======================================================== -->
-    <record id="action_product_rubro" model="ir.ui.actions.act_window">
+    <record id="action_product_rubro" model="ir.actions.act_window">
         <field name="name">Rubros</field>
         <field name="res_model">product.rubro</field>
         <field name="view_mode">list,form</field>
@@ -109,73 +406,73 @@
         </field>
     </record>
 
-    <record id="action_product_familia" model="ir.ui.actions.act_window">
+    <record id="action_product_familia" model="ir.actions.act_window">
         <field name="name">Familias</field>
         <field name="res_model">product.familia</field>
         <field name="view_mode">list,form</field>
     </record>
 
-    <record id="action_product_type" model="ir.ui.actions.act_window">
+    <record id="action_product_type" model="ir.actions.act_window">
         <field name="name">Tipos</field>
         <field name="res_model">product.type</field>
         <field name="view_mode">list,form</field>
     </record>
 
-    <record id="action_product_model" model="ir.ui.actions.act_window">
+    <record id="action_product_model" model="ir.actions.act_window">
         <field name="name">Modelos</field>
         <field name="res_model">product.model</field>
         <field name="view_mode">list,form</field>
     </record>
 
-    <record id="action_product_color" model="ir.ui.actions.act_window">
+    <record id="action_product_color" model="ir.actions.act_window">
         <field name="name">Colores</field>
         <field name="res_model">product.color</field>
         <field name="view_mode">list,form</field>
     </record>
 
-    <record id="action_product_medida" model="ir.ui.actions.act_window">
+    <record id="action_product_medida" model="ir.actions.act_window">
         <field name="name">Medidas</field>
         <field name="res_model">product.medida</field>
         <field name="view_mode">list,form</field>
     </record>
 
-    <record id="action_product_tenido" model="ir.ui.actions.act_window">
+    <record id="action_product_tenido" model="ir.actions.act_window">
         <field name="name">Teñidos</field>
         <field name="res_model">product.tenido</field>
         <field name="view_mode">list,form</field>
     </record>
 
-    <record id="action_product_texto" model="ir.ui.actions.act_window">
+    <record id="action_product_texto" model="ir.actions.act_window">
         <field name="name">Textos</field>
         <field name="res_model">product.texto</field>
         <field name="view_mode">list,form</field>
     </record>
 
-    <record id="action_product_material" model="ir.ui.actions.act_window">
+    <record id="action_product_material" model="ir.actions.act_window">
         <field name="name">Materiales</field>
         <field name="res_model">product.material</field>
         <field name="view_mode">list,form</field>
     </record>
 
-    <record id="action_product_detalle" model="ir.ui.actions.act_window">
+    <record id="action_product_detalle" model="ir.actions.act_window">
         <field name="name">Detalles</field>
         <field name="res_model">product.detalle</field>
         <field name="view_mode">list,form</field>
     </record>
 
-    <record id="action_product_titulo" model="ir.ui.actions.act_window">
+    <record id="action_product_titulo" model="ir.actions.act_window">
         <field name="name">Títulos</field>
         <field name="res_model">product.titulo</field>
         <field name="view_mode">list,form</field>
     </record>
 
-    <record id="action_product_talla" model="ir.ui.actions.act_window">
+    <record id="action_product_talla" model="ir.actions.act_window">
         <field name="name">Tallas</field>
         <field name="res_model">product.talla</field>
         <field name="view_mode">list,form</field>
     </record>
 
-    <record id="action_product_otros" model="ir.ui.actions.act_window">
+    <record id="action_product_otros" model="ir.actions.act_window">
         <field name="name">Otros Atributos</field>
         <field name="res_model">product.otros</field>
         <field name="view_mode">list,form</field>
