@@ -10,8 +10,8 @@
         <field name="model">product.rubro</field>
         <field name="arch" type="xml">
             <list string="Rubros">
-                <field name="codigo"/>
                 <field name="name"/>
+                <field name="codigo"/>
             </list>
         </field>
     </record>
@@ -40,8 +40,8 @@
         <field name="model">product.familia</field>
         <field name="arch" type="xml">
             <list string="Familias">
-                <field name="codigo"/>
                 <field name="name"/>
+                <field name="codigo"/>
             </list>
         </field>
     </record>
@@ -70,8 +70,8 @@
         <field name="model">product.type</field>
         <field name="arch" type="xml">
             <list string="Tipos">
-                <field name="codigo"/>
                 <field name="name"/>
+                <field name="codigo"/>
             </list>
         </field>
     </record>
@@ -100,8 +100,8 @@
         <field name="model">product.model</field>
         <field name="arch" type="xml">
             <list string="Modelos">
-                <field name="codigo"/>
                 <field name="name"/>
+                <field name="codigo"/>
             </list>
         </field>
     </record>
@@ -130,8 +130,8 @@
         <field name="model">product.color</field>
         <field name="arch" type="xml">
             <list string="Colores">
-                <field name="codigo"/>
                 <field name="name"/>
+                <field name="codigo"/>
             </list>
         </field>
     </record>
@@ -160,8 +160,8 @@
         <field name="model">product.medida</field>
         <field name="arch" type="xml">
             <list string="Medidas">
-                <field name="codigo"/>
                 <field name="name"/>
+                <field name="codigo"/>
             </list>
         </field>
     </record>
@@ -190,8 +190,8 @@
         <field name="model">product.tenido</field>
         <field name="arch" type="xml">
             <list string="Teñidos">
-                <field name="codigo"/>
                 <field name="name"/>
+                <field name="codigo"/>
             </list>
         </field>
     </record>
@@ -220,8 +220,8 @@
         <field name="model">product.texto</field>
         <field name="arch" type="xml">
             <list string="Textos">
-                <field name="codigo"/>
                 <field name="name"/>
+                <field name="codigo"/>
             </list>
         </field>
     </record>
@@ -250,8 +250,8 @@
         <field name="model">product.material</field>
         <field name="arch" type="xml">
             <list string="Materiales">
-                <field name="codigo"/>
                 <field name="name"/>
+                <field name="codigo"/>
             </list>
         </field>
     </record>
@@ -280,8 +280,8 @@
         <field name="model">product.detalle</field>
         <field name="arch" type="xml">
             <list string="Detalles">
-                <field name="codigo"/>
                 <field name="name"/>
+                <field name="codigo"/>
             </list>
         </field>
     </record>
@@ -310,8 +310,8 @@
         <field name="model">product.title</field>
         <field name="arch" type="xml">
             <list string="Títulos">
-                <field name="codigo"/>
                 <field name="name"/>
+                <field name="codigo"/>
             </list>
         </field>
     </record>
@@ -340,8 +340,8 @@
         <field name="model">product.talla</field>
         <field name="arch" type="xml">
             <list string="Tallas">
-                <field name="codigo"/>
                 <field name="name"/>
+                <field name="codigo"/>
             </list>
         </field>
     </record>
@@ -370,8 +370,8 @@
         <field name="model">product.otros</field>
         <field name="arch" type="xml">
             <list string="Otros Atributos">
-                <field name="codigo"/>
                 <field name="name"/>
+                <field name="codigo"/>
             </list>
         </field>
     </record>
