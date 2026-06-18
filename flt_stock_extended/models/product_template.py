@@ -44,7 +44,7 @@ class ProductTemplate(models.Model):
     help='Codificación única del producto basada en sus atributos'
     )
 
-    @api.depends('product_familia_id', 'product_familia_id.property_ids', 
+    @api.depends('product_familia_id', 'product_familia_id.property_ids.sequence', 'product_familia_id.property_ids.property_field', 
                  'product_rubro_id', 'product_material_id', 'product_detalle_id', 
                  'product_titulo_id', 'product_type_id', 'product_model_id', 
                  'product_tenido_id', 'product_color_id', 'product_medida_id', 
