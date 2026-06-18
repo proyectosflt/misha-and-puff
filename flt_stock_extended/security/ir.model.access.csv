@@ -14,3 +14,4 @@ access_product_color_user,product.color user,model_product_color,base.group_user
 access_product_medida_user,product.medida user,model_product_medida,base.group_user,1,1,1,1
 access_product_texto_user,product.texto user,model_product_texto,base.group_user,1,1,1,1
 access_product_talla_user,product.talla user,model_product_talla,base.group_user,1,1,1,1,1
+access_product_familia_property_user,product.familia.property user,model_product_familia_property,base.group_user,1,1,1,1
