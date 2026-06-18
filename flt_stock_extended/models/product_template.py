@@ -58,7 +58,10 @@ class ProductTemplate(models.Model):
             codes = []
             if record.product_familia_id.codigo:
                 codes.append(record.product_familia_id.codigo)
-            for prop in record.product_familia_id.property_ids:
+            
+            sorted_properties = record.product_familia_id.property_ids.sorted(key=lambda p: p.sequence)
+            
+            for prop in sorted_properties:
                 field_value = record[prop.property_field]
                 if field_value and hasattr(field_value, 'codigo'):
                     codes.append(field_value.codigo or '')
