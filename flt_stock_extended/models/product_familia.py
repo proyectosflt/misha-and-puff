@@ -7,3 +7,4 @@ class ProductFamilia(models.Model):
 
     name = fields.Char(string='Nombre', required=True)
     codigo = fields.Char(string='Código', required=True)
+    property_ids = fields.One2many('product.familia.property', 'familia_id', string='Propiedades')

@@ -12,6 +12,7 @@
             <list string="Rubros">
                 <field name="name"/>
                 <field name="codigo"/>
+                <field name="familia_ids" widget="many2many_tags"/>
             </list>
         </field>
     </record>
@@ -25,6 +26,7 @@
                     <group>
                         <group>
                             <field name="name"/>
+                            <field name="familia_ids" widget="many2many_tags"/>
                         </group>
                         <group>
                             <field name="codigo"/>
@@ -60,6 +62,16 @@
                             <field name="codigo"/>
                         </group>
                     </group>
+                    <notebook>
+                        <page string="Propiedades para Codificación" name="properties">
+                            <field name="property_ids">
+                                <list editable="bottom">
+                                    <field name="sequence" widget="handle"/>
+                                    <field name="property_field"/>
+                                </list>
+                            </field>
+                        </page>
+                    </notebook>
                 </sheet>
             </form>
         </field>
@@ -72,6 +84,7 @@
             <list string="Tipos">
                 <field name="name"/>
                 <field name="codigo"/>
+                <field name="familia_ids" widget="many2many_tags"/>
             </list>
         </field>
     </record>
@@ -85,6 +98,7 @@
                     <group>
                         <group>
                             <field name="name"/>
+                            <field name="familia_ids" widget="many2many_tags"/>
                         </group>
                         <group>
                             <field name="codigo"/>
@@ -102,6 +116,7 @@
             <list string="Modelos">
                 <field name="name"/>
                 <field name="codigo"/>
+                <field name="familia_ids" widget="many2many_tags"/>
             </list>
         </field>
     </record>
@@ -115,6 +130,7 @@
                     <group>
                         <group>
                             <field name="name"/>
+                            <field name="familia_ids" widget="many2many_tags"/>
                         </group>
                         <group>
                             <field name="codigo"/>
@@ -132,6 +148,7 @@
             <list string="Colores">
                 <field name="name"/>
                 <field name="codigo"/>
+                <field name="familia_ids" widget="many2many_tags"/>
             </list>
         </field>
     </record>
@@ -145,6 +162,7 @@
                     <group>
                         <group>
                             <field name="name"/>
+                            <field name="familia_ids" widget="many2many_tags"/>
                         </group>
                         <group>
                             <field name="codigo"/>
@@ -162,6 +180,7 @@
             <list string="Medidas">
                 <field name="name"/>
                 <field name="codigo"/>
+                <field name="familia_ids" widget="many2many_tags"/>
             </list>
         </field>
     </record>
@@ -175,6 +194,7 @@
                     <group>
                         <group>
                             <field name="name"/>
+                            <field name="familia_ids" widget="many2many_tags"/>
                         </group>
                         <group>
                             <field name="codigo"/>
@@ -192,6 +212,7 @@
             <list string="Teñidos">
                 <field name="name"/>
                 <field name="codigo"/>
+                <field name="familia_ids" widget="many2many_tags"/>
             </list>
         </field>
     </record>
@@ -205,6 +226,7 @@
                     <group>
                         <group>
                             <field name="name"/>
+                            <field name="familia_ids" widget="many2many_tags"/>
                         </group>
                         <group>
                             <field name="codigo"/>
@@ -222,6 +244,7 @@
             <list string="Textos">
                 <field name="name"/>
                 <field name="codigo"/>
+                <field name="familia_ids" widget="many2many_tags"/>
             </list>
         </field>
     </record>
@@ -235,6 +258,7 @@
                     <group>
                         <group>
                             <field name="name"/>
+                            <field name="familia_ids" widget="many2many_tags"/>
                         </group>
                         <group>
                             <field name="codigo"/>
@@ -252,6 +276,7 @@
             <list string="Materiales">
                 <field name="name"/>
                 <field name="codigo"/>
+                <field name="familia_ids" widget="many2many_tags"/>
             </list>
         </field>
     </record>
@@ -265,6 +290,7 @@
                     <group>
                         <group>
                             <field name="name"/>
+                            <field name="familia_ids" widget="many2many_tags"/>
                         </group>
                         <group>
                             <field name="codigo"/>
@@ -282,6 +308,7 @@
             <list string="Detalles">
                 <field name="name"/>
                 <field name="codigo"/>
+                <field name="familia_ids" widget="many2many_tags"/>
             </list>
         </field>
     </record>
@@ -295,6 +322,7 @@
                     <group>
                         <group>
                             <field name="name"/>
+                            <field name="familia_ids" widget="many2many_tags"/>
                         </group>
                         <group>
                             <field name="codigo"/>
@@ -312,6 +340,7 @@
             <list string="Títulos">
                 <field name="name"/>
                 <field name="codigo"/>
+                <field name="familia_ids" widget="many2many_tags"/>
             </list>
         </field>
     </record>
@@ -325,6 +354,7 @@
                     <group>
                         <group>
                             <field name="name"/>
+                            <field name="familia_ids" widget="many2many_tags"/>
                         </group>
                         <group>
                             <field name="codigo"/>
@@ -342,6 +372,7 @@
             <list string="Tallas">
                 <field name="name"/>
                 <field name="codigo"/>
+                <field name="familia_ids" widget="many2many_tags"/>
             </list>
         </field>
     </record>
@@ -355,6 +386,7 @@
                     <group>
                         <group>
                             <field name="name"/>
+                            <field name="familia_ids" widget="many2many_tags"/>
                         </group>
                         <group>
                             <field name="codigo"/>
@@ -372,6 +404,7 @@
             <list string="Otros Atributos">
                 <field name="name"/>
                 <field name="codigo"/>
+                <field name="familia_ids" widget="many2many_tags"/>
             </list>
         </field>
     </record>
@@ -385,6 +418,7 @@
                     <group>
                         <group>
                             <field name="name"/>
+                            <field name="familia_ids" widget="many2many_tags"/>
                         </group>
                         <group>
                             <field name="codigo"/>
@@ -481,8 +515,8 @@
     <!-- ======================================================== -->
     <!-- 3. MENUS DEFINITIONS (With Actions Linked)               -->
     <!-- ======================================================== -->
-    <menuitem id="menu_product_rubro" name="Rubros" parent="stock.menu_product_in_config_stock" action="action_product_rubro" sequence="53"/>
-    <menuitem id="menu_product_familia" name="Familias" parent="stock.menu_product_in_config_stock" action="action_product_familia" sequence="54"/>
+    <menuitem id="menu_product_familia" name="Familias" parent="stock.menu_product_in_config_stock" action="action_product_familia" sequence="53"/>
+    <menuitem id="menu_product_rubro" name="Rubros" parent="stock.menu_product_in_config_stock" action="action_product_rubro" sequence="54"/>
     <menuitem id="menu_product_type" name="Tipos" parent="stock.menu_product_in_config_stock" action="action_product_type" sequence="55"/>
     <menuitem id="menu_product_model" name="Modelos" parent="stock.menu_product_in_config_stock" action="action_product_model" sequence="56"/>
     <menuitem id="menu_product_color" name="Colores" parent="stock.menu_product_in_config_stock" action="action_product_color" sequence="57"/>

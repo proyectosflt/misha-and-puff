@@ -9,22 +9,34 @@
                 <field name="descripcion"/>
             </xpath>
             <xpath expr="//group[@name='group_general']" position="inside">
-                <field name="product_category"/>
-                <field name="product_rubro_id"/>
+                <field name="show_rubro" invisible="1"/>
+                <field name="show_material" invisible="1"/>
+                <field name="show_detalle" invisible="1"/>
+                <field name="show_titulo" invisible="1"/>
+                <field name="show_type" invisible="1"/>
+                <field name="show_model" invisible="1"/>
+                <field name="show_tenido" invisible="1"/>
+                <field name="show_color" invisible="1"/>
+                <field name="show_medida" invisible="1"/>
+                <field name="show_texto" invisible="1"/>
+                <field name="show_talla" invisible="1"/>
+                <field name="show_otros" invisible="1"/>
+
                 <field name="product_familia_id"/>
-                <field name="product_material_id"/>
-                <field name="product_detalle_id" invisible="product_category != 'hilo'"/>
-                <field name="product_titulo_id" invisible="product_category != 'hilo'"/>
-                <field name="product_otros_id"/>
+                <field name="product_rubro_id" invisible="not show_rubro"/>
+                <field name="product_material_id" invisible="not show_material"/>
+                <field name="product_detalle_id" invisible="not show_detalle"/>
+                <field name="product_titulo_id" invisible="not show_titulo"/>
+                <field name="product_otros_id" invisible="not show_otros"/>
+                <field name="product_type_id" invisible="not show_type"/>
+                <field name="product_model_id" invisible="not show_model"/>
+                <field name="product_tenido_id" invisible="not show_tenido"/>
+                <field name="product_color_id" invisible="not show_color"/>
+                <field name="product_medida_id" invisible="not show_medida"/>
+                <field name="product_texto_id" invisible="not show_texto"/>
+                <field name="product_talla_id" invisible="not show_talla"/>
             </xpath>
             <xpath expr="//group[@name='group_standard_price']" position="inside">
-                <field name="product_type_id" invisible="product_category != 'avio'"/>
-                <field name="product_model_id" invisible="product_category != 'avio'"/>
-                <field name="product_tenido_id" invisible="product_category != 'hilo'"/>
-                <field name="product_color_id"/>
-                <field name="product_medida_id" invisible="product_category != 'avio'"/>
-                <field name="product_texto_id" invisible="product_category != 'avio'"/>
-                <field name="product_talla_id" invisible="product_category != 'avio'"/>
                 <field name = "codificacion"/>  
             </xpath>
         </field>
