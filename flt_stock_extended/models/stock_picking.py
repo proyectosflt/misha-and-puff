@@ -13,9 +13,11 @@ class StockPicking(models.Model):
     )
 
     def button_validate(self):
-        # Verificar si es una recepción (albarán de entrada)
-        # y si el usuario NO es Administrador de Compras
-        if self.picking_type_id.code == 'incoming' and not self.user_has_groups('purchase.group_purchase_manager'):
+        # CORRECCIÓN: Usamos self.env.user.has_group() para verificar el grupo correctamente
+        is_purchase_admin = self.env.user.has_group('purchase.group_purchase_manager')
+
+        # Verificar si es una recepción (albarán de entrada) y si el usuario NO es Administrador
+        if self.picking_type_id.code == 'incoming' and not is_purchase_admin:
             for move in self.move_ids:
                 # Comparar la cantidad hecha (quantity) con la demanda (product_uom_qty)
                 if move.quantity > move.product_uom_qty:
