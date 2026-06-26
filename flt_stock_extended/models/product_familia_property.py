@@ -8,6 +8,7 @@ class ProductFamiliaProperty(models.Model):
     familia_id = fields.Many2one('product.familia', string='Familia', required=True, ondelete='cascade')
     sequence = fields.Integer(string='Secuencia', default=10)
     property_field = fields.Selection([
+        ('product_familia_id', 'Familia'),
         ('product_rubro_id', 'Rubro'),
         ('product_material_id', 'Material'),
         ('product_detalle_id', 'Detalle'),

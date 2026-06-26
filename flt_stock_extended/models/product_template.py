@@ -56,8 +56,6 @@ class ProductTemplate(models.Model):
                 continue
             
             codes = []
-            if record.product_familia_id.codigo:
-                codes.append(record.product_familia_id.codigo)
             
             sorted_properties = record.product_familia_id.property_ids.sorted(key=lambda p: p.sequence)
             
