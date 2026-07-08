@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+import odoo
 from odoo import models, fields, api
 from odoo.exceptions import UserError
 from odoo.tools.translate import _
@@ -20,15 +21,20 @@ class StockPicking(models.Model):
             
         model_id = self.env['ir.model']._get(self._name).id
         
-        for user in group.users:
-            self.env['mail.activity'].create({
-                'res_id': self.id,
-                'res_model_id': model_id,
-                'activity_type_id': self.env.ref('mail.mail_activity_data_todo').id,
-                'summary': title,
-                'note': f'<p>{message}</p>',
-                'user_id': user.id,
-            })
+        # Open a completely separate database cursor
+        with odoo.registry(self.env.cr.dbname).cursor() as new_cr:
+            # Create a new environment using this new cursor
+            new_env = odoo.api.Environment(new_cr, self.env.uid, self.env.context)
+            
+            for user in group.users:
+                new_env['mail.activity'].create({
+                    'res_id': self.id,
+                    'res_model_id': model_id,
+                    'activity_type_id': new_env.ref('mail.mail_activity_data_todo').id,
+                    'summary': title,
+                    'note': f'<p>{message}</p>',
+                    'user_id': user.id,
+                })
 
     def button_validate(self):
         is_purchase_admin = self.env.user.has_group('purchase.group_purchase_manager')
