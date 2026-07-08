@@ -3,18 +3,7 @@
     <record id="purchase_order_line_view_inherit_flt_stock_extended" model="ir.ui.view">
         <field name="name">purchase.order.line.form.inherit.flt.stock.extended</field>
         <field name="model">purchase.order.line</field>
-        <field name="inherit_id" ref="purchase.purchase_order_line_form"/>
-        <field name="arch" type="xml">
-            <xpath expr="//field[@name='product_qty']" position="after">
-                <field name="tolerancia"/>
-            </xpath>
-        </field>
-    </record>
-
-    <record id="purchase_order_line_tree_inherit_flt_stock_extended" model="ir.ui.view">
-        <field name="name">purchase.order.line.tree.inherit.flt.stock.extended</field>
-        <field name="model">purchase.order.line</field>
-        <field name="inherit_id" ref="purchase.purchase_order_line_tree"/>
+        <field name="inherit_id" ref="purchase.purchase_order_form"/>
         <field name="arch" type="xml">
             <xpath expr="//field[@name='product_qty']" position="after">
                 <field name="tolerancia"/>
