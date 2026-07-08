@@ -45,6 +45,10 @@
                         <field name="tolerancia_compra"/>
                         <field name="tolerancia_venta"/>
                     </group>
+                    <group>
+                        <field name="fecha_minima_tolerancia_compra"/>
+                        <field name="fecha_minima_tolerancia_venta"/>
+                    </group>
                 </page>
             </xpath>
         </field>
