@@ -9,6 +9,7 @@ class SaleOrderLine(models.Model):
         compute='_compute_tolerancia',
         store=True,
         readonly=False,
+        copy=False,
         help='Tolerancia de venta tomada del producto'
     )
 

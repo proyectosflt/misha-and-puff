@@ -9,6 +9,7 @@ class PurchaseOrderLine(models.Model):
         compute='_compute_tolerancia',
         store=True,
         readonly=False,
+        copy=False,
         help='Tolerancia de compra tomada del producto'
     )
 
