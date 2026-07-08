@@ -24,6 +24,25 @@ class ProductTemplate(models.Model):
     product_talla_id = fields.Many2one('product.talla', string='Talla', domain="[('familia_ids', 'in', product_familia_id)]")
     product_otros_id = fields.Many2one('product.otros', string='Otros Atributos', domain="[('familia_ids', 'in', product_familia_id)]")
     
+    tolerancia_compra = fields.Float(
+        string='Tolerancia Compra',
+        help='Tolerancia para compras'
+    )
+    tolerancia_venta = fields.Float(
+        string='Tolerancia Venta',
+        help='Tolerancia para ventas'
+    )
+    
+    fecha_minima_tolerancia_compra = fields.Date(
+        string='Fecha de Inicio Tolerancia Compra',
+        help='Fecha mínima para la tolerancia de compra'
+    )
+    
+    fecha_minima_tolerancia_venta = fields.Date(
+        string='Fecha de Inicio Tolerancia Venta',
+        help='Fecha mínima para la tolerancia de venta'
+    )
+    
     show_rubro = fields.Boolean(compute='_compute_attribute_visibility')
     show_material = fields.Boolean(compute='_compute_attribute_visibility')
     show_detalle = fields.Boolean(compute='_compute_attribute_visibility')

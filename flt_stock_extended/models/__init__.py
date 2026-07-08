@@ -25,3 +25,5 @@ from . import product_medida
 from . import product_texto
 from . import product_talla
 from . import product_otros
+from . import purchase_order
+from . import sale_order
