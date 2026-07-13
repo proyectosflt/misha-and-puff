@@ -48,9 +48,9 @@ class PurchaseOrder(models.Model):
                     materia_prima = line.materia_prima_id
                     vendor = order.partner_id
 
-                    # 2. Ensure the "Resupply Subcontractor on Order" route is selected on the finished product
-                    if resupply_route and resupply_route.id not in product.route_ids.ids:
-                        product.write({'route_ids': [(4, resupply_route.id)]})
+                    # 2. Ensure the "Resupply Subcontractor on Order" route is selected on the raw material
+                    if resupply_route and resupply_route.id not in materia_prima.route_ids.ids:
+                        materia_prima.write({'route_ids': [(4, resupply_route.id)]})
 
                     # 3. Search for an existing Subcontracting BoM with this exact materia prima component
                     boms = Bom.search([
