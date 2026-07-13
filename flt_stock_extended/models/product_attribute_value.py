@@ -23,7 +23,7 @@ class ProductTemplateAttributeValue(models.Model):
         """
         Overridden to append the custom 'nombre' field to the variant name
         ONLY if the attribute is a color attribute.
-        """
+        """ 
         # 1. Fetch filtered values following Odoo 18 native rules
         ptavs = self._without_no_variant_attributes().with_prefetch(self._prefetch_ids)
         ptavs = ptavs._filter_single_value_lines().with_prefetch(self._prefetch_ids)
