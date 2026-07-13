@@ -23,7 +23,7 @@ class PurchaseOrderLine(models.Model):
     materia_prima_id = fields.Many2one(
         'product.product',
         string='Materia Prima',
-        domain=[('type', '=', 'product')],
+        domain=[('type', '=', 'consu')],
         help="Raw material required for subcontracting this product."
     )
 
