@@ -69,11 +69,13 @@ class PurchaseOrder(models.Model):
                         target_bom = Bom.create({
                             'product_tmpl_id': product.product_tmpl_id.id,
                             'product_id': product.id if product.product_variant_count > 1 else False,
+                            'product_uom_id': product.uom_id.id, # Explicitly set finished product UoM
                             'type': 'subcontract',
                             'subcontractor_ids': [(4, vendor.id)],
                             'bom_line_ids': [(0, 0, {
                                 'product_id': materia_prima.id,
                                 'product_qty': 1.1,
+                                'product_uom_id': materia_prima.uom_id.id, # CRITICAL FIX: Explicitly set component UoM
                             })]
                         })
 
