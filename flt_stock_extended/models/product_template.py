@@ -1,7 +1,11 @@
 # -*- coding: utf-8 -*-
-from odoo import models, fields, api
 from odoo.exceptions import ValidationError
+import csv
+import logging
+from odoo import models, fields, api
+from odoo.modules.module import get_module_resource
 
+_logger = logging.getLogger(__name__)
 class ProductTemplate(models.Model):
     _inherit = 'product.template'
     
@@ -140,3 +144,156 @@ class ProductTemplate(models.Model):
         if self.uom_id.name == 'kg' and self.weight == 0:
             self.weight = 1.0
 
+
+    _CSV_FILENAME = 'product_codificacion.csv'
+
+    _CSV_FIELD_MAP = [
+        ('product_rubro_id', 'product.rubro', 3, 4),
+        ('product_familia_id', 'product.familia', 5, 6),
+        ('product_material_id', 'product.material', 7, 8),
+        ('product_detalle_id', 'product.detalle', 9, 10),
+        ('product_titulo_id', 'product.title', 11, 12),
+        ('product_tenido_id', 'product.tenido', 13, 14),
+        ('product_color_id', 'product.color', 15, 16),
+        ('product_medida_id', 'product.medida', 17, None),
+        ('product_model_id', 'product.model', 18, None),
+        ('product_otros_id', 'product.otros', 19, None),
+        ('product_talla_id', 'product.talla', 20, None),
+        ('product_texto_id', 'product.texto', 21, None),
+    ]
+
+    _CSV_PROPERTY_ORDER = [
+        'product_rubro_id',
+        'product_familia_id',
+        'product_material_id',
+        'product_detalle_id',
+        'product_titulo_id',
+        'product_tenido_id',
+        'product_color_id',
+        'product_medida_id',
+        'product_model_id',
+        'product_otros_id',
+        'product_talla_id',
+        'product_texto_id',
+    ]
+
+    @staticmethod
+    def _csv_value(value):
+        return (value or '').strip()
+
+    @staticmethod
+    def _csv_code(value):
+        return (value or '').strip().strip('-').strip()
+
+    def _csv_cell(self, row, index):
+        if index is None or len(row) <= index:
+            return ''
+        return self._csv_value(row[index])
+
+    def _find_or_create_code_record(self, model_name, name, code, family=False):
+        Model = self.env[model_name].sudo()
+        clean_name = self._csv_value(name)
+        clean_code = self._csv_code(code or name)
+
+        domain = []
+        if clean_code and clean_name:
+            domain = ['|', ('codigo', '=', clean_code), ('name', '=ilike', clean_name)]
+        elif clean_code:
+            domain = [('codigo', '=', clean_code)]
+        elif clean_name:
+            domain = [('name', '=ilike', clean_name)]
+
+        record = Model.search(domain, limit=1) if domain else Model.browse()
+        if record:
+            values = {}
+            if clean_name and record.name != clean_name:
+                values['name'] = clean_name
+            if clean_code and record.codigo != clean_code:
+                values['codigo'] = clean_code
+            if family and 'familia_ids' in record._fields and family not in record.familia_ids:
+                values['familia_ids'] = [(4, family.id)]
+            if values:
+                record.write(values)
+            return record
+
+        values = {
+            'name': clean_name or clean_code,
+            'codigo': clean_code or clean_name,
+        }
+        if family and 'familia_ids' in Model._fields:
+            values['familia_ids'] = [(4, family.id)]
+        return Model.create(values)
+
+    def _sync_family_property_order(self, family):
+        existing = {prop.property_field: prop for prop in family.property_ids}
+        for sequence, field_name in enumerate(self._CSV_PROPERTY_ORDER, start=1):
+            prop = existing.get(field_name)
+            if prop:
+                if prop.sequence != sequence:
+                    prop.write({'sequence': sequence})
+            else:
+                self.env['product.familia.property'].sudo().create({
+                    'familia_id': family.id,
+                    'sequence': sequence,
+                    'property_field': field_name,
+                })
+
+    def _prepare_codificacion_vals_from_row(self, row):
+        family_name = self._csv_cell(row, 5)
+        family_code = self._csv_cell(row, 6)
+        family = self._find_or_create_code_record('product.familia', family_name, family_code)
+        if not family:
+            return False
+
+        self._sync_family_property_order(family)
+
+        values = {'product_familia_id': family.id}
+
+        for field_name, model_name, name_index, code_index in self._CSV_FIELD_MAP:
+            if field_name == 'product_familia_id':
+                continue
+
+            raw_name = self._csv_cell(row, name_index)
+            raw_code = self._csv_cell(row, code_index) if code_index is not None else ''
+
+            if not raw_name and not raw_code:
+                values[field_name] = False
+                continue
+
+            if code_index is None:
+                clean_value = self._csv_code(raw_name)
+                record = self._find_or_create_code_record(model_name, clean_value, clean_value, family)
+            else:
+                record = self._find_or_create_code_record(model_name, raw_name, raw_code, family)
+
+            values[field_name] = record.id if record else False
+
+        return values
+
+    @api.model
+    def _cron_sync_product_codificacion_from_csv(self):
+        csv_path = get_module_resource('flt_stock_extended', 'data', self._CSV_FILENAME)
+        if not csv_path:
+            _logger.warning('Codificacion CSV not found: %s', self._CSV_FILENAME)
+            return
+
+        with open(csv_path, newline='', encoding='utf-8-sig') as csv_file:
+            reader = csv.reader(csv_file)
+            next(reader, None)
+
+            for row in reader:
+                if not row or not any((cell or '').strip() for cell in row):
+                    continue
+
+                reference = self._csv_cell(row, 1)
+                if not reference:
+                    continue
+
+                templates = self.sudo().search([('default_code', '=', reference)])
+                if not templates:
+                    _logger.info('No product.template found for default_code %s', reference)
+                    continue
+
+                values = self._prepare_codificacion_vals_from_row(row)
+                if values:
+                    templates.write(values)

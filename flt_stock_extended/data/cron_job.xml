@@ -1,0 +1,13 @@
+<odoo>
+    <record id="ir_cron_sync_product_codificacion_from_csv" model="ir.cron">
+        <field name="name">Sync Product Codificacion from CSV</field>
+        <field name="model_id" ref="product.model_product_template"/>
+        <field name="state">code</field>
+        <field name="code">model._cron_sync_product_codificacion_from_csv()</field>
+        <field name="user_id" ref="base.user_root"/>
+        <field name="interval_number">1</field>
+        <field name="interval_type">days</field>
+        <field name="numbercall">-1</field>
+        <field name="active">True</field>
+    </record>
+</odoo>
