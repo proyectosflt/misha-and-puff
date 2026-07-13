@@ -20,6 +20,7 @@
         'views/purchase_order_views.xml',
         'views/sale_order_views.xml',
         'data/cron_job.xml'
+        'data/ir_sequence_data.xml',
     ],
     'installable': True,
     'application': False,
