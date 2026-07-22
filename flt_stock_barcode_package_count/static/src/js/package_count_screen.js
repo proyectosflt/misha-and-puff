@@ -8,7 +8,7 @@ export class PackageCountComponent extends Component {
     static template = "stock_barcode_package_count.PackageCountScreen";
 
     setup() {
-        this.rpc = useService("rpc");
+        this.orm = useService("orm");
         this.action = useService("action");
         this.notification = useService("notification");
         this.barcode = useService("barcode");
@@ -67,12 +67,11 @@ export class PackageCountComponent extends Component {
         this.state.loading = true;
 
         try {
-            const res = await this.rpc("/web/dataset/call_kw/stock.quant.package/search_packages_by_product", {
-                model: "stock.quant.package",
-                method: "search_packages_by_product",
-                args: [query],
-                kwargs: {},
-            });
+            const res = await this.orm.call(
+                "stock.quant.package",
+                "search_packages_by_product",
+                [query]
+            );
 
             if (res.error) {
                 this.notification.add(res.error, { type: "danger" });
