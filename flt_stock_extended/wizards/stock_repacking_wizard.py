@@ -19,7 +19,6 @@ class StockRepackWizard(models.TransientModel):
         for w in self:
             w.theoretical_qty = 0.0
             if w.product_id and w.location_id:
-                # Sum ONLY quants that are NOT in a package (loose stock)
                 quants = self.env['stock.quant'].search([
                     ('product_id', '=', w.product_id.id),
                     ('location_id', '=', w.location_id.id),
@@ -37,7 +36,7 @@ class StockRepackWizard(models.TransientModel):
         Quant = self.env['stock.quant'].with_context(inventory_mode=True)
         quants_to_apply = self.env['stock.quant']
 
-        # 1. Zero out ONLY loose (unpackaged) stock in this location
+        # 1. Zero out ONLY loose (unpackaged) stock
         loose_quants = Quant.search([
             ('product_id', '=', self.product_id.id),
             ('location_id', '=', self.location_id.id),
@@ -47,12 +46,11 @@ class StockRepackWizard(models.TransientModel):
         ])
         for loose_quant in loose_quants:
             loose_quant.cantidad_conos = 0
-            loose_quant.peso_bruto = 0.0
-            loose_quant.peso_neto = 0.0
+            loose_quant.tara_cono = 0.0
             loose_quant.inventory_quantity = 0.0
             quants_to_apply |= loose_quant
 
-        # 2. Create the NEW packages with exact packed weight
+        # 2. Create NEW packages and quants with exact net weight & cono info
         for line in self.line_ids:
             package = self.env['stock.quant.package'].create({
                 'package_type_id': line.package_type_id.id,
@@ -64,13 +62,14 @@ class StockRepackWizard(models.TransientModel):
                 'package_id': package.id,
             })
 
-            quant.cantidad_conos = line.cantidad_conos or 0
-            quant.peso_bruto = line.peso_bruto or 0.0
-            quant.peso_neto = line.peso_neto or 0.0
-            quant.inventory_quantity = line.peso_neto
+            quant.write({
+                'cantidad_conos': line.cantidad_conos or 0,
+                'tara_cono': line.tara_cono or 0.0,
+                'inventory_quantity': line.peso_neto,
+            })
             quants_to_apply |= quant
 
-        # 3. Apply inventory adjustment (updates loose stock to 0 and creates new packages)
+        # 3. Apply inventory adjustment
         if quants_to_apply:
             quants_to_apply.action_apply_inventory()
 
@@ -107,4 +106,3 @@ class StockRepackWizardLine(models.TransientModel):
     def _compute_peso_neto(self):
         for line in self:
             line.peso_neto = (line.peso_bruto or 0.0) - (line.tara_bolsa or 0.0) - (line.tara_cono_total or 0.0)
-

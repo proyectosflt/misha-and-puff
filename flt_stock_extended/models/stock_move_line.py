@@ -13,20 +13,17 @@ class StockMoveLine(models.Model):
     peso_bruto = fields.Float(string="Peso bruto", digits='Stock Weight')
     peso_neto = fields.Float(string="Peso neto", compute='_compute_peso_neto', store=True, readonly=False, digits='Stock Weight')
 
-    # FIX: Depend on the relational field, NOT the master weight attribute
     @api.depends('result_package_id.package_type_id')
     def _compute_tara_bolsa(self):
         for record in self:
             if not record.exists() or record.state == 'done':
                 continue
             try:
-                # Set default only if tara_bolsa is empty
                 if not record.tara_bolsa and record.result_package_id.package_type_id:
                     record.tara_bolsa = record.result_package_id.package_type_id.base_weight or 0.0
             except Exception:
                 continue
 
-    # FIX: Depend on cono_id, NOT cono_id.tara_cono
     @api.depends('cono_id')
     def _compute_tara_cono(self):
         for record in self:
@@ -64,8 +61,7 @@ class StockMoveLine(models.Model):
             ctx = dict(ml.env.context or {})
             ctx.update({
                 'quant_cantidad_conos': ml.cantidad_conos or 0,
-                'quant_peso_bruto': ml.peso_bruto or 0.0,
-                'quant_peso_neto': ml.peso_neto or 0.0,
+                'quant_tara_cono': ml.tara_cono or 0.0,
                 'move_line_location_id': ml.location_id.id,
                 'move_line_location_dest_id': ml.location_dest_id.id,
                 'move_line_package_id': ml.package_id.id if ml.package_id else False,
