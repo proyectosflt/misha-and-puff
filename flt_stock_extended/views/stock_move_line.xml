@@ -54,10 +54,10 @@
             <xpath expr="//field[@name='quantity']" position="attributes">
                 <attribute name="optional">hide</attribute>
             </xpath>
-            <xpath expr="//list" position="inside">
+            <!-- <xpath expr="//list" position="inside">
                 <button name="action_duplicar" string="Duplicar" type="object"
                         column_invisible="parent.state in ('done', 'cancel')"/>
-            </xpath>
+            </xpath> -->
         </field>
     </record>
 </odoo>
