@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from odoo import models, fields, api
 
 class StockRepackWizard(models.TransientModel):
@@ -80,7 +81,8 @@ class StockRepackWizard(models.TransientModel):
         # 3. Apply the adjustment to both new packages and cleared loose stock
         if quants_to_apply:
             quants_to_apply.action_apply_inventory()
-            
+
+
 class StockRepackWizardLine(models.TransientModel):
     _name = 'stock.repack.wizard.line'
 
@@ -89,25 +91,27 @@ class StockRepackWizardLine(models.TransientModel):
     cono_id = fields.Many2one('tipo.cono', string="Tipo de cono")
     cantidad_conos = fields.Integer(string="Conos")
     peso_bruto = fields.Float(string="Peso bruto", digits='Stock Weight')
-    tara_bolsa = fields.Float(compute='_compute_tara_bolsa', store=True, readonly=False, digits='Stock Weight')
-    tara_cono = fields.Float(compute='_compute_tara_cono', store=True, readonly=False, digits='Stock Weight')
-    tara_cono_total = fields.Float(compute='_compute_tara_cono', store=True, digits='Stock Weight')
-    peso_neto = fields.Float(compute='_compute_peso_neto', store=True, digits='Stock Weight')
+    tara_bolsa = fields.Float(compute='_compute_tara_bolsa', readonly=False, digits='Stock Weight')
+    tara_cono = fields.Float(compute='_compute_tara_cono', readonly=False, digits='Stock Weight')
+    tara_cono_total = fields.Float(compute='_compute_tara_cono_total', digits='Stock Weight')
+    peso_neto = fields.Float(compute='_compute_peso_neto', digits='Stock Weight')
 
-    @api.depends('package_type_id.base_weight')
+    @api.depends('package_type_id')
     def _compute_tara_bolsa(self):
         for line in self:
-            if not line.tara_bolsa:
-                line.tara_bolsa = line.package_type_id.base_weight or 0.0
+            line.tara_bolsa = line.package_type_id.base_weight or 0.0
 
-    @api.depends('cono_id.tara_cono', 'cantidad_conos')
+    @api.depends('cono_id')
     def _compute_tara_cono(self):
         for line in self:
-            if not line.tara_cono:
-                line.tara_cono = line.cono_id.tara_cono or 0.0
-            line.tara_cono_total = line.tara_cono * (line.cantidad_conos or 0)
+            line.tara_cono = line.cono_id.tara_cono or 0.0
+
+    @api.depends('tara_cono', 'cantidad_conos')
+    def _compute_tara_cono_total(self):
+        for line in self:
+            line.tara_cono_total = (line.tara_cono or 0.0) * (line.cantidad_conos or 0)
 
     @api.depends('peso_bruto', 'tara_bolsa', 'tara_cono_total')
     def _compute_peso_neto(self):
         for line in self:
-            line.peso_neto = (line.peso_bruto or 0.0) - line.tara_bolsa - line.tara_cono_total
+            line.peso_neto = (line.peso_bruto or 0.0) - (line.tara_bolsa or 0.0) - (line.tara_cono_total or 0.0)
