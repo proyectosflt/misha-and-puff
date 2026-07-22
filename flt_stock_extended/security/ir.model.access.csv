@@ -13,5 +13,7 @@ access_product_tenido_user,product.tenido user,model_product_tenido,base.group_u
 access_product_color_user,product.color user,model_product_color,base.group_user,1,1,1,1
 access_product_medida_user,product.medida user,model_product_medida,base.group_user,1,1,1,1
 access_product_texto_user,product.texto user,model_product_texto,base.group_user,1,1,1,1
-access_product_talla_user,product.talla user,model_product_talla,base.group_user,1,1,1,1,1
+access_product_talla_user,product.talla user,model_product_talla,base.group_user,1,1,1,1
 access_product_familia_property_user,product.familia.property user,model_product_familia_property,base.group_user,1,1,1,1
+access_stock_repack_wizard_user,stock.repack.wizard user,model_stock_repack_wizard,base.group_user,1,1,1,1
+access_stock_repack_wizard_line_user,stock.repack.wizard.line user,model_stock_repack_wizard_line,base.group_user,1,1,1,1

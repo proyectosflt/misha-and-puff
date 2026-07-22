@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_stock_repack_wizard_form" model="ir.ui.view">
+        <field name="name">stock.repack.wizard.form</field>
+        <field name="model">stock.repack.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Empacado por conteo con corrección de inventario">
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="product_id"/>
+                            <field name="location_id"/>
+                        </group>
+                        <group>
+                            <field name="theoretical_qty" readonly="1"/>
+                            <field name="remaining_qty" readonly="1"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Paquetes" name="packages">
+                            <field name="line_ids">
+                                <list editable="bottom">
+                                    <field name="package_type_id"/>
+                                    <field name="cono_id"/>
+                                    <field name="cantidad_conos"/>
+                                    <field name="peso_bruto"/>
+                                    <field name="tara_bolsa" readonly="1"/>
+                                    <field name="tara_cono_total" readonly="1"/>
+                                    <field name="peso_neto" readonly="1"/>
+                                </list>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+                <footer>
+                    <button name="action_apply" type="object" string="Aplicar" class="btn-primary"/>
+                    <button string="Cancelar" special="cancel" class="btn-secondary"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_stock_repack_wizard" model="ir.actions.act_window">
+        <field name="name">Empacado por conteo</field>
+        <field name="res_model">stock.repack.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+
+    <menuitem id="menu_stock_repack_wizard"
+              name="Empacado por conteo"
+              parent="stock.menu_stock_adjustments"
+              action="action_stock_repack_wizard"
+              sequence="2"/>
+</odoo>
