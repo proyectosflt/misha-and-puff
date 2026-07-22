@@ -7,10 +7,10 @@
     'data': [],
     'assets': {
         'web.assets_backend': [
-            'stock_barcode_package_count/static/src/js/main_menu_patch.js',
-            'stock_barcode_package_count/static/src/js/package_count_screen.js',
-            'stock_barcode_package_count/static/src/xml/main_menu_patch.xml',
-            'stock_barcode_package_count/static/src/xml/package_count_screen.xml',
+            'flt_stock_barcode_package_count/static/src/js/main_menu_patch.js',
+            'flt_stock_barcode_package_count/static/src/js/package_count_screen.js',
+            'flt_stock_barcode_package_count/static/src/xml/main_menu_patch.xml',
+            'flt_stock_barcode_package_count/static/src/xml/package_count_screen.xml',
         ],
     },
     'installable': True,
