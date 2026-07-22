@@ -2,7 +2,7 @@
     'name': 'Barcode - Conteo de Paquetes',
     'version': '18.0.1.0.0',
     'category': 'Inventory/Barcode',
-    'summary': 'Verificación de presencia física de paquetes por producto sin realizar ajustes de inventario',
+    'summary': 'Verificación de presencia física de paquetes por producto',
     'depends': ['stock', 'stock_barcode'],
     'data': [],
     'assets': {
