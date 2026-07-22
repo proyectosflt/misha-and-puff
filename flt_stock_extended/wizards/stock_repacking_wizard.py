@@ -8,7 +8,7 @@ class StockRepackWizard(models.TransientModel):
     location_id = fields.Many2one('stock.location', required=True,
                                    domain=[('usage', '=', 'internal')])
     theoretical_qty = fields.Float(compute='_compute_theoretical_qty',
-                                    digits='Stock Weight')
+                                   digits='Stock Weight')
     line_ids = fields.One2many('stock.repack.wizard.line', 'wizard_id')
     remaining_qty = fields.Float(compute='_compute_remaining_qty',
                                   digits='Stock Weight')
@@ -31,39 +31,56 @@ class StockRepackWizard(models.TransientModel):
             
     def action_apply(self):
         self.ensure_one()
-        Quant = self.env['stock.quant']
+        # Usamos inventory_mode=True para habilitar la edición de conteo de inventario
+        Quant = self.env['stock.quant'].with_context(inventory_mode=True)
+        quants_to_apply = self.env['stock.quant']
 
+        # 1. Crear paquetes y asignar cantidad contada a cada uno
         for line in self.line_ids:
             package = self.env['stock.quant.package'].create({
                 'package_type_id': line.package_type_id.id,
             })
-            quant = Quant._gen_stock_quant(  # o search+create manual, según versión
-                product_id=self.product_id,
-                location_id=self.location_id,
-                package_id=package,
-            )
-            quant.inventory_quantity = line.peso_neto
 
-        # Quant "suelto" (sin paquete) — ajustamos lo que sobra/falta
+            quant = Quant.search([
+                ('product_id', '=', self.product_id.id),
+                ('location_id', '=', self.location_id.id),
+                ('package_id', '=', package.id),
+                ('lot_id', '=', False),
+                ('owner_id', '=', False),
+            ], limit=1)
+
+            if not quant:
+                quant = Quant.create({
+                    'product_id': self.product_id.id,
+                    'location_id': self.location_id.id,
+                    'package_id': package.id,
+                })
+
+            quant.inventory_quantity = line.peso_neto
+            quants_to_apply |= quant
+
+        # 2. Quant "suelto" (sin paquete) — asignamos lo que sobra/falta
         loose_quant = Quant.search([
             ('product_id', '=', self.product_id.id),
             ('location_id', '=', self.location_id.id),
             ('package_id', '=', False),
+            ('lot_id', '=', False),
+            ('owner_id', '=', False),
         ], limit=1)
+
         if not loose_quant:
             loose_quant = Quant.create({
                 'product_id': self.product_id.id,
                 'location_id': self.location_id.id,
+                'package_id': False,
             })
-        loose_quant.inventory_quantity = self.remaining_qty
 
-        # Esto dispara la corrección automática si no coincide con lo teórico
-        (self.line_ids.mapped(lambda l: None), )  # no-op, ver nota abajo
-        quants_to_apply = Quant.search([
-            ('product_id', '=', self.product_id.id),
-            ('location_id', '=', self.location_id.id),
-        ])
-        quants_to_apply.action_apply_inventory()
+        loose_quant.inventory_quantity = self.remaining_qty
+        quants_to_apply |= loose_quant
+
+        # 3. Aplicar el ajuste únicamente en los quants modificados
+        if quants_to_apply:
+            quants_to_apply.action_apply_inventory()
             
 class StockRepackWizardLine(models.TransientModel):
     _name = 'stock.repack.wizard.line'
