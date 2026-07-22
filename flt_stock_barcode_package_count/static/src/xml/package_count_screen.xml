@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates id="template" xml:space="preserve">
+    <t t-name="stock_barcode_package_count.PackageCountScreen">
+        <div class="o_barcode_client_action d-flex flex-column h-100 bg-light">
+            <!-- Header -->
+            <div class="navbar navbar-dark bg-dark px-3 py-2 d-flex justify-content-between align-items-center text-white shadow-sm">
+                <button class="btn btn-outline-light btn-sm" t-on-click="goBack">
+                    <i class="fa fa-arrow-left me-1"/> Volver
+                </button>
+                <h5 class="m-0 fw-bold">Conteo de paquetes</h5>
+                <span class="badge bg-info">Solo Verificación</span>
+            </div>
+
+            <div class="p-3 flex-grow-1 overflow-auto">
+                <!-- Buscador de Producto -->
+                <div class="card p-3 mb-3 shadow-sm">
+                    <label class="form-label fw-bold">Escanear o buscar producto:</label>
+                    <div class="input-group">
+                        <input type="text" 
+                               ref="searchInput"
+                               class="form-control form-control-lg" 
+                               placeholder="Escanee producto o referencia..." 
+                               t-model="state.searchQuery"
+                               t-on-keydown="(e) => e.key === 'Enter' &amp;&amp; this.searchProduct()"/>
+                        <button class="btn btn-primary btn-lg" t-on-click="searchProduct">
+                            <i class="fa fa-search me-1"/> Buscar
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Detalle del Producto y Lista de Paquetes -->
+                <t t-if="state.product">
+                    <div class="card p-3 mb-3 border-info shadow-sm">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <h4 class="text-info mb-1 fw-bold"><t t-esc="state.product.name"/></h4>
+                                <span class="text-muted" t-if="state.product.barcode">
+                                    <i class="fa fa-barcode me-1"/> <t t-esc="state.product.barcode"/>
+                                </span>
+                            </div>
+                            <button class="btn btn-outline-danger btn-sm" t-on-click="resetProduct">
+                                <i class="fa fa-times me-1"/> Cambiar Producto
+                            </button>
+                        </div>
+                        <hr class="my-2"/>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <span class="fw-bold fs-5">
+                                Verificados: <t t-esc="scannedPackagesCount"/> / <t t-esc="totalPackages"/> paquetes
+                            </span>
+                            <span t-if="scannedPackagesCount == totalPackages &amp;&amp; totalPackages &gt; 0" 
+                                  class="badge bg-success fs-6 p-2">
+                                <i class="fa fa-check-circle me-1"/> ¡Completado!
+                            </span>
+                        </div>
+                    </div>
+
+                    <!-- Lista de Paquetes -->
+                    <div class="packages-list">
+                        <t t-foreach="state.packages" t-as="pkg" t-key="pkg.id">
+                            <div t-attf-class="card mb-2 p-3 border-2 shadow-sm d-flex flex-row justify-content-between align-items-center #{pkg.scanned ? 'border-success bg-success-subtle' : 'border-secondary'}">
+                                <div>
+                                    <h5 class="mb-1 fw-bold">
+                                        <i class="fa fa-archive me-2 text-primary"/>
+                                        <t t-esc="pkg.name"/>
+                                    </h5>
+                                    <div class="text-muted small">
+                                        <span><i class="fa fa-map-marker me-1"/> <t t-esc="pkg.location_name"/></span>
+                                        <span class="ms-3"><i class="fa fa-cubes me-1"/> Cant: <t t-esc="pkg.quantity"/></span>
+                                    </div>
+                                </div>
+                                <div>
+                                    <span t-if="pkg.scanned" class="btn btn-success fw-bold disabled">
+                                        <i class="fa fa-check me-1"/> Verificado
+                                    </span>
+                                    <button t-else="" class="btn btn-outline-primary" t-on-click="() => this.processPackageScan(pkg.name)">
+                                        Marcar Verificado
+                                    </button>
+                                </div>
+                            </div>
+                        </t>
+                    </div>
+                </t>
+            </div>
+        </div>
+    </t>
+</templates>
