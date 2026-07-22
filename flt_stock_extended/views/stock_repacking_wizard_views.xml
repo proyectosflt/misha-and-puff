@@ -24,7 +24,8 @@
                                     <field name="cono_id"/>
                                     <field name="cantidad_conos"/>
                                     <field name="peso_bruto"/>
-                                    <field name="tara_bolsa" readonly="1"/>
+                                    <field name="tara_bolsa"/>
+                                    <field name="tara_cono"/>
                                     <field name="tara_cono_total" readonly="1"/>
                                     <field name="peso_neto" readonly="1"/>
                                 </list>

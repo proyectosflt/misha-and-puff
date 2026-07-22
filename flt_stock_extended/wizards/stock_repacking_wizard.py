@@ -8,10 +8,10 @@ class StockRepackWizard(models.TransientModel):
     location_id = fields.Many2one('stock.location', required=True,
                                    domain=[('usage', '=', 'internal')])
     theoretical_qty = fields.Float(compute='_compute_theoretical_qty',
-                                   digits='Stock Weight')
+                                   digits='Stock Weight', string="Cantidad teórica")
     line_ids = fields.One2many('stock.repack.wizard.line', 'wizard_id')
     remaining_qty = fields.Float(compute='_compute_remaining_qty',
-                                  digits='Stock Weight')
+                                  digits='Stock Weight', string="Cantidad restante")
 
     @api.depends('product_id', 'location_id')
     def _compute_theoretical_qty(self):
@@ -55,6 +55,9 @@ class StockRepackWizard(models.TransientModel):
                     'package_id': package.id,
                 })
 
+            quant.cantidad_conos = line.cantidad_conos or 0
+            quant.peso_bruto = line.peso_bruto or 0.0
+            quant.peso_neto = line.peso_neto or 0.0
             quant.inventory_quantity = line.peso_neto
             quants_to_apply |= quant
 
@@ -68,6 +71,9 @@ class StockRepackWizard(models.TransientModel):
         ])
 
         for loose_quant in loose_quants:
+            loose_quant.cantidad_conos = 0
+            loose_quant.peso_bruto = 0.0
+            loose_quant.peso_neto = 0.0
             loose_quant.inventory_quantity = 0.0
             quants_to_apply |= loose_quant
 
@@ -83,20 +89,22 @@ class StockRepackWizardLine(models.TransientModel):
     cono_id = fields.Many2one('tipo.cono', string="Tipo de cono")
     cantidad_conos = fields.Integer(string="Conos")
     peso_bruto = fields.Float(string="Peso bruto", digits='Stock Weight')
-    tara_bolsa = fields.Float(compute='_compute_tara_bolsa', store=True, digits='Stock Weight')
-    tara_cono = fields.Float(compute='_compute_tara_cono', store=True, digits='Stock Weight')
+    tara_bolsa = fields.Float(compute='_compute_tara_bolsa', store=True, readonly=False, digits='Stock Weight')
+    tara_cono = fields.Float(compute='_compute_tara_cono', store=True, readonly=False, digits='Stock Weight')
     tara_cono_total = fields.Float(compute='_compute_tara_cono', store=True, digits='Stock Weight')
     peso_neto = fields.Float(compute='_compute_peso_neto', store=True, digits='Stock Weight')
 
     @api.depends('package_type_id.base_weight')
     def _compute_tara_bolsa(self):
         for line in self:
-            line.tara_bolsa = line.package_type_id.base_weight or 0.0
+            if not line.tara_bolsa:
+                line.tara_bolsa = line.package_type_id.base_weight or 0.0
 
     @api.depends('cono_id.tara_cono', 'cantidad_conos')
     def _compute_tara_cono(self):
         for line in self:
-            line.tara_cono = line.cono_id.tara_cono or 0.0
+            if not line.tara_cono:
+                line.tara_cono = line.cono_id.tara_cono or 0.0
             line.tara_cono_total = line.tara_cono * (line.cantidad_conos or 0)
 
     @api.depends('peso_bruto', 'tara_bolsa', 'tara_cono_total')
