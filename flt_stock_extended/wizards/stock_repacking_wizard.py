@@ -31,11 +31,10 @@ class StockRepackWizard(models.TransientModel):
             
     def action_apply(self):
         self.ensure_one()
-        # Usamos inventory_mode=True para habilitar la edición de conteo de inventario
         Quant = self.env['stock.quant'].with_context(inventory_mode=True)
         quants_to_apply = self.env['stock.quant']
 
-        # 1. Crear paquetes y asignar cantidad contada a cada uno
+        # 1. Create packaged quants with their actual packed weight
         for line in self.line_ids:
             package = self.env['stock.quant.package'].create({
                 'package_type_id': line.package_type_id.id,
@@ -59,26 +58,20 @@ class StockRepackWizard(models.TransientModel):
             quant.inventory_quantity = line.peso_neto
             quants_to_apply |= quant
 
-        # 2. Quant "suelto" (sin paquete) — asignamos lo que sobra/falta
-        loose_quant = Quant.search([
+        # 2. Zero out any existing loose (unpackaged) stock in this location
+        loose_quants = Quant.search([
             ('product_id', '=', self.product_id.id),
             ('location_id', '=', self.location_id.id),
             ('package_id', '=', False),
             ('lot_id', '=', False),
             ('owner_id', '=', False),
-        ], limit=1)
+        ])
 
-        if not loose_quant:
-            loose_quant = Quant.create({
-                'product_id': self.product_id.id,
-                'location_id': self.location_id.id,
-                'package_id': False,
-            })
+        for loose_quant in loose_quants:
+            loose_quant.inventory_quantity = 0.0
+            quants_to_apply |= loose_quant
 
-        loose_quant.inventory_quantity = self.remaining_qty
-        quants_to_apply |= loose_quant
-
-        # 3. Aplicar el ajuste únicamente en los quants modificados
+        # 3. Apply the adjustment to both new packages and cleared loose stock
         if quants_to_apply:
             quants_to_apply.action_apply_inventory()
             
