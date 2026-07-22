@@ -4,6 +4,7 @@ from odoo import api, models, fields
 
 class StockMoveLine(models.Model):
     _inherit = 'stock.move.line'
+
     cantidad_conos = fields.Integer(string="Conos")
     cono_id = fields.Many2one('tipo.cono', string='Tipo de Cono')
     tara_bolsa = fields.Float(string="Tara bolsa", compute='_compute_tara_bolsa', store=True, readonly=False, digits='Stock Weight')
@@ -12,31 +13,33 @@ class StockMoveLine(models.Model):
     peso_bruto = fields.Float(string="Peso bruto", digits='Stock Weight')
     peso_neto = fields.Float(string="Peso neto", compute='_compute_peso_neto', store=True, readonly=False, digits='Stock Weight')
 
-    @api.depends('result_package_id.package_type_id.base_weight')
+    # FIX: Depend on the relational field, NOT the master weight attribute
+    @api.depends('result_package_id.package_type_id')
     def _compute_tara_bolsa(self):
-        # Use .exists() to filter out deleted records before iterating
         for record in self:
-            if not record.exists():
+            if not record.exists() or record.state == 'done':
                 continue
             try:
-                if not record.tara_bolsa:
+                # Set default only if tara_bolsa is empty
+                if not record.tara_bolsa and record.result_package_id.package_type_id:
                     record.tara_bolsa = record.result_package_id.package_type_id.base_weight or 0.0
             except Exception:
                 continue
 
-    @api.depends('cono_id.tara_cono')
+    # FIX: Depend on cono_id, NOT cono_id.tara_cono
+    @api.depends('cono_id')
     def _compute_tara_cono(self):
-        # Use .exists() to filter out deleted records before iterating
         for record in self:
-            if not record.tara_cono:
+            if not record.exists() or record.state == 'done':
+                continue
+            if not record.tara_cono and record.cono_id:
                 record.tara_cono = record.cono_id.tara_cono or 0.0
             record.tara_cono_total = (record.tara_cono or 0.0) * (record.cantidad_conos or 0)
 
     @api.depends('peso_bruto', 'tara_bolsa', 'tara_cono', 'cantidad_conos')
     def _compute_peso_neto(self):
-        # Use .exists() to filter out deleted records before iterating
         for record in self:
-            if not record.exists():
+            if not record.exists() or record.state == 'done':
                 continue
             try:
                 value = (record.peso_bruto or 0.0) - (record.tara_bolsa or 0.0) - ((record.tara_cono or 0.0) * (record.cantidad_conos or 0))
@@ -58,7 +61,6 @@ class StockMoveLine(models.Model):
     def _action_done(self):
         """Override to pass custom fields in context for stock.quant updates"""
         for ml in self:
-            # Pass the custom field values and location/package info in context
             ctx = dict(ml.env.context or {})
             ctx.update({
                 'quant_cantidad_conos': ml.cantidad_conos or 0,
