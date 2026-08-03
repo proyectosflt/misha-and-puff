@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <templates id="template" xml:space="preserve">
-    <!-- Heredamos específicamente del menú de inicio, no del layout general -->
+    <!-- Heredamos especificamente del menu de inicio -->
     <t t-inherit="stock_barcode.MainMenu" t-inherit-mode="extension">
-        <!-- Buscamos el último botón del menú (que es Conteo de inventario) -->
-        <xpath expr="//button[last()]" position="after">
+        <!-- Insertamos al final del contenedor para no romper cadenas t-if/t-else -->
+        <xpath expr="//div[hasclass('o_barcode_client_action')]" position="inside">
             <button class="btn btn-info btn-lg text-white w-100 mt-2 py-3 fw-bold shadow-sm o_stock_barcode_package_count_btn"
                     t-on-click="openPackageCount">
                 <i class="fa fa-cubes me-2"/> Conteo de paquetes
