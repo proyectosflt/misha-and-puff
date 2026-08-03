@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    
+    <!-- List View -->
+    <record id="view_stock_repack_tree" model="ir.ui.view">
+        <field name="name">stock.repack.tree</field>
+        <field name="model">stock.repack</field>
+        <field name="arch" type="xml">
+            <list string="Empacados por conteo">
+                <field name="product_id"/>
+                <field name="location_id"/>
+                <field name="theoretical_qty"/>
+                <field name="remaining_qty"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- Form View -->
+    <record id="view_stock_repack_form" model="ir.ui.view">
+        <field name="name">stock.repack.form</field>
+        <field name="model">stock.repack</field>
+        <field name="arch" type="xml">
+            <form string="Empacado por conteo con corrección de inventario">
+                <!-- Move the validation button to the header -->
+                <header>
+                    <button name="action_apply" type="object" string="Validar y Finalizar" class="btn-primary"/>
+                </header>
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="product_id"/>
+                            <field name="location_id"/>
+                        </group>
+                        <group>
+                            <field name="theoretical_qty" readonly="1"/>
+                            <field name="remaining_qty" readonly="1"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Paquetes" name="packages">
+                            <field name="line_ids">
+                                <list editable="bottom">
+                                    <field name="package_type_id"/>
+                                    <field name="cono_id"/>
+                                    <field name="cantidad_conos"/>
+                                    <field name="peso_bruto"/>
+                                    <field name="tara_bolsa"/>
+                                    <field name="tara_cono"/>
+                                    <field name="tara_cono_total" readonly="1"/>
+                                    <field name="peso_neto" readonly="1"/>
+                                </list>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- Action -->
+    <record id="action_stock_repack" model="ir.actions.act_window">
+        <field name="name">Empacado por conteo</field>
+        <field name="res_model">stock.repack</field>
+        <!-- Include list view in the view mode -->
+        <field name="view_mode">list,form</field>
+        <!-- Removed target="new" so it opens as a standard window -->
+    </record>
+
+    <!-- Menu Item -->
+    <menuitem id="menu_stock_repack"
+              name="Empacado por conteo"
+              parent="stock.menu_stock_adjustments"
+              action="action_stock_repack"
+              sequence="2"/>
+              
+</odoo>
