@@ -1,18 +1,17 @@
 /** @odoo-module **/
 
 import { patch } from "@web/core/utils/patch";
-import * as MainMenuModule from "@stock_barcode/components/main_menu";
+import { registry } from "@web/core/registry";
 
-// Detecta el componente correcto del menú principal en Odoo 18
-const MainMenu = MainMenuModule.default || MainMenuModule.MainMenu;
+// En lugar de adivinar la ruta del archivo, obtenemos la clase del menú 
+// directamente desde el registro de acciones del cliente de Odoo.
+const MainMenu = registry.category("actions").get("stock_barcode_main_menu");
 
 if (MainMenu) {
     patch(MainMenu.prototype, {
         openPackageCount() {
-            // Ejecutamos la acción con el servicio disponible
-            const actionService = this.actionService || this.action || this.env.services.action;
-
-            actionService.doAction({
+            // Utilizamos el entorno (env) para llamar al servicio de acciones
+            this.env.services.action.doAction({
                 type: "ir.actions.client",
                 tag: "stock_barcode_package_count_action",
                 target: "fullscreen",
@@ -20,4 +19,6 @@ if (MainMenu) {
             });
         }
     });
+} else {
+    console.error("No se pudo encontrar el menú principal de Barcode en el registro.");
 }
