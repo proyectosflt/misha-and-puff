@@ -18,4 +18,7 @@ access_product_familia_property_user,product.familia.property user,model_product
 access_stock_repack_user,stock.repack user,model_stock_repack,base.group_user,1,1,1,1
 access_stock_repack_line_user,stock.repack.line user,model_stock_repack_line,base.group_user,1,1,1,1
 access_stock_repack_confirm_wizard_user,stock.repack.confirm.wizard user,model_stock_repack_confirm_wizard,base.group_user,1,1,1,1
+access_stock_packages_desglose,stock.packages.desglose user,model_stock_packages_desglose,base.group_user,1,1,1,1
+access_stock_packages_desglose_source,stock.packages.desglose.source user,model_stock_packages_desglose_source,base.group_user,1,1,1,1
+access_stock_packages_desglose_dest,stock.packages.desglose.dest user,model_stock_packages_desglose_dest,base.group_user,1,1,1,1
 
