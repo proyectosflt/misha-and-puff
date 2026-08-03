@@ -2,8 +2,8 @@
 <templates id="template" xml:space="preserve">
     <!-- Heredamos especificamente del menu de inicio -->
     <t t-inherit="stock_barcode.MainMenu" t-inherit-mode="extension">
-        <!-- Insertamos al final del contenedor para no romper cadenas t-if/t-else -->
-        <xpath expr="//div[hasclass('o_barcode_client_action')]" position="inside">
+        <!-- Insertamos al final del template heredado para compatibilidad entre versiones -->
+        <xpath expr="." position="inside">
             <button class="btn btn-info btn-lg text-white w-100 mt-2 py-3 fw-bold shadow-sm o_stock_barcode_package_count_btn"
                     t-on-click="openPackageCount">
                 <i class="fa fa-cubes me-2"/> Conteo de paquetes
