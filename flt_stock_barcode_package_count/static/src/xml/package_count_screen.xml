@@ -69,10 +69,11 @@
                                     </div>
                                 </div>
                                 <div>
+                                    <!-- Aquí se aplicó la corrección: t-if en lugar de t-else -->
                                     <span t-if="pkg.scanned" class="btn btn-success fw-bold disabled">
                                         <i class="fa fa-check me-1"/> Verificado
                                     </span>
-                                    <button t-else="" class="btn btn-outline-primary" t-on-click="() => this.processPackageScan(pkg.name)">
+                                    <button t-if="!pkg.scanned" class="btn btn-outline-primary" t-on-click="() => this.processPackageScan(pkg.name)">
                                         Marcar Verificado
                                     </button>
                                 </div>
