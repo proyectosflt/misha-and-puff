@@ -13,7 +13,7 @@
         'views/report_package_barcode.xml',
         'views/stock_quant.xml',
         'views/stock_quant_package.xml',
-        # 'views/stock_repacking_wizard_views.xml',
+        'views/stock_packages_desglose_views.xml',
         'views/stock_repacking_views.xml',
         'views/color_family_views.xml',
         'views/product_attribute_value_views.xml',

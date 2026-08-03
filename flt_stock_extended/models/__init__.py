@@ -28,3 +28,4 @@ from . import product_otros
 from . import purchase_order
 from . import sale_order
 from . import stock_repack
+from . import stock_package_desglose

@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    
+    <!-- List View -->
+    <record id="view_stock_packages_desglose_tree" model="ir.ui.view">
+        <field name="name">stock.packages.desglose.tree</field>
+        <field name="model">stock.packages.desglose</field>
+        <field name="arch" type="xml">
+            <list string="Desglose y reempacado">
+                <field name="create_date" string="Fecha"/>
+                <field name="theoretical_conos"/>
+                <field name="remaining_conos"/>
+                <field name="theoretical_neto"/>
+                <field name="remaining_neto"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- Form View -->
+    <record id="view_stock_packages_desglose_form" model="ir.ui.view">
+        <field name="name">stock.packages.desglose.form</field>
+        <field name="model">stock.packages.desglose</field>
+        <field name="arch" type="xml">
+            <form string="Desglose y reempacado de bolsas">
+                <header>
+                    <button name="action_apply" type="object" string="Validar y Finalizar" class="btn-primary"/>
+                </header>
+                <sheet>
+                    <group>
+                        <group string="Totales Teóricos (Origen)">
+                            <field name="theoretical_conos" readonly="1"/>
+                            <field name="theoretical_bruto" readonly="1"/>
+                            <field name="theoretical_neto" readonly="1"/>
+                        </group>
+                        <group string="Pendiente por Empacar (Diferencias)">
+                            <!-- We can use decorators to highlight errors if there are remaining cones -->
+                            <field name="remaining_conos" readonly="1" decoration-danger="remaining_conos != 0" decoration-success="remaining_conos == 0"/>
+                            <field name="remaining_bruto" readonly="1"/>
+                            <field name="remaining_neto" readonly="1"/>
+                        </group>
+                    </group>
+                    
+                    <notebook>
+                        <page string="Desglose y Reempacado">
+                            
+                            <!-- Table 1: Source Packages -->
+                            <separator string="Paquetes de Origen"/>
+                            <field name="source_line_ids">
+                                <list editable="bottom">
+                                    <field name="package_id"/>
+                                    <field name="cantidad_conos" sum="Total Conos"/>
+                                    <field name="peso_bruto" sum="Total Bruto"/>
+                                    <field name="peso_neto" sum="Total Neto"/>
+                                </list>
+                            </field>
+                            
+                            <!-- Table 2: Destination Packages -->
+                            <separator string="Nuevos Paquetes (Destino)"/>
+                            <field name="dest_line_ids">
+                                <list editable="bottom">
+                                    <field name="location_id"/>
+                                    <field name="package_type_id"/>
+                                    <field name="cono_id"/>
+                                    <field name="cantidad_conos" sum="Total Conos"/>
+                                    <field name="peso_bruto" sum="Total Peso Bruto"/>
+                                    <field name="tara_bolsa"/>
+                                    <field name="tara_cono"/>
+                                    <field name="tara_cono_total" readonly="1"/>
+                                    <field name="peso_neto" readonly="1" sum="Total Peso Neto"/>
+                                </list>
+                            </field>
+
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- Action -->
+    <record id="action_stock_packages_desglose" model="ir.actions.act_window">
+        <field name="name">Desglose y reempacado de bolsas</field>
+        <field name="res_model">stock.packages.desglose</field>
+        <field name="view_mode">list,form</field>
+    </record>
+
+    <!-- Menu Item (Sequence 3 places it below Empacado por conteo) -->
+    <menuitem id="menu_stock_packages_desglose"
+              name="Desglose y reempacado de bolsas"
+              parent="stock.menu_stock_adjustments"
+              action="action_stock_packages_desglose"
+              sequence="3"/>
+              
+</odoo>
