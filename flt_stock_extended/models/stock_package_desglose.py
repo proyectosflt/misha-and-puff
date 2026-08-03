@@ -91,7 +91,7 @@ class StockPackagesDesglose(models.Model):
         self.unlink()
         
         # 5. Return to list view
-        return self.env.ref('tu_modulo.action_stock_packages_desglose').read()[0]
+        return self.env.ref('flt_stock_extended.action_stock_packages_desglose').read()[0]
 
 
 class StockPackagesDesgloseSource(models.Model):
