@@ -1,15 +1,15 @@
 /** @odoo-module **/
 
 import { patch } from "@web/core/utils/patch";
-import * as MainModule from "@stock_barcode/components/main";
+import * as MainMenuModule from "@stock_barcode/components/main_menu";
 
-// Detecta si MainComponent es default export o named export
-const MainComponent = MainModule.default || MainModule.MainComponent;
+// Detecta el componente correcto del menú principal en Odoo 18
+const MainMenu = MainMenuModule.default || MainMenuModule.MainMenu;
 
-if (MainComponent) {
-    patch(MainComponent.prototype, {
+if (MainMenu) {
+    patch(MainMenu.prototype, {
         openPackageCount() {
-            // Compatibilidad con los nombres del servicio de acciones en Odoo 18
+            // Ejecutamos la acción con el servicio disponible
             const actionService = this.actionService || this.action || this.env.services.action;
 
             actionService.doAction({
