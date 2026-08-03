@@ -7,7 +7,7 @@ class StockRepack(models.Model):
 
     product_id = fields.Many2one('product.product', required=True, string="Producto")
     location_id = fields.Many2one('stock.location', required=True,
-                                   domain=[('usage', '=', 'internal')], string="Ubicación")
+                                   domain=[('usage', '=', 'internal')], string="Ubicación de Origen")
     theoretical_qty = fields.Float(compute='_compute_theoretical_qty',
                                    digits='Stock Weight', string="Cantidad teórica")
     line_ids = fields.One2many('stock.repack.line', 'repack_id', string="Líneas de empaque")
@@ -33,7 +33,6 @@ class StockRepack(models.Model):
 
     def action_apply(self):
         self.ensure_one()
-        # If there are remaining quantities, ask the user what to do with loose quants
         if self.remaining_qty > 0:
             return {
                 'name': 'Confirmar Remanente',
@@ -47,7 +46,6 @@ class StockRepack(models.Model):
                 }
             }
         
-        # If remaining_qty <= 0, process and delete loose quants by default
         return self._process_repack(delete_remanent=True)
 
     def _process_repack(self, delete_remanent=True):
@@ -55,7 +53,7 @@ class StockRepack(models.Model):
         Quant = self.env['stock.quant'].with_context(inventory_mode=True)
         quants_to_apply = self.env['stock.quant']
 
-        # 1. Handle loose (unpackaged) stock depending on user's decision
+        # 1. Handle loose (unpackaged) stock on origin location
         loose_quants = Quant.search([
             ('product_id', '=', self.product_id.id),
             ('location_id', '=', self.location_id.id),
@@ -65,27 +63,27 @@ class StockRepack(models.Model):
         ])
 
         if delete_remanent:
-            # Zero out loose stock completely
             for loose_quant in loose_quants:
                 loose_quant.cantidad_conos = 0
                 loose_quant.tara_cono = 0.0
                 loose_quant.inventory_quantity = 0.0
                 quants_to_apply |= loose_quant
         else:
-            # Keep remaining quantities on loose stock
             for loose_quant in loose_quants:
                 loose_quant.inventory_quantity = self.remaining_qty
                 quants_to_apply |= loose_quant
 
-        # 2. Create NEW packages and quants with exact net weight & cono info
+        # 2. Create NEW packages and quants using each line's specified destination location
         for line in self.line_ids:
             package = self.env['stock.quant.package'].create({
                 'package_type_id': line.package_type_id.id,
             })
 
+            target_location = line.location_id or self.location_id
+
             quant = Quant.create({
                 'product_id': self.product_id.id,
-                'location_id': self.location_id.id,
+                'location_id': target_location.id,
                 'package_id': package.id,
             })
 
@@ -100,10 +98,10 @@ class StockRepack(models.Model):
         if quants_to_apply:
             quants_to_apply.action_apply_inventory()
 
-        # 4. Delete the repack record since validation is complete
+        # 4. Delete the repack record
         self.unlink()
 
-        # 5. Redirect to list view
+        # 5. Redirect back to list view
         return self.env.ref('flt_stock_extended.action_stock_repack').read()[0]
 
 
@@ -111,7 +109,14 @@ class StockRepackLine(models.Model):
     _name = 'stock.repack.line'
     _description = 'Línea de Empacado por conteo'
 
-    repack_id = fields.Many2one('stock.repack', ondelete='cascade') 
+    repack_id = fields.Many2one('stock.repack', ondelete='cascade')
+    location_id = fields.Many2one(
+        'stock.location', 
+        string="Ubicación Destino", 
+        required=True,
+        domain=[('usage', '=', 'internal')],
+        default=lambda self: self._default_location_id()
+    )
     package_type_id = fields.Many2one('stock.package.type', string="Tipo de paquete", required=True)
     cono_id = fields.Many2one('tipo.cono', string="Tipo de cono")
     cantidad_conos = fields.Integer(string="Conos")
@@ -120,6 +125,18 @@ class StockRepackLine(models.Model):
     tara_cono = fields.Float(compute='_compute_tara_cono', readonly=False, digits='Stock Weight')
     tara_cono_total = fields.Float(compute='_compute_tara_cono_total', digits='Stock Weight')
     peso_neto = fields.Float(compute='_compute_peso_neto', digits='Stock Weight')
+
+    def _default_location_id(self):
+        repack_id = self.env.context.get('default_repack_id')
+        if repack_id:
+            repack = self.env['stock.repack'].browse(repack_id)
+            return repack.location_id.id
+        return False
+
+    @api.onchange('repack_id')
+    def _onchange_repack_id(self):
+        if self.repack_id and not self.location_id:
+            self.location_id = self.repack_id.location_id
 
     @api.depends('package_type_id')
     def _compute_tara_bolsa(self):
@@ -150,9 +167,7 @@ class StockRepackConfirmWizard(models.TransientModel):
     remaining_qty = fields.Float(string="Cantidad Restante", digits='Stock Weight', readonly=True)
 
     def action_confirm_yes(self):
-        """User chose YES: zero out / delete remaining stock."""
         return self.repack_id._process_repack(delete_remanent=True)
 
     def action_confirm_no(self):
-        """User chose NO: keep remaining stock in loose quants."""
         return self.repack_id._process_repack(delete_remanent=False)

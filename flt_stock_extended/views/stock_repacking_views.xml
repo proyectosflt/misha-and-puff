@@ -58,16 +58,20 @@
                     </group>
                     <notebook>
                         <page string="Paquetes" name="packages">
-                            <field name="line_ids">
+                            <field name="line_ids" context="{'default_location_id': location_id}">
                                 <list editable="bottom">
+                                    <field name="location_id"/>
                                     <field name="package_type_id"/>
                                     <field name="cono_id"/>
-                                    <field name="cantidad_conos"/>
-                                    <field name="peso_bruto"/>
+                                    <!-- sum="Total Conos" adds total row at footer -->
+                                    <field name="cantidad_conos" sum="Total Conos"/>
+                                    <!-- sum="Total Peso Bruto" adds total row at footer -->
+                                    <field name="peso_bruto" sum="Total Peso Bruto"/>
                                     <field name="tara_bolsa"/>
                                     <field name="tara_cono"/>
                                     <field name="tara_cono_total" readonly="1"/>
-                                    <field name="peso_neto" readonly="1"/>
+                                    <!-- sum="Total Peso Neto" adds total row at footer -->
+                                    <field name="peso_neto" readonly="1" sum="Total Peso Neto"/>
                                 </list>
                             </field>
                         </page>
