@@ -77,7 +77,7 @@ class StockRepack(models.Model):
         self.unlink()
 
         # 5. Redirect back to the list view to prevent a "Record does not exist" error
-        return self.env.ref('tu_modulo.action_stock_repack').read()[0]
+        return self.env.ref('flt_stock_extended.action_stock_repack').read()[0]
 
 
 class StockRepackLine(models.Model):
