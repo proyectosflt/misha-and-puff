@@ -17,3 +17,5 @@ access_product_talla_user,product.talla user,model_product_talla,base.group_user
 access_product_familia_property_user,product.familia.property user,model_product_familia_property,base.group_user,1,1,1,1
 access_stock_repack_user,stock.repack user,model_stock_repack,base.group_user,1,1,1,1
 access_stock_repack_line_user,stock.repack.line user,model_stock_repack_line,base.group_user,1,1,1,1
+access_stock_repack_confirm_wizard_user,stock.repack.confirm.wizard user,model_stock_repack_confirm_wizard,base.group_user,1,1,1,1
+

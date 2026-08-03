@@ -33,10 +33,29 @@ class StockRepack(models.Model):
 
     def action_apply(self):
         self.ensure_one()
+        # If there are remaining quantities, ask the user what to do with loose quants
+        if self.remaining_qty > 0:
+            return {
+                'name': 'Confirmar Remanente',
+                'type': 'ir.actions.act_window',
+                'res_model': 'stock.repack.confirm.wizard',
+                'view_mode': 'form',
+                'target': 'new',
+                'context': {
+                    'default_repack_id': self.id,
+                    'default_remaining_qty': self.remaining_qty,
+                }
+            }
+        
+        # If remaining_qty <= 0, process and delete loose quants by default
+        return self._process_repack(delete_remanent=True)
+
+    def _process_repack(self, delete_remanent=True):
+        self.ensure_one()
         Quant = self.env['stock.quant'].with_context(inventory_mode=True)
         quants_to_apply = self.env['stock.quant']
 
-        # 1. Zero out ONLY loose (unpackaged) stock
+        # 1. Handle loose (unpackaged) stock depending on user's decision
         loose_quants = Quant.search([
             ('product_id', '=', self.product_id.id),
             ('location_id', '=', self.location_id.id),
@@ -44,11 +63,19 @@ class StockRepack(models.Model):
             ('lot_id', '=', False),
             ('owner_id', '=', False),
         ])
-        for loose_quant in loose_quants:
-            loose_quant.cantidad_conos = 0
-            loose_quant.tara_cono = 0.0
-            loose_quant.inventory_quantity = 0.0
-            quants_to_apply |= loose_quant
+
+        if delete_remanent:
+            # Zero out loose stock completely
+            for loose_quant in loose_quants:
+                loose_quant.cantidad_conos = 0
+                loose_quant.tara_cono = 0.0
+                loose_quant.inventory_quantity = 0.0
+                quants_to_apply |= loose_quant
+        else:
+            # Keep remaining quantities on loose stock
+            for loose_quant in loose_quants:
+                loose_quant.inventory_quantity = self.remaining_qty
+                quants_to_apply |= loose_quant
 
         # 2. Create NEW packages and quants with exact net weight & cono info
         for line in self.line_ids:
@@ -73,10 +100,10 @@ class StockRepack(models.Model):
         if quants_to_apply:
             quants_to_apply.action_apply_inventory()
 
-        # 4. Delete the record since the work is done
+        # 4. Delete the repack record since validation is complete
         self.unlink()
 
-        # 5. Redirect back to the list view to prevent a "Record does not exist" error
+        # 5. Redirect to list view
         return self.env.ref('flt_stock_extended.action_stock_repack').read()[0]
 
 
@@ -84,7 +111,6 @@ class StockRepackLine(models.Model):
     _name = 'stock.repack.line'
     _description = 'Línea de Empacado por conteo'
 
-    # cascade ensures lines are deleted when the main record is validated/deleted
     repack_id = fields.Many2one('stock.repack', ondelete='cascade') 
     package_type_id = fields.Many2one('stock.package.type', string="Tipo de paquete", required=True)
     cono_id = fields.Many2one('tipo.cono', string="Tipo de cono")
@@ -114,3 +140,19 @@ class StockRepackLine(models.Model):
     def _compute_peso_neto(self):
         for line in self:
             line.peso_neto = (line.peso_bruto or 0.0) - (line.tara_bolsa or 0.0) - (line.tara_cono_total or 0.0)
+
+
+class StockRepackConfirmWizard(models.TransientModel):
+    _name = 'stock.repack.confirm.wizard'
+    _description = 'Confirmación de Cantidades Remanentes'
+
+    repack_id = fields.Many2one('stock.repack', required=True)
+    remaining_qty = fields.Float(string="Cantidad Restante", digits='Stock Weight', readonly=True)
+
+    def action_confirm_yes(self):
+        """User chose YES: zero out / delete remaining stock."""
+        return self.repack_id._process_repack(delete_remanent=True)
+
+    def action_confirm_no(self):
+        """User chose NO: keep remaining stock in loose quants."""
+        return self.repack_id._process_repack(delete_remanent=False)
