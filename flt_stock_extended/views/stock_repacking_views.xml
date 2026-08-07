@@ -66,13 +66,13 @@
                                     <field name="package_type_id"/>
                                     <field name="cono_id"/>
                                     <!-- sum="Total Conos" adds total row at footer -->
-                                    <field name="cantidad_conos" sum="Total Conos"/>
                                     <!-- sum="Total Peso Bruto" adds total row at footer -->
-                                    <field name="peso_bruto" sum="Total Peso Bruto"/>
                                     <field name="tara_bolsa"/>
                                     <field name="tara_cono"/>
                                     <field name="tara_cono_total" readonly="1"/>
+                                    <field name="cantidad_conos" sum="Total Conos"/>
                                     <!-- sum="Total Peso Neto" adds total row at footer -->
+                                    <field name="peso_bruto" sum="Total Peso Bruto"/>
                                     <field name="peso_neto" readonly="1" sum="Total Peso Neto"/>
                                     <!-- Readonly Created Package Link -->
                                     <field name="package_id" readonly="1" widget="many2one"/>
