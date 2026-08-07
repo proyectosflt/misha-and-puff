@@ -28,7 +28,7 @@
     "data"          : [],
     "assets"        : {
                     "web.assets_backend":[
-                        "qz_tray_report/static/src/js/*",
+                        "qz_tray_report_v18/static/src/js/*",
                     ],
     },
     "images"        : ['static/description/banner.gif'],

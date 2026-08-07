@@ -28,8 +28,8 @@
     "data"          : [],
     "assets"        : {
                     "web.assets_backend":[
-                        "qz_tray_base/static/src/js/qz_tray_lib.js",
-                        "qz_tray_base/static/src/js/qz.js",
+                        "qz_tray_base_v18/static/src/js/qz_tray_lib.js",
+                        "qz_tray_base_v18/static/src/js/qz.js",
                     ],
     },
     "images"        : ['static/description/banner.png'],
