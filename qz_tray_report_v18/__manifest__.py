@@ -24,7 +24,7 @@
     "website"       : "https://tugit.in",
     "sequence"      : 8,
     "category"      : "Extra Tools",
-    "depends"       : ['qz_tray_base'],
+    "depends"       : ['qz_tray_base_v18'],
     "data"          : [],
     "assets"        : {
                     "web.assets_backend":[
