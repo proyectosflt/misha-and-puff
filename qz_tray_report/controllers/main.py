@@ -26,3 +26,4 @@ class ZplLabelController(http.Controller):
                 return {'success':False, 'message': "The report is not for ZPL."}
         except Exception as e:
             return {'success':False, 'message': f'Error in ZPL Label Report: {str(e)}'}
+ 
