@@ -16,7 +16,7 @@
     "description"   : """QZ Tray Base is a foundational module required to support printing related features using QZ Tray. 
     It enables seamless communication between Odoo and local printers when used together with our utility modules.
     """,
-    "version"       : "19.0.1.0.0",
+    "version"       : "18.0.1.0.0",
     "author"        : "TugIT Software",
     "company"       : "TugIT Software",
     "maintainer"    : "TugIT Software",
