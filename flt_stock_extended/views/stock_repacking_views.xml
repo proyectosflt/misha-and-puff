@@ -32,6 +32,7 @@
                 <field name="location_id"/>
                 <field name="theoretical_qty"/>
                 <field name="remaining_qty"/>
+                <field name="state"/>
             </list>
         </field>
     </record>
@@ -43,8 +44,9 @@
         <field name="arch" type="xml">
             <form string="Empacado por conteo con corrección de inventario">
                 <header>
-                    <button name="action_apply" type="object" string="Validar y Finalizar" class="btn-primary"/>
+                    <button name="action_finalizar" string="Finalizar" type="object" class="oe_highlight" invisible="state != 'draft'"/>
                 </header>
+                <field name="state" widget="statusbar" statusbar_visible="draft,done"/>
                 <sheet>
                     <group>
                         <group>
@@ -72,6 +74,8 @@
                                     <field name="tara_cono_total" readonly="1"/>
                                     <!-- sum="Total Peso Neto" adds total row at footer -->
                                     <field name="peso_neto" readonly="1" sum="Total Peso Neto"/>
+                                    <button name="action_apply_line" string="Aplicar" type="object" icon="fa-check" invisible="is_applied"/>
+<field name="is_applied" column_invisible="True"/>
                                 </list>
                             </field>
                         </page>

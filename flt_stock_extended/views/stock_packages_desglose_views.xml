@@ -12,6 +12,7 @@
                 <field name="remaining_conos"/>
                 <field name="theoretical_neto"/>
                 <field name="remaining_neto"/>
+                <field name="state"/>
             </list>
         </field>
     </record>
@@ -23,9 +24,10 @@
         <field name="arch" type="xml">
             <form string="Desglose y reempacado de bolsas">
                 <header>
-                    <button name="action_apply" type="object" string="Validar y Finalizar" class="btn-primary"/>
+                    <button name="action_finalizar" string="Finalizar" type="object" class="oe_highlight" invisible="state != 'draft'"/>
                 </header>
                 <sheet>
+                    <field name="state" widget="statusbar" statusbar_visible="draft,done"/>
                     <group>
                         <group string="Totales Teóricos (Origen)">
                             <field name="theoretical_conos" readonly="1"/>
@@ -67,6 +69,8 @@
                                     <field name="tara_cono"/>
                                     <field name="tara_cono_total" readonly="1"/>
                                     <field name="peso_neto" readonly="1" sum="Total Peso Neto"/>
+                                    <button name="action_apply_line" string="Aplicar" type="object" icon="fa-check" invisible="is_applied"/>
+<field name="is_applied" column_invisible="True"/>
                                 </list>
                             </field>
 
