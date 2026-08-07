@@ -6,6 +6,11 @@ class StockPackagesDesglose(models.Model):
     _name = 'stock.packages.desglose'
     _description = 'Desglose y reempacado de bolsas'
 
+    state = fields.Selection([
+        ('draft', 'Abierto'),
+        ('done', 'Cerrado')
+    ], string="Estado", default='draft', required=True, copy=False)
+
     source_line_ids = fields.One2many('stock.packages.desglose.source', 'desglose_id', string="Paquetes de Origen")
     dest_line_ids = fields.One2many('stock.packages.desglose.dest', 'desglose_id', string="Nuevos Paquetes (Destino)")
 
@@ -32,8 +37,11 @@ class StockPackagesDesglose(models.Model):
             rec.remaining_bruto = rec.theoretical_bruto - sum(rec.dest_line_ids.mapped('peso_bruto'))
             rec.remaining_neto = rec.theoretical_neto - sum(rec.dest_line_ids.mapped('peso_neto'))
 
-    def action_apply(self):
+    def action_finalizar(self):
         self.ensure_one()
+
+        if self.state == 'done':
+            raise UserError("Este registro ya se encuentra cerrado.")
 
         if not self.source_line_ids:
             raise UserError("Debe agregar al menos un paquete de origen.")
@@ -41,22 +49,19 @@ class StockPackagesDesglose(models.Model):
         if not self.dest_line_ids:
             raise UserError("Debe generar al menos un paquete nuevo de destino.")
 
-        # Block if remaining cones are not exactly 0
+        # Block closure if remaining cones are not exactly 0
         if self.remaining_conos != 0:
-            raise UserError("No puede validar. La cantidad de conos restantes debe ser exactamente cero.")
+            raise UserError("No puede finalizar. La cantidad de conos restantes debe ser exactamente cero.")
 
-        # Ensure we are dealing with a single product type across the source packages
-        products = self.source_line_ids.mapped('package_id.quant_ids.product_id')
-        if not products:
-            raise UserError("Los paquetes seleccionados no tienen inventario/productos.")
-        if len(products) > 1:
-            raise UserError("Los paquetes de origen contienen múltiples productos. Solo se permite reempacar un producto a la vez.")
-        
-        product = products[0]
+        # Ensure any unapplied destination lines get applied automatically on close
+        unapplied_lines = self.dest_line_ids.filtered(lambda l: not l.is_applied)
+        for line in unapplied_lines:
+            line.action_apply_line()
+
+        # Zero out the old source packages completely
         Quant = self.env['stock.quant'].with_context(inventory_mode=True)
         quants_to_apply = self.env['stock.quant']
 
-        # 1. Zero out the old source packages completely (remaining weight is automatically discarded)
         for source_line in self.source_line_ids:
             for quant in source_line.package_id.quant_ids:
                 quant.cantidad_conos = 0
@@ -64,34 +69,11 @@ class StockPackagesDesglose(models.Model):
                 quant.inventory_quantity = 0.0
                 quants_to_apply |= quant
 
-        # 2. Create the NEW packages and quants exactly as defined by the user
-        for dest in self.dest_line_ids:
-            new_package = self.env['stock.quant.package'].create({
-                'package_type_id': dest.package_type_id.id,
-            })
-
-            new_quant = Quant.create({
-                'product_id': product.id,
-                'location_id': dest.location_id.id,
-                'package_id': new_package.id,
-            })
-
-            new_quant.write({
-                'cantidad_conos': dest.cantidad_conos or 0,
-                'tara_cono': dest.tara_cono or 0.0,
-                'inventory_quantity': dest.peso_neto,
-            })
-            quants_to_apply |= new_quant
-
-        # 3. Apply the inventory adjustment
         if quants_to_apply:
             quants_to_apply.action_apply_inventory()
 
-        # 4. Delete this record so it disappears once finished
-        self.unlink()
-        
-        # 5. Return to list view
-        return self.env.ref('flt_stock_extended.action_stock_packages_desglose').read()[0]
+        # Mark as Cerrado (done) instead of unlinking
+        self.write({'state': 'done'})
 
 
 class StockPackagesDesgloseSource(models.Model):
@@ -111,7 +93,6 @@ class StockPackagesDesgloseSource(models.Model):
                 quants = line.package_id.quant_ids
                 conos = sum(quants.mapped('cantidad_conos'))
                 neto = sum(quants.mapped('quantity'))
-                # Calculate the old tare totals based on standard quant calculations
                 tara_conos = sum((q.tara_cono * q.cantidad_conos) for q in quants)
                 tara_bolsa = line.package_id.package_type_id.base_weight or 0.0
                 
@@ -143,10 +124,10 @@ class StockPackagesDesgloseDest(models.Model):
     tara_cono = fields.Float(compute='_compute_tara_cono', readonly=False, digits='Stock Weight')
     tara_cono_total = fields.Float(compute='_compute_tara_cono_total', digits='Stock Weight')
     peso_neto = fields.Float(compute='_compute_peso_neto', digits='Stock Weight')
+    is_applied = fields.Boolean(string="Aplicado", default=False, copy=False)
 
     @api.onchange('desglose_id')
     def _onchange_desglose_id(self):
-        # Default destination location to the location of the first source package
         if self.desglose_id and self.desglose_id.source_line_ids and not self.location_id:
             self.location_id = self.desglose_id.source_line_ids[0].package_id.location_id
 
@@ -169,3 +150,39 @@ class StockPackagesDesgloseDest(models.Model):
     def _compute_peso_neto(self):
         for line in self:
             line.peso_neto = (line.peso_bruto or 0.0) - (line.tara_bolsa or 0.0) - (line.tara_cono_total or 0.0)
+
+    def action_apply_line(self):
+        for line in self:
+            if line.is_applied:
+                raise UserError("Esta línea ya ha sido aplicada.")
+            
+            if line.desglose_id.state == 'done':
+                raise UserError("No se pueden aplicar líneas en un registro cerrado.")
+
+            products = line.desglose_id.source_line_ids.mapped('package_id.quant_ids.product_id')
+            if not products:
+                raise UserError("Los paquetes seleccionados no tienen inventario/productos.")
+            if len(products) > 1:
+                raise UserError("Los paquetes de origen contienen múltiples productos. Solo se permite reempacar un producto a la vez.")
+
+            product = products[0]
+            Quant = self.env['stock.quant'].with_context(inventory_mode=True)
+
+            new_package = self.env['stock.quant.package'].create({
+                'package_type_id': line.package_type_id.id,
+            })
+
+            new_quant = Quant.create({
+                'product_id': product.id,
+                'location_id': line.location_id.id,
+                'package_id': new_package.id,
+            })
+
+            new_quant.write({
+                'cantidad_conos': line.cantidad_conos or 0,
+                'tara_cono': line.tara_cono or 0.0,
+                'inventory_quantity': line.peso_neto,
+            })
+
+            new_quant.action_apply_inventory()
+            line.is_applied = True

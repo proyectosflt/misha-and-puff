@@ -1,9 +1,15 @@
 # -*- coding: utf-8 -*-
 from odoo import models, fields, api
+from odoo.exceptions import UserError
 
 class StockRepack(models.Model):
     _name = 'stock.repack'
     _description = 'Empacado por conteo con corrección de inventario'
+
+    state = fields.Selection([
+        ('draft', 'Abierto'),
+        ('done', 'Cerrado')
+    ], string="Estado", default='draft', required=True, copy=False)
 
     product_id = fields.Many2one('product.product', required=True, string="Producto")
     location_id = fields.Many2one('stock.location', required=True,
@@ -31,8 +37,12 @@ class StockRepack(models.Model):
         for w in self:
             w.remaining_qty = w.theoretical_qty - sum(w.line_ids.mapped('peso_neto'))
 
-    def action_apply(self):
+    def action_finalizar(self):
         self.ensure_one()
+
+        if self.state == 'done':
+            raise UserError("Este registro ya se encuentra cerrado.")
+
         if self.remaining_qty > 0:
             return {
                 'name': 'Confirmar Remanente',
@@ -46,14 +56,19 @@ class StockRepack(models.Model):
                 }
             }
         
-        return self._process_repack(delete_remanent=True)
+        return self._process_finalization(delete_remanent=True)
 
-    def _process_repack(self, delete_remanent=True):
+    def _process_finalization(self, delete_remanent=True):
         self.ensure_one()
         Quant = self.env['stock.quant'].with_context(inventory_mode=True)
         quants_to_apply = self.env['stock.quant']
 
-        # 1. Handle loose (unpackaged) stock on origin location
+        # Apply any lines that haven't been applied yet
+        unapplied_lines = self.line_ids.filtered(lambda l: not l.is_applied)
+        for line in unapplied_lines:
+            line.action_apply_line()
+
+        # Handle loose (unpackaged) stock on origin location
         loose_quants = Quant.search([
             ('product_id', '=', self.product_id.id),
             ('location_id', '=', self.location_id.id),
@@ -73,36 +88,11 @@ class StockRepack(models.Model):
                 loose_quant.inventory_quantity = self.remaining_qty
                 quants_to_apply |= loose_quant
 
-        # 2. Create NEW packages and quants using each line's specified destination location
-        for line in self.line_ids:
-            package = self.env['stock.quant.package'].create({
-                'package_type_id': line.package_type_id.id,
-            })
-
-            target_location = line.location_id or self.location_id
-
-            quant = Quant.create({
-                'product_id': self.product_id.id,
-                'location_id': target_location.id,
-                'package_id': package.id,
-            })
-
-            quant.write({
-                'cantidad_conos': line.cantidad_conos or 0,
-                'tara_cono': line.tara_cono or 0.0,
-                'inventory_quantity': line.peso_neto,
-            })
-            quants_to_apply |= quant
-
-        # 3. Apply inventory adjustment
         if quants_to_apply:
             quants_to_apply.action_apply_inventory()
 
-        # 4. Delete the repack record
-        self.unlink()
-
-        # 5. Redirect back to list view
-        return self.env.ref('flt_stock_extended.action_stock_repack').read()[0]
+        # Mark state as Cerrado (done) instead of deleting
+        self.write({'state': 'done'})
 
 
 class StockRepackLine(models.Model):
@@ -125,6 +115,7 @@ class StockRepackLine(models.Model):
     tara_cono = fields.Float(compute='_compute_tara_cono', readonly=False, digits='Stock Weight')
     tara_cono_total = fields.Float(compute='_compute_tara_cono_total', digits='Stock Weight')
     peso_neto = fields.Float(compute='_compute_peso_neto', digits='Stock Weight')
+    is_applied = fields.Boolean(string="Aplicado", default=False, copy=False)
 
     def _default_location_id(self):
         repack_id = self.env.context.get('default_repack_id')
@@ -158,6 +149,37 @@ class StockRepackLine(models.Model):
         for line in self:
             line.peso_neto = (line.peso_bruto or 0.0) - (line.tara_bolsa or 0.0) - (line.tara_cono_total or 0.0)
 
+    def action_apply_line(self):
+        for line in self:
+            if line.is_applied:
+                raise UserError("Esta línea ya ha sido aplicada.")
+
+            if line.repack_id.state == 'done':
+                raise UserError("No se pueden aplicar líneas en un registro cerrado.")
+
+            Quant = self.env['stock.quant'].with_context(inventory_mode=True)
+
+            package = self.env['stock.quant.package'].create({
+                'package_type_id': line.package_type_id.id,
+            })
+
+            target_location = line.location_id or line.repack_id.location_id
+
+            quant = Quant.create({
+                'product_id': line.repack_id.product_id.id,
+                'location_id': target_location.id,
+                'package_id': package.id,
+            })
+
+            quant.write({
+                'cantidad_conos': line.cantidad_conos or 0,
+                'tara_cono': line.tara_cono or 0.0,
+                'inventory_quantity': line.peso_neto,
+            })
+
+            quant.action_apply_inventory()
+            line.is_applied = True
+
 
 class StockRepackConfirmWizard(models.TransientModel):
     _name = 'stock.repack.confirm.wizard'
@@ -167,7 +189,7 @@ class StockRepackConfirmWizard(models.TransientModel):
     remaining_qty = fields.Float(string="Cantidad Restante", digits='Stock Weight', readonly=True)
 
     def action_confirm_yes(self):
-        return self.repack_id._process_repack(delete_remanent=True)
+        return self.repack_id._process_finalization(delete_remanent=True)
 
     def action_confirm_no(self):
-        return self.repack_id._process_repack(delete_remanent=False)
+        return self.repack_id._process_finalization(delete_remanent=False)
