@@ -45,8 +45,8 @@
             <form string="Empacado por conteo con corrección de inventario">
                 <header>
                     <button name="action_finalizar" string="Finalizar" type="object" class="oe_highlight" invisible="state != 'draft'"/>
+                    <field name="state" widget="statusbar" statusbar_visible="draft,done"/>
                 </header>
-                <field name="state" widget="statusbar" statusbar_visible="draft,done"/>
                 <sheet>
                     <group>
                         <group>
