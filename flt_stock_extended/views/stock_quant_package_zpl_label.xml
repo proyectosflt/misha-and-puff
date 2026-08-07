@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <template id="label_package_template_view_inherit" inherit_id="stock.label_package_template_view">
+            <xpath expr="//t[@t-translation='off']" position="replace">
+                <t t-translation="off">
+^XA
+^PW812
+^LL609
+<t t-set="quant" t-value="package.quant_ids and package.quant_ids[0]"/>
+<t t-set="tmpl" t-value="quant.product_tmpl_id if quant else False"/>
+<t t-if="tmpl">
+    <t t-set="tenido" t-value="tmpl.product_tenido_id.codigo or ''"/>
+    <t t-set="color" t-value="tmpl.product_color_id.codigo or ''"/>
+    <t t-set="top_line" t-value="((tenido + '-') if (tenido and color) else tenido) + color"/>
+    <t t-set="props" t-value="tmpl.product_familia_id.property_ids.sorted(lambda p: p.sequence)"/>
+    <t t-set="rest_codes" t-value="[tmpl[p.property_field].codigo for p in props if tmpl[p.property_field] and p.property_field not in ('product_tenido_id', 'product_color_id') and getattr(tmpl[p.property_field], 'codigo', False)]"/>
+    <t t-set="sub_line" t-value="'-'.join(rest_codes)"/>
+
+^FO0,35^FB812,1,0,C^A0N,60,55^FD<t t-out="top_line"/>^FS
+^FO0,110^FB812,1,0,C^A0N,45,40^FD<t t-out="sub_line"/>^FS
+^FO0,175^FB812,1,0,C^A0N,38,35^FD<t t-out="tmpl.id"/>^FS
+</t>
+
+^FO160,230^BY2,3,100
+^BCN,100,Y,N,N
+^FD<t t-out="quant.product_id.barcode or package.name"/>^FS
+
+^FO10,430^FB250,1,0,C^A0N,30,28^FDCONOS^FS
+^FO280,430^FB250,1,0,C^A0N,30,28^FDKGB^FS
+^FO550,430^FB250,1,0,C^A0N,30,28^FDKGN^FS
+
+^FO10,475^FB250,1,0,C^A0N,42,38^FD<t t-out="package.cantidad_conos or ''"/>^FS
+^FO280,475^FB250,1,0,C^A0N,42,38^FD<t t-out="package.peso_bruto or ''"/>^FS
+^FO550,475^FB250,1,0,C^A0N,42,38^FD<t t-out="package.peso_neto or ''"/>^FS
+^XZ
+                </t>
+            </xpath>
+        </template>
+    </data>
+</odoo>

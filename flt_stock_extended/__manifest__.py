@@ -22,6 +22,7 @@
         'views/purchase_order_views.xml',
         'views/sale_order_views.xml',
         'data/cron_job.xml',
+        'views/stock_quant_package_zpl_label.xml'
     ],
     'installable': True,
     'application': False,
