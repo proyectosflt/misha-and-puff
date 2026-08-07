@@ -63,12 +63,10 @@ class StockRepack(models.Model):
         Quant = self.env['stock.quant'].with_context(inventory_mode=True)
         quants_to_apply = self.env['stock.quant']
 
-        # Apply any lines that haven't been applied yet
         unapplied_lines = self.line_ids.filtered(lambda l: not l.is_applied)
         for line in unapplied_lines:
             line.action_apply_line()
 
-        # Handle loose (unpackaged) stock on origin location
         loose_quants = Quant.search([
             ('product_id', '=', self.product_id.id),
             ('location_id', '=', self.location_id.id),
@@ -91,7 +89,6 @@ class StockRepack(models.Model):
         if quants_to_apply:
             quants_to_apply.action_apply_inventory()
 
-        # Mark state as Cerrado (done) instead of deleting
         self.write({'state': 'done'})
 
 
@@ -115,6 +112,8 @@ class StockRepackLine(models.Model):
     tara_cono = fields.Float(compute='_compute_tara_cono', readonly=False, digits='Stock Weight')
     tara_cono_total = fields.Float(compute='_compute_tara_cono_total', digits='Stock Weight')
     peso_neto = fields.Float(compute='_compute_peso_neto', digits='Stock Weight')
+
+    package_id = fields.Many2one('stock.quant.package', string="Paquete Creado", readonly=True, copy=False)
     is_applied = fields.Boolean(string="Aplicado", default=False, copy=False)
 
     def _default_location_id(self):
@@ -178,7 +177,17 @@ class StockRepackLine(models.Model):
             })
 
             quant.action_apply_inventory()
-            line.is_applied = True
+
+            line.write({
+                'package_id': package.id,
+                'is_applied': True,
+            })
+
+    def action_print_label(self):
+        self.ensure_one()
+        if not self.package_id:
+            raise UserError("Debe aplicar la línea antes de imprimir la etiqueta del paquete.")
+        return self.env.ref('stock.label_package_template_view').report_action(self.package_id)
 
 
 class StockRepackConfirmWizard(models.TransientModel):

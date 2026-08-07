@@ -49,16 +49,13 @@ class StockPackagesDesglose(models.Model):
         if not self.dest_line_ids:
             raise UserError("Debe generar al menos un paquete nuevo de destino.")
 
-        # Block closure if remaining cones are not exactly 0
         if self.remaining_conos != 0:
             raise UserError("No puede finalizar. La cantidad de conos restantes debe ser exactamente cero.")
 
-        # Ensure any unapplied destination lines get applied automatically on close
         unapplied_lines = self.dest_line_ids.filtered(lambda l: not l.is_applied)
         for line in unapplied_lines:
             line.action_apply_line()
 
-        # Zero out the old source packages completely
         Quant = self.env['stock.quant'].with_context(inventory_mode=True)
         quants_to_apply = self.env['stock.quant']
 
@@ -72,7 +69,6 @@ class StockPackagesDesglose(models.Model):
         if quants_to_apply:
             quants_to_apply.action_apply_inventory()
 
-        # Mark as Cerrado (done) instead of unlinking
         self.write({'state': 'done'})
 
 
@@ -124,6 +120,8 @@ class StockPackagesDesgloseDest(models.Model):
     tara_cono = fields.Float(compute='_compute_tara_cono', readonly=False, digits='Stock Weight')
     tara_cono_total = fields.Float(compute='_compute_tara_cono_total', digits='Stock Weight')
     peso_neto = fields.Float(compute='_compute_peso_neto', digits='Stock Weight')
+    
+    package_id = fields.Many2one('stock.quant.package', string="Paquete Creado", readonly=True, copy=False)
     is_applied = fields.Boolean(string="Aplicado", default=False, copy=False)
 
     @api.onchange('desglose_id')
@@ -185,4 +183,14 @@ class StockPackagesDesgloseDest(models.Model):
             })
 
             new_quant.action_apply_inventory()
-            line.is_applied = True
+            
+            line.write({
+                'package_id': new_package.id,
+                'is_applied': True,
+            })
+
+    def action_print_label(self):
+        self.ensure_one()
+        if not self.package_id:
+            raise UserError("Debe aplicar la línea antes de imprimir la etiqueta del paquete.")
+        return self.env.ref('stock.label_package_template_view').report_action(self.package_id)
