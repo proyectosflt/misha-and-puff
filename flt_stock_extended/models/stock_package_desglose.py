@@ -193,4 +193,13 @@ class StockPackagesDesgloseDest(models.Model):
         self.ensure_one()
         if not self.package_id:
             raise UserError("Debe aplicar la línea antes de imprimir la etiqueta del paquete.")
-        return self.env.ref('stock.label_package_template_view').report_action(self.package_id)
+
+        # Search for the report action using the template name
+        report = self.env['ir.actions.report'].search([
+            ('report_name', '=', 'stock.label_package_template_view')
+        ], limit=1)
+
+        if not report:
+            raise UserError("No se encontró la acción de informe para la etiqueta del paquete.")
+
+        return report.report_action(self.package_id)
