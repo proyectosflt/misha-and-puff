@@ -14,7 +14,9 @@
     <t t-set="color" t-value="tmpl.product_color_id.codigo or ''"/>
     <t t-set="top_line" t-value="((tenido + '-') if (tenido and color) else tenido) + color"/>
     <t t-set="props" t-value="tmpl.product_familia_id.property_ids.sorted(lambda p: p.sequence)"/>
-    <t t-set="rest_codes" t-value="[tmpl[p.property_field].codigo for p in props if tmpl[p.property_field] and p.property_field not in ('product_tenido_id', 'product_color_id') and getattr(tmpl[p.property_field], 'codigo', False)]"/>
+    
+    <!-- FIX: Replaced getattr() with direct record access inside the comprehension -->
+    <t t-set="rest_codes" t-value="[tmpl[p.property_field].codigo for p in props if p.property_field not in ('product_tenido_id', 'product_color_id') and tmpl[p.property_field] and tmpl[p.property_field].codigo]"/>
     <t t-set="sub_line" t-value="'-'.join(rest_codes)"/>
 
 ^FO0,35^FB812,1,0,C^A0N,60,55^FD<t t-out="top_line"/>^FS
@@ -24,7 +26,7 @@
 
 ^FO160,230^BY2,3,100
 ^BCN,100,Y,N,N
-^FD<t t-out="quant.product_id.barcode or package.name"/>^FS
+^FD<t t-out="package.name"/>^FS
 
 ^FO10,430^FB250,1,0,C^A0N,30,28^FDCONOS^FS
 ^FO280,430^FB250,1,0,C^A0N,30,28^FDKGB^FS
