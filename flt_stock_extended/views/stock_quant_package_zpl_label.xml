@@ -12,11 +12,11 @@
 <t t-if="tmpl">
     <t t-set="tenido" t-value="tmpl.product_tenido_id.codigo or ''"/>
     <t t-set="color" t-value="tmpl.product_color_id.codigo or ''"/>
-    <t t-set="top_line" t-value="((tenido + ' – ') if (tenido and color) else tenido) + color"/>
+    <t t-set="top_line" t-value="((tenido + '-') if (tenido and color) else tenido) + color"/>
     
     <t t-set="props" t-value="tmpl.product_familia_id.property_ids.sorted(lambda p: p.sequence)"/>
     <t t-set="rest_codes" t-value="[tmpl[p.property_field].codigo for p in props if p.property_field not in ('product_tenido_id', 'product_color_id') and tmpl[p.property_field] and tmpl[p.property_field].codigo]"/>
-    <t t-set="sub_line" t-value="' – '.join(rest_codes)"/>
+    <t t-set="sub_line" t-value="'-'.join(rest_codes)"/>
 
 ^FO0,30^FB812,1,0,C^A0N,65,55^FD<t t-out="top_line"/>^FS
 ^FO0,110^FB812,1,0,C^A0N,45,38^FD<t t-out="sub_line"/>^FS
