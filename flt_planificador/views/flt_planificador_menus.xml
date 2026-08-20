@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Menú en Ventas: Pedidos -> Planificación -->
+    <menuitem id="menu_flt_planificador_sale"
+              name="Planificación"
+              parent="sale.sale_order_menu"
+              action="action_flt_planificador"
+              sequence="90"/>
+
+    <!-- Menú en Inventario: Operaciones -> Ajustes -> Planificación -->
+    <menuitem id="menu_stock_adjustments"
+              name="Ajustes"
+              parent="stock.menu_stock_warehouse_mgmt"
+              sequence="90"/>
+
+    <menuitem id="menu_flt_planificador_stock"
+              name="Planificación"
+              parent="menu_stock_adjustments"
+              action="action_flt_planificador"
+              sequence="10"/>
+
+</odoo>
