@@ -11,10 +11,8 @@ class FltPlanificadorLine(models.Model):
         required=True
     )
     fecha_planificada = fields.Date(string='Fecha planificada', required=True)
-    pri_tp = fields.Char(string='Pri T/P')
     temporada = fields.Char(string='Temporada')
     programa = fields.Char(string='Programa')
-    pri_cp = fields.Char(string='Pri C/P')
     partner_id = fields.Many2one('res.partner', string='Clte/Prov', required=True)
     pri_prod = fields.Char(string='Pri Prod')
     product_id = fields.Many2one('product.product', string='Producto', required=True)
@@ -40,14 +38,16 @@ class FltPlanificadorLine(models.Model):
         required=True
     )
 
+    # Cambiar de Char a Integer
+    pri_tp = fields.Integer(string='Pri T/P')
+    pri_cp = fields.Integer(string='Pri C/P')
+
     def action_procesar(self):
-        # Filtramos solo las líneas que aún están pendientes
         lineas_pendientes = self.filtered(lambda l: l.state == 'pendiente')
         if not lineas_pendientes:
             return
 
         grupos = {}
-        # Agrupar por Fecha, Temporada, Programa y Cliente
         for linea in lineas_pendientes:
             key = (linea.fecha_planificada, linea.temporada, linea.programa, linea.partner_id.id)
             if key not in grupos:
@@ -57,12 +57,17 @@ class FltPlanificadorLine(models.Model):
         for key, lineas in grupos.items():
             fecha, temporada, programa, partner_id = key
             
-            # 1. Crear el Pedido de Venta (Sale Order)
+            # Obtener el número más bajo (mayor prioridad) del grupo
+            min_pri_tp = min([p for p in lineas.mapped('pri_tp') if p] or [0])
+            min_pri_cp = min([p for p in lineas.mapped('pri_cp') if p] or [0])
+            
             so_vals = {
                 'partner_id': partner_id,
-                'commitment_date': fecha,  # Fecha de entrega esperada
+                'commitment_date': fecha,
                 'temporada': temporada,
                 'programa': programa,
+                'pri_tp': min_pri_tp,
+                'pri_cp': min_pri_cp,
                 'order_line': [],
             }
             
@@ -73,19 +78,18 @@ class FltPlanificadorLine(models.Model):
                 }))
 
             sale_order = self.env['sale.order'].create(so_vals)
-            
-            # 2. Confirmar el Pedido (esto genera el Stock Picking automáticamente)
             sale_order.action_confirm()
 
-            # 3. Actualizar los pickings generados con los campos custom y enlazar M2M
             for picking in sale_order.picking_ids:
                 picking.write({
                     'temporada': temporada,
                     'programa': programa,
+                    'pri_tp': min_pri_tp,
+                    'pri_cp': min_pri_cp,
+                    'scheduled_date': fecha, # Forzamos la fecha programada
                     'planificador_line_ids': [(6, 0, lineas.ids)]
                 })
 
-            # 4. Actualizar las líneas de planificación con el SO, los pickings y el estado
             lineas.write({
                 'sale_order_id': sale_order.id,
                 'picking_ids': [(6, 0, sale_order.picking_ids.ids)],

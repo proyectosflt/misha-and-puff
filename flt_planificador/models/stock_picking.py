@@ -13,3 +13,6 @@ class StockPicking(models.Model):
         string='Líneas de Planificación',
         readonly=True
     )
+    # Añadir campos de prioridad
+    pri_tp = fields.Integer(string='Pri T/P')
+    pri_cp = fields.Integer(string='Pri C/P')
