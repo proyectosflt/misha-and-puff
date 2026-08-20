@@ -7,4 +7,4 @@ class ProductColor(models.Model):
 
     name = fields.Char(string='Nombre', required=True)
     codigo = fields.Char(string='Código', required=True)
-    familia_ids = fields.Many2many('product.familia', string='Familias')
+    familia_ids = fields.Many2many('product.familia', string='Familias') 
