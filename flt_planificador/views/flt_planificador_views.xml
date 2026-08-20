@@ -29,12 +29,15 @@
     <field name="model">flt.planificador.line</field>
     <field name="arch" type="xml">
         <list string="Líneas de Planificación" editable="bottom" multi_edit="1">
-            <!-- Botón de cabecera visible al seleccionar registros -->
-            <button name="action_procesar" 
-                    string="Procesar" 
-                    type="object" 
-                    class="btn-primary" 
-                    icon="fa-cogs"/>
+            
+            <!-- Header for bulk action buttons -->
+            <header>
+                <button name="action_procesar" 
+                        string="Procesar" 
+                        type="object" 
+                        class="btn-primary" 
+                        icon="fa-cogs"/>
+            </header>
             
             <field name="fecha_planificada"/>
             <field name="pri_tp"/>
