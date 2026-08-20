@@ -10,7 +10,7 @@
 
     <!-- Menú en Inventario: Operaciones -> Ajustes -> Planificación -->
     <menuitem id="menu_stock_adjustments"
-              name="Ajustes"
+              name="Planificación"
               parent="stock.menu_stock_warehouse_mgmt"
               sequence="90"/>
 

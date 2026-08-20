@@ -1,6 +1,5 @@
 from odoo import models, fields, api
 
-
 class FltPlanificador(models.Model):
     _name = 'flt.planificador'
     _description = 'Planificación'
@@ -16,6 +15,15 @@ class FltPlanificador(models.Model):
         default=fields.Date.context_today,
         required=True
     )
+    state = fields.Selection(
+        [
+            ('en_proceso', 'En Proceso'),
+            ('cerrado', 'Cerrado'),
+        ],
+        string='Estado',
+        default='en_proceso',
+        required=True
+    )
     line_ids = fields.One2many(
         'flt.planificador.line',
         'planificador_id',
@@ -29,3 +37,14 @@ class FltPlanificador(models.Model):
                 date_val = vals.get('date') or fields.Date.today()
                 vals['name'] = f"Planificación {date_val}"
         return super().create(vals_list)
+
+    def action_open_lines(self):
+        self.ensure_one()
+        return {
+            'name': f'Líneas - {self.name}',
+            'type': 'ir.actions.act_window',
+            'res_model': 'flt.planificador.line',
+            'view_mode': 'list,form',
+            'domain': [('planificador_id', '=', self.id)],
+            'context': {'default_planificador_id': self.id},
+        }
