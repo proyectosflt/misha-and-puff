@@ -5,8 +5,7 @@
     <record id="view_order_tree_inherit_planificador" model="ir.ui.view">
         <field name="name">sale.order.list.inherit.planificador</field>
         <field name="model">sale.order</field>
-        <field name="inherit_id" ref="
-sale.sale_order_tree"/>
+        <field name="inherit_id" ref="sale.sale_order_tree"/>
         <field name="arch" type="xml">
             <!-- Modificamos el orden por defecto de la lista -->
             <xpath expr="//list" position="attributes">
