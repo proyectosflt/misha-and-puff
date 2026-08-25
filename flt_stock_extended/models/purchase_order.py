@@ -74,7 +74,7 @@ class PurchaseOrder(models.Model):
                             'subcontractor_ids': [(4, vendor.id)],
                             'bom_line_ids': [(0, 0, {
                                 'product_id': materia_prima.id,
-                                'product_qty': 1.1,
+                                'product_qty': 1.05,
                                 'product_uom_id': materia_prima.uom_id.id, # CRITICAL FIX: Explicitly set component UoM
                             })]
                         })
