@@ -66,6 +66,11 @@ class ProductTemplate(models.Model):
     store=True,
     help='Codificación única del producto basada en sus atributos'
     )
+    
+    codificacion_anterior = fields.Char(
+        string='Codificación Anterior',
+        help='Codificación anterior del producto, si existía'
+    )
 
     @api.depends('product_familia_id', 'product_familia_id.property_ids.sequence', 'product_familia_id.property_ids.property_field', 
                  'product_rubro_id', 'product_material_id', 'product_detalle_id', 
