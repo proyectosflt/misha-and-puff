@@ -37,7 +37,7 @@
                 <field name="product_talla_id" invisible="not show_talla"/>
             </xpath>
             <xpath expr="//group[@name='group_standard_price']" position="inside">
-                <field name = "codificacion"/>  
+                <field name = "codificacion_anterior"/>  
             </xpath>
             <xpath expr="//notebook" position="inside">
                 <page string="Tolerancias">
