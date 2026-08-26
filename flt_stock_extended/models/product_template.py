@@ -6,6 +6,7 @@ from odoo import models, fields, api
 from odoo.modules.module import get_module_resource
 
 _logger = logging.getLogger(__name__)
+
 class ProductTemplate(models.Model):
     _inherit = 'product.template'
     
@@ -61,10 +62,10 @@ class ProductTemplate(models.Model):
     show_otros = fields.Boolean(compute='_compute_attribute_visibility')
     
     codificacion = fields.Char(
-    string='Codificación',
-    compute='_compute_codificacion',
-    store=True,
-    help='Codificación única del producto basada en sus atributos'
+        string='Codificación',
+        compute='_compute_codificacion',
+        store=True,
+        help='Codificación única del producto basada en sus atributos'
     )
     
     codificacion_anterior = fields.Char(
@@ -84,7 +85,6 @@ class ProductTemplate(models.Model):
                 continue
             
             codes = []
-            
             sorted_properties = record.product_familia_id.property_ids.sorted(key=lambda p: p.sequence)
             
             for prop in sorted_properties:
@@ -128,7 +128,6 @@ class ProductTemplate(models.Model):
             record.show_talla = self.env['product.talla'].search_count([('familia_ids', 'in', familia_id)], limit=1) > 0
             record.show_otros = self.env['product.otros'].search_count([('familia_ids', 'in', familia_id)], limit=1) > 0
 
-
     @api.model_create_multi
     def create(self, vals_list):
         for vals in vals_list:
@@ -136,10 +135,20 @@ class ProductTemplate(models.Model):
                 uom = self.env['uom.uom'].browse(vals['uom_id'])
                 if uom.name == 'kg' and vals.get('weight', 0) == 0:
                     vals['weight'] = 1.0
-        return super(ProductTemplate, self).create(vals_list)
+        records = super(ProductTemplate, self).create(vals_list)
+        if not self.env.context.get('skip_name_sync'):
+            for rec in records:
+                if rec.codificacion and rec.name != rec.codificacion:
+                    rec.with_context(skip_name_sync=True).write({'name': rec.codificacion})
+        return records
 
     def write(self, vals):
         res = super(ProductTemplate, self).write(vals)
+        # Update name with codificacion whenever attributes change in standard write operations
+        if not self.env.context.get('skip_name_sync'):
+            for rec in self:
+                if rec.codificacion and rec.name != rec.codificacion:
+                    rec.with_context(skip_name_sync=True).write({'name': rec.codificacion})
         # Trigger recomputation on variants when template is updated
         self.product_variant_ids._compute_studio_fields()
         return res
@@ -148,7 +157,6 @@ class ProductTemplate(models.Model):
     def _onchange_uom_id_weight(self):
         if self.uom_id.name == 'kg' and self.weight == 0:
             self.weight = 1.0
-
 
     _CSV_FILENAME = 'product_codificacion.csv'
 
@@ -301,4 +309,8 @@ class ProductTemplate(models.Model):
 
                 values = self._prepare_codificacion_vals_from_row(row)
                 if values:
-                    templates.write(values)
+                    for template in templates:
+                        vals_to_write = dict(values)
+                        # Explicitly preserve current product name as codificacion_anterior ONLY during the cron transition
+                        vals_to_write['codificacion_anterior'] = template.name
+                        template.write(vals_to_write)
