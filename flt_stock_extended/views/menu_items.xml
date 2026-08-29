@@ -146,8 +146,9 @@
         <field name="model">product.color</field>
         <field name="arch" type="xml">
             <list string="Colores">
-                <field name="name"/>
                 <field name="codigo"/>
+                <field name="name"/>
+                <field name="color_family_id"/>
                 <field name="familia_ids" widget="many2many_tags"/>
             </list>
         </field>
@@ -161,11 +162,12 @@
                 <sheet>
                     <group>
                         <group>
-                            <field name="name"/>
+                            <field name="codigo"/>
                             <field name="familia_ids" widget="many2many_tags"/>
                         </group>
+                            <field name="name"/>
+                            <field name="color_family_id"/>
                         <group>
-                            <field name="codigo"/>
                         </group>
                     </group>
                 </sheet>
