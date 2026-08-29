@@ -24,14 +24,27 @@ class ProductProduct(models.Model):
 
     @api.model
     def _name_search(self, name='', domain=None, operator='ilike', limit=100, order=None):
-        domain = domain or []
-        if name:
-            name_domain = ['|', ('name', operator, name), ('codificacion_anterior', operator, name)]
-            domain = expression.AND([domain, name_domain])
-            name = ''
+        # 1. Run standard Odoo search
+        standard_query = super()._name_search(name=name, domain=domain, operator=operator, limit=limit, order=order)
         
-        # Call the super method with the updated domain
-        return super()._name_search(name, domain=domain, operator=operator, limit=limit, order=order)
+        if not name:
+            return standard_query
+        
+        # Get IDs
+        standard_ids = list(standard_query)
+        
+        # 2. Run custom search
+        custom_domain = [('codificacion_anterior', operator, name)]
+        if domain:
+            custom_domain = expression.AND([custom_domain, domain])
+            
+        custom_ids = list(self._search(custom_domain, limit=limit, order=order))
+        
+        # 3. Combine IDs
+        combined_ids = list(set(standard_ids + custom_ids))
+        
+        # 4. Return merged Query object
+        return self._search([('id', 'in', combined_ids)], limit=limit, order=order)
 
     @api.depends('product_template_variant_value_ids',
                  'product_template_variant_value_ids.attribute_id.name',
