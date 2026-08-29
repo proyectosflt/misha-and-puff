@@ -18,22 +18,25 @@
     <t t-set="rest_codes" t-value="[tmpl[p.property_field].codigo for p in props if p.property_field not in ('product_tenido_id', 'product_color_id') and tmpl[p.property_field] and tmpl[p.property_field].codigo]"/>
     <t t-set="sub_line" t-value="'-'.join(rest_codes)"/>
 
-^FO0,30^FB812,1,0,C^A0N,65,55^FD<t t-out="top_line"/>^FS
-^FO0,110^FB812,1,0,C^A0N,45,38^FD<t t-out="sub_line"/>^FS
-^FO0,170^FB812,1,0,C^A0N,40,35^FD<t t-out="tmpl.id"/>^FS
+^FO0,30^FB812,1,0,C^A0N,85,70^FD<t t-out="top_line"/>^FS
+^FO0,125^FB812,1,0,C^A0N,65,55^FD<t t-out="sub_line"/>^FS
+^FO0,200^FB812,1,0,C^A0N,55,45^FD<t t-out="tmpl.id"/>^FS
 </t>
 
 <!-- DYNAMIC BARCODE CENTERING MATH IN QWEB -->
 <t t-set="barcode_val" t-value="quant.product_id.barcode or package.name if quant else package.name"/>
 <t t-set="barcode_len" t-value="len(barcode_val) if barcode_val else 0"/>
-<t t-set="barcode_x" t-value="int(371 - (barcode_len * 11))"/>
+<t t-set="barcode_x" t-value="int(406 - (barcode_len * 5.5))"/>
 <t t-if="barcode_x &lt; 10">
     <t t-set="barcode_x" t-value="10"/>
 </t>
 
-^FO<t t-out="barcode_x"/>,230^BY2,3,90
-^BCN,90,Y,N,N
+^FO<t t-out="barcode_x"/>,270^BY1,3,90
+^BCN,90,N,N,N
 ^FD<t t-out="barcode_val"/>^FS
+
+<!-- INDEPENDENT LARGER BARCODE TEXT -->
+^FO0,370^FB812,1,0,C^A0N,40,35^FD<t t-out="barcode_val"/>^FS
 
 <!-- FOOTER VALUES -->
 ^FO10,430^FB250,1,0,C^A0N,30,28^FDCONOS^FS
