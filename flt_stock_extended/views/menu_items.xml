@@ -165,9 +165,9 @@
                             <field name="codigo"/>
                             <field name="familia_ids" widget="many2many_tags"/>
                         </group>
+                        <group>
                             <field name="name"/>
                             <field name="color_family_id"/>
-                        <group>
                         </group>
                     </group>
                 </sheet>
