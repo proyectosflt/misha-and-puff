@@ -76,29 +76,24 @@ class ProductTemplate(models.Model):
     )
 
     @api.model
-    def _name_search(self, name='', domain=None, operator='ilike', limit=100, order=None):
-        # 1. Run the standard Odoo search (handles name, default_code, barcode)
-        standard_query = super()._name_search(name=name, domain=domain, operator=operator, limit=limit, order=order)
-        
+    def name_search(self, name='', args=None, operator='ilike', limit=100):
+        args = list(args or [])
         if not name:
-            return standard_query
+            return super().name_search(name=name, args=args, operator=operator, limit=limit)
         
-        # In Odoo 18, _name_search returns a Query object. We convert it to a list of IDs.
-        standard_ids = list(standard_query)
-        
-        # 2. Build and run our custom search for 'codificacion_anterior'
-        custom_domain = [('codificacion_anterior', operator, name)]
-        if domain:
-            # Safely combine our custom domain with any existing view domains
-            custom_domain = expression.AND([custom_domain, domain])
-            
-        custom_ids = list(self._search(custom_domain, limit=limit, order=order))
-        
-        # 3. Combine both lists of IDs and remove duplicates
-        combined_ids = list(set(standard_ids + custom_ids))
-        
-        # 4. Return a new Query object so Odoo 18 UI gets exactly what it expects
-        return self._search([('id', 'in', combined_ids)], limit=limit, order=order)
+        domain = [
+            '|', '|', '|',
+            ('name', operator, name),
+            ('default_code', operator, name),
+            ('barcode', operator, name),
+            ('codificacion_anterior', operator, name),
+        ]
+
+        if args:
+            domain = ['&'] + args + domain
+
+        templates = self.search_fetch(domain, ['display_name'], limit=limit)
+        return [(tmpl.id, tmpl.display_name) for tmpl in templates]
 
     @api.depends('product_familia_id', 'product_familia_id.property_ids.sequence', 'product_familia_id.property_ids.property_field', 
                  'product_rubro_id', 'product_material_id', 'product_detalle_id', 

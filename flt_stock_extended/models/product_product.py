@@ -23,28 +23,25 @@ class ProductProduct(models.Model):
     default_code = fields.Char(compute='_compute_studio_fields', store=True)
 
     @api.model
-    def _name_search(self, name='', domain=None, operator='ilike', limit=100, order=None):
-        # 1. Run standard Odoo search
-        standard_query = super()._name_search(name=name, domain=domain, operator=operator, limit=limit, order=order)
-        
+    def name_search(self, name='', args=None, operator='ilike', limit=100):
+        args = list(args or [])
         if not name:
-            return standard_query
+            return super().name_search(name=name, args=args, operator=operator, limit=limit)
         
-        # Get IDs
-        standard_ids = list(standard_query)
-        
-        # 2. Run custom search
-        custom_domain = [('codificacion_anterior', operator, name)]
-        if domain:
-            custom_domain = expression.AND([custom_domain, domain])
-            
-        custom_ids = list(self._search(custom_domain, limit=limit, order=order))
-        
-        # 3. Combine IDs
-        combined_ids = list(set(standard_ids + custom_ids))
-        
-        # 4. Return merged Query object
-        return self._search([('id', 'in', combined_ids)], limit=limit, order=order)
+        # Search across name, default_code (Internal Reference), barcode, and codificacion_anterior
+        domain = [
+            '|', '|', '|',
+            ('name', operator, name),
+            ('default_code', operator, name),
+            ('barcode', operator, name),
+            ('codificacion_anterior', operator, name),
+        ]
+
+        if args:
+            domain = ['&'] + args + domain
+
+        products = self.search_fetch(domain, ['display_name'], limit=limit)
+        return [(product.id, product.display_name) for product in products]
 
     @api.depends('product_template_variant_value_ids',
                  'product_template_variant_value_ids.attribute_id.name',
