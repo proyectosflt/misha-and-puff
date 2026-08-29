@@ -94,8 +94,6 @@ class StockRepack(models.Model):
         self.write({'state': 'done'})
         self.message_post(
             body=Markup(f"<p>Se finalizó el empacado por conteo para <b>{self.product_id.display_name}</b> en <b>{self.location_id.display_name}</b>. El registro quedó en estado <b>Cerrado</b>.</p>"),
-            subtype_xmlid='mail.mt_comment',
-            content_subtype='html',
         )
 
 
@@ -191,8 +189,6 @@ class StockRepackLine(models.Model):
             })
             line.repack_id.message_post(
                 body=Markup(f"<p>Se aplicó la línea de empaque: <b>{package.name}</b> en <b>{line.location_id.display_name}</b>.</p>"),
-                subtype_xmlid='mail.mt_comment',
-                content_subtype='html',
             )
 
     def action_copy_line(self):

@@ -74,8 +74,6 @@ class StockPackagesDesglose(models.Model):
         self.write({'state': 'done'})
         self.message_post(
             body=Markup(f"<p>Se finalizó el desglose y reempacado. El registro quedó en estado <b>Cerrado</b> con <b>{self.remaining_conos}</b> conos restantes.</p>"),
-            subtype_xmlid='mail.mt_comment',
-            content_subtype='html',
         )
 
 
@@ -197,8 +195,6 @@ class StockPackagesDesgloseDest(models.Model):
             })
             line.desglose_id.message_post(
                 body=Markup(f"<p>Se aplicó la línea de destino: <b>{new_package.name}</b> en <b>{line.location_id.display_name}</b></p>."),
-                subtype_xmlid='mail.mt_comment',
-                content_subtype='html',
             )
 
     def action_copy_line(self):
