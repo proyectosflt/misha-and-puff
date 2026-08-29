@@ -28,6 +28,11 @@
                 <attribute name="sum">Total Demanda</attribute>
             </xpath>
 
+            <xpath expr="//field[@name='move_ids_without_package']/list/field[@name='product_uom_qty']" position="after">
+                <field name="tolerancia_compra" optional="show" column_invisible="not (tolerancia_compra)"/>
+                <field name="tolerancia_venta" optional="show" column_invisible="not (tolerancia_venta)"/>
+            </xpath>
+
             <xpath expr="//field[@name='move_ids_without_package']/list/field[@name='quantity']" position="before">
                 <field name="paquetes" optional="show" sum="Total Paquetes"/>
                 <field name="conos" optional="show" sum="Total Conos"/>

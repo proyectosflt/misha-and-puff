@@ -43,7 +43,7 @@ class StockPicking(models.Model):
         # Verificar si es una recepción (albarán de entrada) y si el usuario NO es Administrador
         if self.picking_type_id.code == 'incoming' and not is_purchase_admin:
             for move in self.move_ids:
-                tolerancia = move.purchase_line_id.tolerancia or 0.0
+                tolerancia = move.tolerancia_compra or 0.0
                 max_allowed = move.product_uom_qty + tolerancia
                 tolerancia_date = move.product_id.product_tmpl_id.fecha_minima_tolerancia_compra
                 purchase_date_as_date = fields.Date.to_date(move.purchase_line_id.order_id.date_approve)
@@ -70,7 +70,7 @@ class StockPicking(models.Model):
         # Verificar si es una entrega (albarán de salida) y si el usuario NO es Administrador de Ventas
         if self.picking_type_id.code == 'outgoing' and not is_sales_admin:
             for move in self.move_ids:
-                tolerancia = move.sale_line_id.tolerancia or 0.0
+                tolerancia = move.tolerancia_venta or 0.0
                 max_allowed = move.product_uom_qty + tolerancia
                 tolerancia_date = move.product_id.product_tmpl_id.fecha_minima_tolerancia_venta
                 sale_date_as_date = fields.Date.to_date(move.sale_line_id.order_id.date_order)

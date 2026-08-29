@@ -24,6 +24,9 @@ class StockMove(models.Model):
     paquetes = fields.Integer(string="Paquetes", compute="_compute_detailed_metrics", store=True)
     conos = fields.Integer(string="Conos", compute="_compute_detailed_metrics", store=True)
     cantidad_bruto = fields.Float(string="Cantidad bruto", compute="_compute_detailed_metrics", store=True)
+    
+    tolerancia_compra = fields.Float(related='purchase_line_id.tolerancia', string="Tolerancia", digits='Stock Weight', default=0.0)
+    tolerancia_venta = fields.Float(related='sale_line_id.tolerancia', string="Tolerancia", digits='Stock Weight', default=0.0)
 
     @api.depends('picking_id', 'picking_id.move_ids_without_package')
     def _compute_item_number(self):
