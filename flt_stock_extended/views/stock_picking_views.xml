@@ -29,8 +29,8 @@
             </xpath>
 
             <xpath expr="//field[@name='move_ids_without_package']/list/field[@name='product_uom_qty']" position="after">
-                <field name="tolerancia_compra" optional="show"/>
-                <field name="tolerancia_venta" optional="show"/>
+                <field name="tolerancia_compra" optional="show" column_invisible="not tolerancia_compra"/>
+                <field name="tolerancia_venta" optional="show" column_invisible="not tolerancia_venta"/>
             </xpath>
 
             <xpath expr="//field[@name='move_ids_without_package']/list/field[@name='quantity']" position="before">
