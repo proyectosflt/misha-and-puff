@@ -83,6 +83,15 @@ class FltPlanificadorLine(models.Model):
             'target': 'current',
         }
 
+    @staticmethod
+    def _pri_prod_sort_value(pri_prod):
+        if pri_prod in (None, ''):
+            return (1, 0.0)
+        try:
+            return (0, float(pri_prod))
+        except (TypeError, ValueError):
+            return (1, 0.0)
+
     def action_procesar(self):
         lineas_pendientes = self.filtered(lambda l: l.state == 'pendiente')
         if not lineas_pendientes:
@@ -97,11 +106,16 @@ class FltPlanificadorLine(models.Model):
 
         for key, lineas in grupos.items():
             fecha, temporada, programa, partner_id = key
-            
+
+            lineas_ordenadas = sorted(
+                lineas,
+                key=lambda linea: self._pri_prod_sort_value(linea.pri_prod)
+            )
+
             # Obtener el número más bajo (mayor prioridad) del grupo
             min_pri_tp = min([p for p in lineas.mapped('pri_tp') if p] or [0])
             min_pri_cp = min([p for p in lineas.mapped('pri_cp') if p] or [0])
-            
+
             so_vals = {
                 'partner_id': partner_id,
                 'commitment_date': fecha,
@@ -111,8 +125,8 @@ class FltPlanificadorLine(models.Model):
                 'pri_cp': min_pri_cp,
                 'order_line': [],
             }
-            
-            for linea in lineas:
+
+            for linea in lineas_ordenadas:
                 so_vals['order_line'].append((0, 0, {
                     'product_id': linea.product_id.id,
                     'product_uom_qty': linea.cantidad_requerida,

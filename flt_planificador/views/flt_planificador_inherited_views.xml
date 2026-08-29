@@ -9,7 +9,7 @@
         <field name="arch" type="xml">
             <!-- Modificamos el orden por defecto de la lista -->
             <xpath expr="//list" position="attributes">
-                <attribute name="default_order">commitment_date asc, pri_tp asc, pri_cp asc</attribute>
+                <attribute name="default_order">commitment_date asc, CASE WHEN (pri_tp IS NULL OR pri_tp = 0) THEN 1 ELSE 0 END asc, pri_tp asc, CASE WHEN (pri_cp IS NULL OR pri_cp = 0) THEN 1 ELSE 0 END asc, pri_cp asc</attribute>
             </xpath>
             <!-- Añadimos las columnas visuales -->
             <field name="partner_id" position="after">
@@ -29,7 +29,7 @@
         <field name="arch" type="xml">
             <!-- Modificamos el orden por defecto de la lista -->
             <xpath expr="//list" position="attributes">
-                <attribute name="default_order">scheduled_date asc, pri_tp asc, pri_cp asc</attribute>
+                <attribute name="default_order">scheduled_date asc, CASE WHEN (pri_tp IS NULL OR pri_tp = 0) THEN 1 ELSE 0 END asc, pri_tp asc, CASE WHEN (pri_cp IS NULL OR pri_cp = 0) THEN 1 ELSE 0 END asc, pri_cp asc</attribute>
             </xpath>
             <!-- Añadimos las columnas visuales -->
             <field name="partner_id" position="after">
