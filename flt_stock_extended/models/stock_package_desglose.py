@@ -5,7 +5,7 @@ from odoo.exceptions import UserError
 class StockPackagesDesglose(models.Model):
     _name = 'stock.packages.desglose'
     _description = 'Desglose y reempacado de bolsas'
-    _inherit = ['mail.thread']
+    _inherit = ['mail.thread', 'mail.activity.mixin']
 
     state = fields.Selection([
         ('draft', 'Abierto'),

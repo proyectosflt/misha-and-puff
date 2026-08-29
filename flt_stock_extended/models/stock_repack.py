@@ -5,7 +5,7 @@ from odoo.exceptions import UserError
 class StockRepack(models.Model):
     _name = 'stock.repack'
     _description = 'Empacado por conteo con corrección de inventario'
-    _inherit = ['mail.thread']
+    _inherit = ['mail.thread', 'mail.activity.mixin']
 
     state = fields.Selection([
         ('draft', 'Abierto'),
