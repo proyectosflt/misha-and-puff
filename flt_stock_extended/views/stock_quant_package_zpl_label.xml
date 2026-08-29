@@ -23,19 +23,19 @@
 ^FO0,200^FB812,1,0,C^A0N,55,45^FD<t t-out="tmpl.id"/>^FS
 </t>
 
-<!-- DYNAMIC BARCODE CENTERING MATH IN QWEB -->
+<!-- EXACT CODE 128 CENTERING MATH FOR ^BY1 -->
 <t t-set="barcode_val" t-value="quant.product_id.barcode or package.name if quant else package.name"/>
 <t t-set="barcode_len" t-value="len(barcode_val) if barcode_val else 0"/>
-<t t-set="barcode_x" t-value="int(406 - (barcode_len * 9))"/>
+<t t-set="barcode_x" t-value="int(388 - (barcode_len * 5.5))"/>
 <t t-if="barcode_x &lt; 10">
     <t t-set="barcode_x" t-value="10"/>
 </t>
 
-^FO<t t-out="barcode_x"/>,260^BY2,3,90
+^FO<t t-out="barcode_x"/>,260^BY1,3,90
 ^BCN,90,N,N,N
 ^FD<t t-out="barcode_val"/>^FS
 
-<!-- ADJUSTED BARCODE TEXT SIZE -->
+<!-- RETAINED PRECISE TEXT SIZE -->
 ^FO0,360^FB812,1,0,C^A0N,35,30^FD<t t-out="barcode_val"/>^FS
 
 <!-- SHIFTED FOOTER VALUES DOWN -->
