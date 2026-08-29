@@ -72,7 +72,7 @@
                                     <!-- Readonly Created Package Link -->
                                     <field name="package_id" readonly="1" widget="many2one"/>
                                     <field name="is_applied" column_invisible="True"/>
-
+                                    <button name="action_copy_line" type="object" string="Copiar" icon="fa-copy" class="btn-secondary"/>
                                     <!-- Action Buttons -->
                                     <button name="action_apply_line" string="Aplicar" type="object" icon="fa-check" invisible="is_applied"/>
                                     <button name="action_print_label" string="Imprimir ZPL" type="object" icon="fa-print" invisible="not is_applied"/>

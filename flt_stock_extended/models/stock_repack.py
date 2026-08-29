@@ -183,6 +183,14 @@ class StockRepackLine(models.Model):
                 'is_applied': True,
             })
 
+    def action_copy_line(self):
+        self.ensure_one()
+        return self.copy(default={
+            'peso_bruto': 0.0,
+            'package_id': False,
+            'is_applied': False,
+        })
+
     def action_print_label(self):
         self.ensure_one()
         if not self.package_id:
