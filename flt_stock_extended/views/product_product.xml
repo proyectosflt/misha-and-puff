@@ -39,7 +39,7 @@
         <field name="arch" type="xml">
             <xpath expr="//search/field[@name='name']" position="after">
                 <field name="codificacion_anterior"/>
-                <field name="product_template_id" string="ID"/>
+                <field name="product_tmpl_id" string="ID"/>
             </xpath>
         </field>
     </record>
