@@ -7,6 +7,7 @@
         <field name="arch" type="xml">
             <xpath expr="//search/field[@name='name']" position="after">
                 <field name="codificacion_anterior"/>
+                <field name="id" string="ID"/>
             </xpath>
         </field>
     </record>
