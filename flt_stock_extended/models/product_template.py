@@ -84,18 +84,21 @@ class ProductTemplate(models.Model):
             if not record.product_familia_id or not record.product_familia_id.property_ids:
                 record.codificacion = ''
                 continue
-            
+
             codes = []
             sorted_properties = record.product_familia_id.property_ids.sorted(key=lambda p: p.sequence)
-            
+
             for prop in sorted_properties:
                 field_value = record[prop.property_field]
                 if field_value and hasattr(field_value, 'codigo'):
-                    codes.append(field_value.codigo or '')
-                else:
-                    codes.append('')
-            
-            record.codificacion = '-'.join(codes)
+                    code = (field_value.codigo or '').strip()
+                    if code:
+                        codes.append(code)
+
+            if record.id:
+                codes.append(str(record.id))
+
+            record.codificacion = '-'.join(codes) if codes else ''
 
     @api.depends('product_familia_id')
     def _compute_attribute_visibility(self):

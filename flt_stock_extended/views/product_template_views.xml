@@ -36,6 +36,7 @@
                 <field name="product_medida_id" invisible="not show_medida"/>
                 <field name="product_texto_id" invisible="not show_texto"/>
                 <field name="product_talla_id" invisible="not show_talla"/>
+                <field name="id" readonly="1"/>
             </xpath>
             <xpath expr="//group[@name='group_standard_price']" position="inside">
                 <field name = "codificacion_anterior"/>  
