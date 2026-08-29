@@ -26,26 +26,26 @@
 <!-- DYNAMIC BARCODE CENTERING MATH IN QWEB -->
 <t t-set="barcode_val" t-value="quant.product_id.barcode or package.name if quant else package.name"/>
 <t t-set="barcode_len" t-value="len(barcode_val) if barcode_val else 0"/>
-<t t-set="barcode_x" t-value="int(406 - (barcode_len * 5.5))"/>
+<t t-set="barcode_x" t-value="int(406 - (barcode_len * 9))"/>
 <t t-if="barcode_x &lt; 10">
     <t t-set="barcode_x" t-value="10"/>
 </t>
 
-^FO<t t-out="barcode_x"/>,270^BY1,3,90
+^FO<t t-out="barcode_x"/>,260^BY2,3,90
 ^BCN,90,N,N,N
 ^FD<t t-out="barcode_val"/>^FS
 
-<!-- INDEPENDENT LARGER BARCODE TEXT -->
-^FO0,370^FB812,1,0,C^A0N,40,35^FD<t t-out="barcode_val"/>^FS
+<!-- ADJUSTED BARCODE TEXT SIZE -->
+^FO0,360^FB812,1,0,C^A0N,35,30^FD<t t-out="barcode_val"/>^FS
 
-<!-- FOOTER VALUES -->
-^FO10,430^FB250,1,0,C^A0N,30,28^FDCONOS^FS
-^FO280,430^FB250,1,0,C^A0N,30,28^FDKGB^FS
-^FO550,430^FB250,1,0,C^A0N,30,28^FDKGN^FS
+<!-- SHIFTED FOOTER VALUES DOWN -->
+^FO10,470^FB250,1,0,C^A0N,30,28^FDCONOS^FS
+^FO280,470^FB250,1,0,C^A0N,30,28^FDKGB^FS
+^FO550,470^FB250,1,0,C^A0N,30,28^FDKGN^FS
 
-^FO10,475^FB250,1,0,C^A0N,42,38^FD<t t-out="package.cantidad_conos or ''"/>^FS
-^FO280,475^FB250,1,0,C^A0N,42,38^FD<t t-out="package.peso_bruto or ''"/>^FS
-^FO550,475^FB250,1,0,C^A0N,42,38^FD<t t-out="package.peso_neto or ''"/>^FS
+^FO10,520^FB250,1,0,C^A0N,42,38^FD<t t-out="package.cantidad_conos or ''"/>^FS
+^FO280,520^FB250,1,0,C^A0N,42,38^FD<t t-out="package.peso_bruto or ''"/>^FS
+^FO550,520^FB250,1,0,C^A0N,42,38^FD<t t-out="package.peso_neto or ''"/>^FS
 ^XZ
                 </t>
             </xpath>
