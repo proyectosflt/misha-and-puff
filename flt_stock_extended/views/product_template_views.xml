@@ -32,6 +32,7 @@
                 <field name="product_model_id" invisible="not show_model"/>
                 <field name="product_tenido_id" invisible="not show_tenido"/>
                 <field name="product_color_id" invisible="not show_color"/>
+                <field name="color_family_id" invisible="not show_color"/>
                 <field name="product_medida_id" invisible="not show_medida"/>
                 <field name="product_texto_id" invisible="not show_texto"/>
                 <field name="product_talla_id" invisible="not show_talla"/>
