@@ -22,11 +22,16 @@ class ProductProduct(models.Model):
     default_code = fields.Char(compute='_compute_studio_fields', store=True)
 
     @api.model
-    def _rec_names_search(self, name, list_templates=False, limit=100, domain=None):
-        # Since it is stored on product.product, search it directly
+    def _name_search(self, name='', domain=None, operator='ilike', limit=100, order=None):
+        domain = list(domain or [])
         if name:
-            domain = ['|', ('codificacion_anterior', 'ilike', name)] + (domain or [])
-        return super()._rec_names_search(name, list_templates=list_templates, limit=limit, domain=domain)
+            domain += [
+                '|', '|',
+                ('name', operator, name),
+                ('default_code', operator, name),
+                ('codificacion_anterior', operator, name),
+            ]
+        return super()._name_search(name=name, domain=domain, operator=operator, limit=limit, order=order)
 
     @api.depends('product_template_variant_value_ids',
                  'product_template_variant_value_ids.attribute_id.name',
