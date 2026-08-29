@@ -116,10 +116,10 @@ class StockPackagesDesgloseDest(models.Model):
     cono_id = fields.Many2one('tipo.cono', string="Tipo de cono")
     cantidad_conos = fields.Integer(string="Conos")
     peso_bruto = fields.Float(string="Peso bruto", digits='Stock Weight')
-    tara_bolsa = fields.Float(compute='_compute_tara_bolsa', readonly=False, digits='Stock Weight')
-    tara_cono = fields.Float(compute='_compute_tara_cono', readonly=False, digits='Stock Weight')
-    tara_cono_total = fields.Float(compute='_compute_tara_cono_total', digits='Stock Weight')
-    peso_neto = fields.Float(compute='_compute_peso_neto', digits='Stock Weight')
+    tara_bolsa = fields.Float(compute='_compute_tara_bolsa', readonly=False, store=True, digits='Stock Weight')
+    tara_cono = fields.Float(compute='_compute_tara_cono', readonly=False, store=True, digits='Stock Weight')
+    tara_cono_total = fields.Float(compute='_compute_tara_cono_total', store=True, digits='Stock Weight')
+    peso_neto = fields.Float(compute='_compute_peso_neto', store=True, digits='Stock Weight')
     
     package_id = fields.Many2one('stock.quant.package', string="Paquete Creado", readonly=True, copy=False)
     is_applied = fields.Boolean(string="Aplicado", default=False, copy=False)
@@ -195,6 +195,8 @@ class StockPackagesDesgloseDest(models.Model):
             'peso_bruto': 0.0,
             'package_id': False,
             'is_applied': False,
+            'tara_bolsa': self.tara_bolsa,
+            'tara_cono': self.tara_cono,
         })
 
     def action_print_label(self):
