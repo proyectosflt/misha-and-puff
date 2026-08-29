@@ -5,11 +5,12 @@ from odoo.exceptions import UserError
 class StockRepack(models.Model):
     _name = 'stock.repack'
     _description = 'Empacado por conteo con corrección de inventario'
+    _inherit = ['mail.thread']
 
     state = fields.Selection([
         ('draft', 'Abierto'),
         ('done', 'Cerrado')
-    ], string="Estado", default='draft', required=True, copy=False)
+    ], string="Estado", default='draft', required=True, copy=False, tracking=True)
 
     product_id = fields.Many2one('product.product', required=True, string="Producto")
     location_id = fields.Many2one('stock.location', required=True,
@@ -90,6 +91,10 @@ class StockRepack(models.Model):
             quants_to_apply.action_apply_inventory()
 
         self.write({'state': 'done'})
+        self.message_post(
+            body=f"<p>Se finalizó el empacado por conteo para <b>{self.product_id.display_name}</b> en <b>{self.location_id.display_name}</b>. El registro quedó en estado <b>Cerrado</b>.</p>",
+            subtype_xmlid='mail.mt_comment'
+        )
 
 
 class StockRepackLine(models.Model):
@@ -182,6 +187,10 @@ class StockRepackLine(models.Model):
                 'package_id': package.id,
                 'is_applied': True,
             })
+            line.repack_id.message_post(
+                body=f"<p>Se aplicó la línea de empaque: <b>{package.name}</b> en <b>{line.location_id.display_name}</b>.</p>",
+                subtype_xmlid='mail.mt_comment'
+            )
 
     def action_copy_line(self):
         self.ensure_one()
