@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from markupsafe import Markup
 from odoo import models, fields, api
 from odoo.exceptions import UserError
 
@@ -72,8 +73,9 @@ class StockPackagesDesglose(models.Model):
 
         self.write({'state': 'done'})
         self.message_post(
-            body=f"<p>Se finalizó el desglose y reempacado. El registro quedó en estado <b>Cerrado</b> con <b>{self.remaining_conos}</b> conos restantes.</p>",
-            subtype_xmlid='mail.mt_comment'
+            body=Markup(f"<p>Se finalizó el desglose y reempacado. El registro quedó en estado <b>Cerrado</b> con <b>{self.remaining_conos}</b> conos restantes.</p>"),
+            subtype_xmlid='mail.mt_comment',
+            content_subtype='html',
         )
 
 
@@ -194,8 +196,9 @@ class StockPackagesDesgloseDest(models.Model):
                 'is_applied': True,
             })
             line.desglose_id.message_post(
-                body=f"<p>Se aplicó la línea de destino: <b>{new_package.name}</b> en <b>{line.location_id.display_name}</b> con <b>{line.cantidad_conos or 0}</b> conos y <b>{line.peso_neto or 0.0}</b> kg netos.</p>",
-                subtype_xmlid='mail.mt_comment'
+                body=Markup(f"<p>Se aplicó la línea de destino: <b>{new_package.name}</b> en <b>{line.location_id.display_name}</b></p>."),
+                subtype_xmlid='mail.mt_comment',
+                content_subtype='html',
             )
 
     def action_copy_line(self):
