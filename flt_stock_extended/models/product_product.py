@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from odoo import models, fields, api
 from odoo.exceptions import ValidationError
+from odoo.osv import expression
 
 
 class ProductProduct(models.Model):
@@ -23,15 +24,14 @@ class ProductProduct(models.Model):
 
     @api.model
     def _name_search(self, name='', domain=None, operator='ilike', limit=100, order=None):
-        domain = list(domain or [])
+        domain = domain or []
         if name:
-            domain += [
-                '|', '|',
-                ('name', operator, name),
-                ('default_code', operator, name),
-                ('codificacion_anterior', operator, name),
-            ]
-        return super()._name_search(name=name, domain=domain, operator=operator, limit=limit, order=order)
+            name_domain = ['|', ('name', operator, name), ('codificacion_anterior', operator, name)]
+            domain = expression.AND([domain, name_domain])
+            name = ''
+        
+        # Call the super method with the updated domain
+        return super()._name_search(name, domain=domain, operator=operator, limit=limit, order=order)
 
     @api.depends('product_template_variant_value_ids',
                  'product_template_variant_value_ids.attribute_id.name',

@@ -4,6 +4,7 @@ import csv
 import logging
 from odoo import models, fields, api
 from odoo.modules.module import get_module_resource
+from odoo.osv import expression
 
 _logger = logging.getLogger(__name__)
 
@@ -76,15 +77,14 @@ class ProductTemplate(models.Model):
 
     @api.model
     def _name_search(self, name='', domain=None, operator='ilike', limit=100, order=None):
-        domain = list(domain or [])
+        domain = domain or []
         if name:
-            domain += [
-                '|', '|',
-                ('name', operator, name),
-                ('default_code', operator, name),
-                ('codificacion_anterior', operator, name),
-            ]
-        return super()._name_search(name=name, domain=domain, operator=operator, limit=limit, order=order)
+            name_domain = ['|', ('name', operator, name), ('codificacion_anterior', operator, name)]
+            domain = expression.AND([domain, name_domain])
+            name = ''
+        
+        # Call the super method with the updated domain
+        return super()._name_search(name, domain=domain, operator=operator, limit=limit, order=order)
 
     @api.depends('product_familia_id', 'product_familia_id.property_ids.sequence', 'product_familia_id.property_ids.property_field', 
                  'product_rubro_id', 'product_material_id', 'product_detalle_id', 
