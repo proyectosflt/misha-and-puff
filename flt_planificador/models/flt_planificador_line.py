@@ -3,6 +3,9 @@ from odoo import models, fields
 class FltPlanificadorLine(models.Model):
     _name = 'flt.planificador.line'
     _description = 'Línea de Planificación'
+    _order = 'planificador_id, sequence, id'
+
+    sequence = fields.Integer(string='Secuencia', default=10)
 
     planificador_id = fields.Many2one(
         'flt.planificador',
@@ -41,6 +44,44 @@ class FltPlanificadorLine(models.Model):
     # Cambiar de Char a Integer
     pri_tp = fields.Integer(string='Pri T/P')
     pri_cp = fields.Integer(string='Pri C/P')
+
+    def action_copy_line(self):
+        self.ensure_one()
+
+        pri_prod_value = self.pri_prod
+        try:
+            if pri_prod_value is not None and pri_prod_value != '':
+                numeric_value = float(pri_prod_value)
+                pri_prod_value = str(int(numeric_value + 1) if numeric_value.is_integer() else numeric_value + 1)
+        except (TypeError, ValueError):
+            pri_prod_value = self.pri_prod
+
+        current_sequence = self.sequence or 0
+        following_lines = self.search([
+            ('planificador_id', '=', self.planificador_id.id),
+            ('id', '!=', self.id),
+            ('sequence', '>', current_sequence),
+        ], order='sequence, id')
+
+        for line in following_lines:
+            line.sequence += 1
+
+        new_line = self.copy(default={
+            'planificador_id': self.planificador_id.id,
+            'sequence': current_sequence + 1,
+            'state': 'pendiente',
+            'sale_order_id': False,
+            'picking_ids': [(5, 0, 0)],
+            'pri_prod': pri_prod_value,
+        })
+
+        return {
+            'type': 'ir.actions.act_window',
+            'res_model': 'flt.planificador.line',
+            'view_mode': 'list,form',
+            'res_id': new_line.id,
+            'target': 'current',
+        }
 
     def action_procesar(self):
         lineas_pendientes = self.filtered(lambda l: l.state == 'pendiente')

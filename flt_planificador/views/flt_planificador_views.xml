@@ -54,6 +54,7 @@
                    widget="badge" 
                    decoration-warning="state == 'pendiente'" 
                    decoration-success="state == 'procesada'"/>
+            <button name="action_copy_line" type="object" string="Copiar" icon="fa-copy" class="btn-secondary"/>
         </list>
     </field>
 </record>
