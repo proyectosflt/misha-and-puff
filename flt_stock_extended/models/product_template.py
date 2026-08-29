@@ -74,6 +74,14 @@ class ProductTemplate(models.Model):
         help='Codificación anterior del producto, si existía'
     )
 
+    @api.model
+    def name_search(self, name='', args=None, operator='ilike', limit=100):
+        args = list(args or [])
+        if name:
+            args += ['|', '|', ('name', operator, name), ('default_code', operator, name), ('codificacion_anterior', operator, name)]
+            return self.search(args, limit=limit).name_get()
+        return super(ProductTemplate, self).name_search(name=name, args=args, operator=operator, limit=limit)
+
     @api.depends('product_familia_id', 'product_familia_id.property_ids.sequence', 'product_familia_id.property_ids.property_field', 
                  'product_rubro_id', 'product_material_id', 'product_detalle_id', 
                  'product_titulo_id', 'product_type_id', 'product_model_id', 

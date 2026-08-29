@@ -8,12 +8,26 @@ class ProductProduct(models.Model):
 
     product_type_id = fields.Many2one('product.type', string='Clasificación de producto')
     weight = fields.Float(default=1.0)
+    codificacion_anterior = fields.Char(
+        related='product_tmpl_id.codificacion_anterior',
+        string='Codificación Anterior',
+        store=True,
+        readonly=True,
+    )
 
     x_studio_title = fields.Char(string='Title', compute='_compute_studio_fields', store=True)
     x_studio_color_code = fields.Char(string='Color Code', compute='_compute_studio_fields', store=True)
     x_studio_color_name = fields.Char(string='Color Name', compute='_compute_studio_fields', store=True)
     color_family_id = fields.Many2one('color.family', string='Familia de Color', compute='_compute_studio_fields', store=True)
     default_code = fields.Char(compute='_compute_studio_fields', store=True)
+
+    @api.model
+    def name_search(self, name='', args=None, operator='ilike', limit=100):
+        args = list(args or [])
+        if name:
+            args += ['|', '|', ('name', operator, name), ('default_code', operator, name), ('codificacion_anterior', operator, name)]
+            return self.search(args, limit=limit).name_get()
+        return super(ProductProduct, self).name_search(name=name, args=args, operator=operator, limit=limit)
 
     @api.depends('product_template_variant_value_ids',
                  'product_template_variant_value_ids.attribute_id.name',
