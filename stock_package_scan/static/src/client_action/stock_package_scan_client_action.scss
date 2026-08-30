@@ -1,0 +1,26 @@
+// Fallback plain colors are provided alongside Odoo's CSS variables so this
+// still looks reasonable even if a variable name below has moved in your
+// version's theme — swap in your own design tokens as needed.
+
+.o_package_scan_action {
+    background-color: var(--o-view-background-color, #fff);
+
+    .o_package_scan_input {
+        font-size: 1.1rem;
+    }
+
+    .o_package_scan_line {
+        cursor: pointer;
+        background-color: var(--o-webclient-background-color, #f8f9fa);
+        transition: background-color 0.15s ease-in-out;
+
+        &:hover {
+            background-color: var(--o-list-hover-bg, #eeeeee);
+        }
+
+        &.o_package_scan_line_done {
+            background-color: rgba(40, 167, 69, 0.08);
+            border-color: rgba(40, 167, 69, 0.35) !important;
+        }
+    }
+}

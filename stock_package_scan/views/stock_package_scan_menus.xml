@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- This is the action the OWL client action registers itself under
+         (see static/src/client_action/stock_package_scan_client_action.js).
+         Opening it with no active_id in context creates a brand new
+         stock.package.scan record on load. -->
+    <record id="action_stock_package_scan_client" model="ir.actions.client">
+        <field name="name">Package Scan</field>
+        <field name="tag">stock_package_scan_client_action</field>
+        <field name="target">main</field>
+    </record>
+
+    <menu id="menu_stock_package_scan_root"
+          name="Package Scan"
+          sequence="60"/>
+    <!-- Add web_icon="stock_package_scan,static/description/icon.png" above
+         once you drop a 140x130 icon.png in that folder, to get a custom
+         tile in the Apps switcher. -->
+
+    <menu id="menu_stock_package_scan_new"
+          name="Scan Packages"
+          parent="menu_stock_package_scan_root"
+          action="action_stock_package_scan_client"
+          sequence="10"/>
+
+    <menu id="menu_stock_package_scan_history"
+          name="Scan History"
+          parent="menu_stock_package_scan_root"
+          action="action_stock_package_scan"
+          sequence="20"/>
+
+</odoo>
