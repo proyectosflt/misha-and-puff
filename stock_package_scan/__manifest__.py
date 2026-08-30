@@ -16,7 +16,7 @@ one screen, instant visual feedback per line.
     'license': 'LGPL-3',
     'depends': [
         'stock',
-        'barcode',
+        'stock_barcode',
     ],
     'data': [
         'security/ir.model.access.csv',
