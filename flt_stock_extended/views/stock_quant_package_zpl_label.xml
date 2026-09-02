@@ -26,12 +26,12 @@
 <!-- RECALCULATED CODE 128 CENTERING FOR 1218 WIDTH -->
 <t t-set="barcode_val" t-value="quant.product_id.barcode or package.name if quant else package.name"/>
 <t t-set="barcode_len" t-value="len(barcode_val) if barcode_val else 0"/>
-<t t-set="barcode_x" t-value="int(591 - (barcode_len * 5.5))"/>
+<t t-set="barcode_x" t-value="int(591 - (barcode_len * 16.5))"/>
 <t t-if="barcode_x &lt; 10">
     <t t-set="barcode_x" t-value="10"/>
 </t>
 
-^FO<t t-out="barcode_x"/>,350^BY1,3,120
+^FO<t t-out="barcode_x"/>,350^BY3,3,120
 ^BCN,120,N,N,N
 ^FD<t t-out="barcode_val"/>^FS
 
