@@ -87,6 +87,7 @@ class ProductTemplate(models.Model):
             ('default_code', operator, name),
             ('barcode', operator, name),
             ('codificacion_anterior', operator, name),
+            ('id', operator, name)
         ]
 
         if args:
@@ -116,8 +117,8 @@ class ProductTemplate(models.Model):
                     if code:
                         codes.append(code)
 
-            if record.id:
-                codes.append(str(record.id))
+            # if record.id:
+            #     codes.append(str(record.id))
 
             record.codificacion = '-'.join(codes) if codes else ''
 

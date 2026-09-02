@@ -5,8 +5,8 @@
             <xpath expr="//t[@t-translation='off']" position="replace">
                 <t t-translation="off">
 ^XA
-^PW812
-^LL609
+^PW1218
+^LL812
 <t t-set="quant" t-value="package.quant_ids and package.quant_ids[0]"/>
 <t t-set="tmpl" t-value="quant.product_tmpl_id if quant else False"/>
 <t t-if="tmpl">
@@ -18,34 +18,33 @@
     <t t-set="rest_codes" t-value="[tmpl[p.property_field].codigo for p in props if p.property_field not in ('product_tenido_id', 'product_color_id') and tmpl[p.property_field] and tmpl[p.property_field].codigo]"/>
     <t t-set="sub_line" t-value="'-'.join(rest_codes)"/>
 
-^FO0,30^FB812,1,0,C^A0N,85,70^FD<t t-out="top_line"/>^FS
-^FO0,125^FB812,1,0,C^A0N,65,55^FD<t t-out="sub_line"/>^FS
-^FO0,200^FB812,1,0,C^A0N,55,45^FD<t t-out="tmpl.id"/>^FS
+^FO0,60^FB1218,1,0,C^A0N,85,70^FD<t t-out="top_line"/>^FS
+^FO0,160^FB1218,1,0,C^A0N,65,55^FD<t t-out="sub_line"/>^FS
+^FO0,250^FB1218,1,0,C^A0N,55,45^FD<t t-out="tmpl.id"/>^FS
 </t>
 
-<!-- EXACT CODE 128 CENTERING MATH FOR ^BY1 -->
+<!-- RECALCULATED CODE 128 CENTERING FOR 1218 WIDTH -->
 <t t-set="barcode_val" t-value="quant.product_id.barcode or package.name if quant else package.name"/>
 <t t-set="barcode_len" t-value="len(barcode_val) if barcode_val else 0"/>
-<t t-set="barcode_x" t-value="int(388 - (barcode_len * 5.5))"/>
+<t t-set="barcode_x" t-value="int(591 - (barcode_len * 5.5))"/>
 <t t-if="barcode_x &lt; 10">
     <t t-set="barcode_x" t-value="10"/>
 </t>
 
-^FO<t t-out="barcode_x"/>,260^BY1,3,90
-^BCN,90,N,N,N
+^FO<t t-out="barcode_x"/>,350^BY1,3,120
+^BCN,120,N,N,N
 ^FD<t t-out="barcode_val"/>^FS
 
-<!-- RETAINED PRECISE TEXT SIZE -->
-^FO0,360^FB812,1,0,C^A0N,35,30^FD<t t-out="barcode_val"/>^FS
+^FO0,490^FB1218,1,0,C^A0N,40,35^FD<t t-out="barcode_val"/>^FS
 
-<!-- SHIFTED FOOTER VALUES DOWN -->
-^FO10,470^FB250,1,0,C^A0N,30,28^FDCONOS^FS
-^FO280,470^FB250,1,0,C^A0N,30,28^FDKGB^FS
-^FO550,470^FB250,1,0,C^A0N,30,28^FDKGN^FS
+<!-- FOOTER VALUES SPREAD ACROSS 6-INCH WIDTH -->
+^FO40,650^FB350,1,0,C^A0N,35,30^FDCONOS^FS
+^FO434,650^FB350,1,0,C^A0N,35,30^FDKGB^FS
+^FO828,650^FB350,1,0,C^A0N,35,30^FDKGN^FS
 
-^FO10,520^FB250,1,0,C^A0N,42,38^FD<t t-out="package.cantidad_conos or ''"/>^FS
-^FO280,520^FB250,1,0,C^A0N,42,38^FD<t t-out="package.peso_bruto or ''"/>^FS
-^FO550,520^FB250,1,0,C^A0N,42,38^FD<t t-out="package.peso_neto or ''"/>^FS
+^FO40,710^FB350,1,0,C^A0N,45,40^FD<t t-out="package.cantidad_conos or ''"/>^FS
+^FO434,710^FB350,1,0,C^A0N,45,40^FD<t t-out="package.peso_bruto or ''"/>^FS
+^FO828,710^FB350,1,0,C^A0N,45,40^FD<t t-out="package.peso_neto or ''"/>^FS
 ^XZ
                 </t>
             </xpath>

@@ -30,11 +30,12 @@ class ProductProduct(models.Model):
         
         # Search across name, default_code (Internal Reference), barcode, and codificacion_anterior
         domain = [
-            '|', '|', '|',
+            '|', '|', '|', '|',
             ('name', operator, name),
             ('default_code', operator, name),
             ('barcode', operator, name),
             ('codificacion_anterior', operator, name),
+            ('product_tmpl_id', operator, name),
         ]
 
         if args:
