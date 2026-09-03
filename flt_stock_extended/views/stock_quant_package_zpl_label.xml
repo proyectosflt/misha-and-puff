@@ -5,8 +5,8 @@
             <xpath expr="//t[@t-translation='off']" position="replace">
                 <t t-translation="off">
 ^XA
-^PW1218
-^LL812
+^PW812
+^LL1218
 <t t-set="quant" t-value="package.quant_ids and package.quant_ids[0]"/>
 <t t-set="tmpl" t-value="quant.product_tmpl_id if quant else False"/>
 <t t-if="tmpl">
@@ -18,33 +18,33 @@
     <t t-set="rest_codes" t-value="[tmpl[p.property_field].codigo for p in props if p.property_field not in ('product_tenido_id', 'product_color_id') and tmpl[p.property_field] and tmpl[p.property_field].codigo]"/>
     <t t-set="sub_line" t-value="'-'.join(rest_codes)"/>
 
-^FO0,60^FB1218,1,0,C^A0N,85,70^FD<t t-out="top_line"/>^FS
-^FO0,160^FB1218,1,0,C^A0N,65,55^FD<t t-out="sub_line"/>^FS
-^FO0,250^FB1218,1,0,C^A0N,55,45^FD<t t-out="tmpl.id"/>^FS
+^FO680,0^FB1218,1,0,C^A0R,85,70^FD<t t-out="top_line"/>^FS
+^FO590,0^FB1218,1,0,C^A0R,65,55^FD<t t-out="sub_line"/>^FS
+^FO510,0^FB1218,1,0,C^A0R,55,45^FD<t t-out="tmpl.id"/>^FS
 </t>
 
-<!-- RECALCULATED CODE 128 CENTERING FOR 1218 WIDTH -->
+<!-- RECALCULATED CODE 128 VERTICAL CENTERING FOR 1218 HEIGHT -->
 <t t-set="barcode_val" t-value="quant.product_id.barcode or package.name if quant else package.name"/>
 <t t-set="barcode_len" t-value="len(barcode_val) if barcode_val else 0"/>
-<t t-set="barcode_x" t-value="int(557 - (barcode_len * 16.5))"/>
-<t t-if="barcode_x &lt; 10">
-    <t t-set="barcode_x" t-value="10"/>
+<t t-set="barcode_y" t-value="int(557 - (barcode_len * 16.5))"/>
+<t t-if="barcode_y &lt; 10">
+    <t t-set="barcode_y" t-value="10"/>
 </t>
 
-^FO<t t-out="barcode_x"/>,350^BY3,3,120
-^BCN,120,N,N,N
+^FO350,<t t-out="barcode_y"/>^BY3,3,120
+^BCR,120,N,N,N
 ^FD<t t-out="barcode_val"/>^FS
 
-^FO0,490^FB1218,1,0,C^A0N,40,35^FD<t t-out="barcode_val"/>^FS
+^FO280,0^FB1218,1,0,C^A0R,40,35^FD<t t-out="barcode_val"/>^FS
 
-<!-- FOOTER VALUES SPREAD ACROSS 6-INCH WIDTH -->
-^FO40,650^FB350,1,0,C^A0N,35,30^FDCONOS^FS
-^FO434,650^FB350,1,0,C^A0N,35,30^FDKGB^FS
-^FO828,650^FB350,1,0,C^A0N,35,30^FDKGN^FS
+<!-- FOOTER VALUES SPREAD VERTICALLY ACROSS 6-INCH LENGTH -->
+^FO130,40^FB350,1,0,C^A0R,35,30^FDCONOS^FS
+^FO130,434^FB350,1,0,C^A0R,35,30^FDKGB^FS
+^FO130,828^FB350,1,0,C^A0R,35,30^FDKGN^FS
 
-^FO40,710^FB350,1,0,C^A0N,45,40^FD<t t-out="package.cantidad_conos or ''"/>^FS
-^FO434,710^FB350,1,0,C^A0N,45,40^FD<t t-out="package.peso_bruto or ''"/>^FS
-^FO828,710^FB350,1,0,C^A0N,45,40^FD<t t-out="package.peso_neto or ''"/>^FS
+^FO60,40^FB350,1,0,C^A0R,45,40^FD<t t-out="package.cantidad_conos or ''"/>^FS
+^FO60,434^FB350,1,0,C^A0R,45,40^FD<t t-out="package.peso_bruto or ''"/>^FS
+^FO60,828^FB350,1,0,C^A0R,45,40^FD<t t-out="package.peso_neto or ''"/>^FS
 ^XZ
                 </t>
             </xpath>
