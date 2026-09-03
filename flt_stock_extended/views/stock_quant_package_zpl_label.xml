@@ -23,17 +23,20 @@
 ^FO510,0^FB1218,1,0,C^A0R,55,45^FD<t t-out="tmpl.id"/>^FS
 </t>
 
-<!-- RECALCULATED CODE 128 VERTICAL CENTERING FOR 1218 HEIGHT -->
+<!-- RECALCULATED CODE 128 CENTERING FOR 1218 LENGTH WITH ^BY2 -->
 <t t-set="barcode_val" t-value="quant.product_id.barcode or package.name if quant else package.name"/>
 <t t-set="barcode_len" t-value="len(barcode_val) if barcode_val else 0"/>
-<t t-set="barcode_y" t-value="int(557 - (barcode_len * 16.5))"/>
+<!-- 1218/2 = 609. Barcode overhead is 70 dots. 609 - 35 = 574. Character width is 22, half is 11 -->
+<t t-set="barcode_y" t-value="int(574 - (barcode_len * 11))"/>
 <t t-if="barcode_y &lt; 10">
     <t t-set="barcode_y" t-value="10"/>
 </t>
 
-^FO350,<t t-out="barcode_y"/>^BY3,3,120
+^FO370,<t t-out="barcode_y"/>^BY2,3,120
 ^BCR,120,N,N,N
 ^FD<t t-out="barcode_val"/>^FS
+
+^FO280,0^FB1218,1,0,C^A0R,40,35^FD<t t-out="barcode_val"/>^FS
 
 ^FO280,0^FB1218,1,0,C^A0R,40,35^FD<t t-out="barcode_val"/>^FS
 
