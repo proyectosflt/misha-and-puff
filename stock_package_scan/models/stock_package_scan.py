@@ -5,37 +5,37 @@ from odoo.exceptions import UserError
 
 class StockPackageScan(models.Model):
     _name = 'stock.package.scan'
-    _description = 'Package Content Scan'
+    _description = 'Escaneo de contenido de paquetes'
     _order = 'id desc'
 
-    name = fields.Char(default=lambda self: _('New'), copy=False, readonly=True)
+    name = fields.Char(default=lambda self: _('Nuevo'), copy=False, readonly=True)
     state = fields.Selection([
-        ('draft', 'Draft'),
-        ('in_progress', 'In Progress'),
-        ('done', 'Done'),
+        ('draft', 'Borrador'),
+        ('in_progress', 'En progreso'),
+        ('done', 'Hecho'),
     ], default='draft', required=True, copy=False)
 
     product_id = fields.Many2one(
-        'product.product', string='Last Product Searched',
-        help="Every time a product barcode is scanned, the packages that "
-             "hold it are appended to the lines below. Scanning a second "
-             "product adds to the same list instead of replacing it.")
+        'product.product', string='Último producto buscado',
+        help="Cada vez que se escanea un código de barras de producto, los paquetes que "
+             "lo contienen se añaden a las líneas de abajo. Escanear un segundo "
+             "producto se suma a la misma lista en lugar de reemplazarla.")
     location_id = fields.Many2one(
-        'stock.location', string='Limit To Location',
+        'stock.location', string='Limitar a ubicación',
         domain=[('usage', '=', 'internal')],
-        help="Optional. Only packages inside this location (and its "
-             "sub-locations) are proposed when a product is searched.")
+        help="Opcional. Solo se proponen los paquetes dentro de esta ubicación "
+             "(y sus sububicaciones) cuando se busca un producto.")
     user_id = fields.Many2one(
-        'res.users', string='Scanned By', default=lambda self: self.env.user)
+        'res.users', string='Escaneado por', default=lambda self: self.env.user)
     company_id = fields.Many2one(
         'res.company', default=lambda self: self.env.company, required=True)
     date = fields.Datetime(default=fields.Datetime.now)
 
     line_ids = fields.One2many(
-        'stock.package.scan.line', 'scan_id', string='Package Lines')
+        'stock.package.scan.line', 'scan_id', string='Líneas de paquete')
     line_count = fields.Integer(compute='_compute_line_stats')
     scanned_count = fields.Integer(compute='_compute_line_stats')
-    progress = fields.Float(compute='_compute_line_stats', string='Progress (%)')
+    progress = fields.Float(compute='_compute_line_stats', string='Progreso (%)')
 
     @api.depends('line_ids.scanned')
     def _compute_line_stats(self):
@@ -48,9 +48,9 @@ class StockPackageScan(models.Model):
     @api.model_create_multi
     def create(self, vals_list):
         for vals in vals_list:
-            if vals.get('name', _('New')) == _('New'):
+            if vals.get('name', _('Nuevo')) == _('Nuevo'):
                 vals['name'] = self.env['ir.sequence'].next_by_code(
-                    'stock.package.scan') or _('New')
+                    'stock.package.scan') or _('Nuevo')
         return super().create(vals_list)
 
     def action_open_scanner(self):
@@ -68,9 +68,9 @@ class StockPackageScan(models.Model):
         for scan in self:
             if scan.scanned_count < scan.line_count:
                 raise UserError(_(
-                    "%(scanned)s of %(total)s packages have been scanned. "
-                    "Scan the rest, or remove the lines you don't need, "
-                    "before closing this session.",
+                    "%(scanned)s de %(total)s paquetes han sido escaneados. "
+                    "Escanee el resto o elimine las líneas que no necesite "
+                    "antes de cerrar esta sesión.",
                     scanned=scan.scanned_count, total=scan.line_count))
             scan.state = 'done'
 
@@ -93,7 +93,7 @@ class StockPackageScan(models.Model):
         self.ensure_one()
         barcode = (barcode or '').strip()
         if not barcode:
-            return {'result': 'error', 'message': _("Empty barcode.")}
+            return {'result': 'error', 'message': _('Código de barras vacío.')}
 
         # 1) Does it match a package we're already tracking?
         line = self.line_ids.filtered(lambda l: l.package_id.name == barcode)
@@ -101,17 +101,17 @@ class StockPackageScan(models.Model):
             if line.scanned:
                 return {
                     'result': 'warning',
-                    'message': _("Package %(package)s was already scanned.",
-                                  package=line.package_id.name),
+                    'message': _('El paquete %(package)s ya fue escaneado.',
+                                package=line.package_id.name),
                 }
             line.action_mark_scanned()
             if self.state == 'draft':
                 self.state = 'in_progress'
             return {
                 'result': 'success',
-                'message': _("Package %(package)s scanned (%(done)s/%(total)s).",
-                              package=line.package_id.name,
-                              done=self.scanned_count, total=self.line_count),
+                'message': _('Paquete %(package)s escaneado (%(done)s/%(total)s).',
+                            package=line.package_id.name,
+                            done=self.scanned_count, total=self.line_count),
             }
 
         # 2) Otherwise, try to resolve it as a product (or packaging) barcode
@@ -121,18 +121,18 @@ class StockPackageScan(models.Model):
             if not added:
                 return {
                     'result': 'warning',
-                    'message': _("No packages found holding %(product)s.",
-                                  product=product.display_name),
+                    'message': _('No se encontraron paquetes que contengan %(product)s.',
+                                product=product.display_name),
                 }
             return {
                 'result': 'success',
-                'message': _("%(count)s package(s) added for %(product)s.",
-                              count=added, product=product.display_name),
+                'message': _('%(count)s paquete(s) añadidos para %(product)s.',
+                            count=added, product=product.display_name),
             }
 
         return {
             'result': 'error',
-            'message': _("Barcode %(barcode)s not recognized.", barcode=barcode),
+            'message': _('Código de barras %(barcode)s no reconocido.', barcode=barcode),
         }
 
     def _find_product_by_barcode(self, barcode):

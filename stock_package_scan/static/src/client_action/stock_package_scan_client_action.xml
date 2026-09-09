@@ -8,29 +8,43 @@
             <div class="d-flex justify-content-between align-items-center mb-2">
                 <h4 class="mb-0" t-esc="state.name"/>
                 <span class="badge text-bg-secondary" t-if="state.lineCount">
-                    <t t-esc="state.scannedCount"/> / <t t-esc="state.lineCount"/> scanned
+                    <t t-esc="state.scannedCount"/> / <t t-esc="state.lineCount"/> escaneados
                 </span>
             </div>
             <p class="text-muted mb-2" t-if="state.productName">
-                Showing packages for: <strong t-esc="state.productName"/>
+                Mostrando paquetes para: <strong t-esc="state.productName"/>
             </p>
-            <div class="input-group">
-                <span class="input-group-text">
-                    <i class="fa fa-barcode"/>
-                </span>
-                <input type="text"
-                       class="form-control o_package_scan_input"
-                       t-ref="barcodeInput"
-                       placeholder="Scan or type a barcode, then press Enter"
-                       t-model="state.manualValue"
-                       t-on-keydown="onManualKeydown"/>
+            <div class="position-relative">
+                <div class="input-group">
+                    <span class="input-group-text">
+                        <i class="fa fa-barcode"/>
+                    </span>
+                    <input type="text"
+                           class="form-control o_package_scan_input"
+                           t-ref="barcodeInput"
+                           placeholder="Escanee o escriba un código de barras o nombre de producto"
+                           t-model="state.manualValue"
+                           t-on-input="onManualInput"
+                           t-on-keydown="onManualKeydown"
+                           autocomplete="off"/>
+                </div>
+                <div t-if="state.productSuggestions.length" class="list-group position-absolute w-100 shadow-sm mt-1 z-3" style="top: 100%; left: 0;">
+                    <button type="button"
+                            class="list-group-item list-group-item-action"
+                            t-foreach="state.productSuggestions"
+                            t-as="suggestion"
+                            t-key="suggestion.id"
+                            t-on-click="() => this.onSuggestionSelect(suggestion)">
+                        <t t-esc="suggestion.name"/>
+                    </button>
+                </div>
             </div>
         </div>
 
         <div class="o_package_scan_lines flex-grow-1 overflow-auto p-3">
             <div t-if="!state.lines.length" class="text-center text-muted mt-5">
                 <i class="fa fa-search fa-2x mb-2"/>
-                <p>Scan a product barcode to list the packages that contain it.</p>
+                <p>Escanee un código de barras de producto para listar los paquetes que lo contienen.</p>
             </div>
 
             <div t-foreach="state.lines" t-as="line" t-key="line.id"
@@ -40,7 +54,7 @@
                     <div class="fw-bold" t-esc="line.package_id[1]"/>
                     <div class="text-muted small" t-if="line.location_id" t-esc="line.location_id[1]"/>
                     <div class="text-muted small" t-if="line.product_qty">
-                        Qty: <t t-esc="line.product_qty"/>
+                        Cant.: <t t-esc="line.product_qty"/>
                     </div>
                 </div>
                 <i t-attf-class="fa fa-2x {{ line.scanned ? 'fa-check-circle text-success' : 'fa-circle-o text-muted' }}"/>

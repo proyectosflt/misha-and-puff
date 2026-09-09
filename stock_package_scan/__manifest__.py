@@ -1,14 +1,15 @@
 # -*- coding: utf-8 -*-
 {
-    'name': "Stock Package Scan",
-    'summary': "Scan packages that contain a given product, barcode-app style.",
+    'name': "Escaneo de paquetes",
+    'summary': "Escanee paquetes que contienen un producto determinado, estilo de aplicación de código de barras.",
     'description': """
-Stock Package Scan
+Escaneo de paquetes
 ===================
-Open a scanning session, scan (or type) a product's barcode to list every
-package that currently holds that product, then scan each package to check
-it off the list. Built to feel like the built-in Barcode app: one input,
-one screen, instant visual feedback per line.
+Abra una sesión de escaneo, escanee (o escriba) el código de barras de un
+producto para listar todos los paquetes que lo contienen actualmente y luego
+escanee cada paquete para marcarlo como completado. Diseñado para sentirse
+como la aplicación de códigos de barras integrada: una entrada, una pantalla,
+retroalimentación visual instantánea por línea.
 """,
     'version': '18.0.1.0.0',
     'category': 'Inventory',

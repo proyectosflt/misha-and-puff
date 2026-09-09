@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
         <record id="seq_stock_package_scan" model="ir.sequence">
-            <field name="name">Package Scan</field>
+            <field name="name">Escaneo de paquetes</field>
             <field name="code">stock.package.scan</field>
             <field name="prefix">PSCAN/%(year)s/</field>
             <field name="padding">4</field>
