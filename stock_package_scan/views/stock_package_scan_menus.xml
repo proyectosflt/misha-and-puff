@@ -17,11 +17,11 @@
          once you drop a 140x130 icon.png in that folder, to get a custom
          tile in the Apps switcher. -->
 
-    <menuitem id="menu_stock_package_scan_new"
+    <!-- <menuitem id="menu_stock_package_scan_new"
           name="Escanear paquetes"
           parent="menu_stock_package_scan_root"
           action="action_stock_package_scan_client"
-          sequence="10"/>
+          sequence="10"/> -->
 
     <menuitem id="menu_stock_package_scan_history"
           name="Historial de escaneo"
