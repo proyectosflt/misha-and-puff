@@ -10,16 +10,21 @@ odoo.qz = {
     // 1. CERTIFICATE & SIGNATURE (DEV MODE — UNSIGNED)
     // -------------------------------------------------------------
     initSecurity() {
-        qz.security.setCertificatePromise((resolve, reject) => {
-            resolve({
-                promise: (res) => res("UNSIGNED")    // Development only
-            });
-        });
+    qz.security.setCertificatePromise((resolve, reject) => {
+        fetch("/qz-certificate", { cache: "no-store" })
+            .then((r) => r.text())
+            .then((text) => (text ? resolve(text) : reject("Empty certificate")))
+            .catch(reject);
+    });
 
-        qz.security.setSignaturePromise((toSign) => {
-            return (resolve, reject) => resolve("test-signature"); // Dev only
-        });
-    },
+    qz.security.setSignatureAlgorithm("SHA512");
+    qz.security.setSignaturePromise((toSign) => (resolve, reject) => {
+        fetch(`/qz-sign-message?request=${encodeURIComponent(toSign)}`, { cache: "no-store" })
+            .then((r) => r.text())
+            .then(resolve)
+            .catch(reject);
+    });
+},
 
     // -------------------------------------------------------------
     // 2. CONNECT TO QZ TRAY
