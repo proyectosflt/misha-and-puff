@@ -5,6 +5,9 @@ from odoo.http import request
 import requests
 import base64
 import tempfile
+from cryptography.hazmat.backends import default_backend
+from cryptography.hazmat.primitives import hashes, serialization
+from cryptography.hazmat.primitives.asymmetric import padding
 
 class ZplLabelController(http.Controller):
 
@@ -25,3 +28,21 @@ class ZplLabelController(http.Controller):
                 return {'success':False, 'message': "The report is not for ZPL."}
         except Exception as e:
             return {'success':False, 'message': f'Error in ZPL Label Report: {str(e)}'}
+
+class QzSigningController(http.Controller):
+    @http.route("/qz-certificate", auth="public", csrf=False)
+    def qz_certificate(self, **kwargs):
+        config_param = request.env["ir.config_parameter"].sudo()
+        cert = config_param.get_param("qz.certificate", default=False)
+        return request.make_response(cert, [("Content-Type", "text/plain")])
+
+    @http.route("/qz-sign-message", auth="public", csrf=False)
+    def qz_sign_message(self, **kwargs):
+        config_param = request.env["ir.config_parameter"].sudo()
+        key_pem = config_param.get_param("qz.key", default=False)
+        private_key = serialization.load_pem_private_key(
+            key_pem.encode("utf-8"), password=None, backend=default_backend()
+        )
+        message = kwargs.get("request", "").encode("utf-8")
+        signature = private_key.sign(message, padding.PKCS1v15(), hashes.SHA512())
+        return request.make_response(base64.b64encode(signature), [("Content-Type", "text/plain")])
