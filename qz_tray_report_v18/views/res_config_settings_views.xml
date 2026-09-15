@@ -1,0 +1,23 @@
+<!-- qz_tray_report_v18/views/res_config_settings_views.xml -->
+<odoo>
+    <record id="res_config_settings_view_form_qz" model="ir.ui.view">
+        <field name="name">res.config.settings.view.form.qz</field>
+        <field name="model">res.config.settings</field>
+        <field name="inherit_id" ref="base.res_config_settings_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//block[last()]" position="after">
+                <block title="QZ Tray" name="qz_tray_settings">
+                    <setting string="Impresión directa ZPL"
+                             help="Imprime directamente sin mostrar la ventana de QZ Tray">
+                        <field name="qz_skip_modal"/>
+                        <div class="content-group mt16" invisible="not qz_skip_modal">
+                            <label for="qz_default_printer" string="Impresora por defecto"/>
+                            <field name="qz_default_printer"
+                                   placeholder="p. ej. ZDesigner TE200"/>
+                        </div>
+                    </setting>
+                </block>
+            </xpath>
+        </field>
+    </record>
+</odoo>

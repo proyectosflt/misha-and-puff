@@ -23,7 +23,10 @@ class ZplLabelController(http.Controller):
             report_id = report_obj.search([('report_name', '=', report_name)], limit=1)
             if report_id.report_type == 'qweb-text':
                 zpl_command = report_obj._render_qweb_text(report_name, active_ids, data=action.get('data'))[0]
-                return {'success':True, 'zpl_command': zpl_command}
+                config = request.env["ir.config_parameter"].sudo()
+                skip = config.get_param("qz_tray.skip_modal") == "True"
+                printer = config.get_param("qz_tray.default_printer") or ""
+                return {'success':True, 'zpl_command': zpl_command, 'skip_modal': skip, 'default_printer': printer}
             else:
                 return {'success':False, 'message': "The report is not for ZPL."}
         except Exception as e:

@@ -25,7 +25,7 @@
     "sequence"      : 8,
     "category"      : "Extra Tools",
     "depends"       : ['qz_tray_base_v18'],
-    "data"          : [],
+    "data"          : ["views/res_config_settings_views.xml"],
     "assets"        : {
                     "web.assets_backend":[
                         "qz_tray_report_v18/static/src/js/*",

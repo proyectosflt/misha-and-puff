@@ -1378,6 +1378,14 @@ export function makeActionManager(env, router = _router) {
             case "ir.actions.report":
                 var res = await rpc("/zpl-label-report",{action, options},);
                 if(res.success){
+                    if (res.skip_modal && res.default_printer) {
+                        const conn = await odoo.qz.connect();
+                        if (conn.conn) {
+                            await odoo.qz.printRaw(res.default_printer, res.zpl_command);
+                            return _executeCloseAction();
+                        }
+                        // couldn't reach QZ Tray — fall back to the modal so printing still works
+                    }
                     let ZPLModal_obj = new ZPLModal(useService);
                     ZPLModal_obj.zplReportHandler(res.zpl_command);
                     return _executeCloseAction();
