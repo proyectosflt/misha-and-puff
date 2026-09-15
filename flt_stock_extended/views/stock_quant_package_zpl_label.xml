@@ -24,7 +24,7 @@
 </t>
 
 <!-- DYNAMIC BARCODE CENTERING MATH IN QWEB -->
-<t t-set="barcode_val" t-value="quant.product_id.barcode or package.name if quant else package.name"/>
+<t t-set="barcode_val" t-value="package.name"/>
 <t t-set="barcode_len" t-value="len(barcode_val) if barcode_val else 0"/>
 <t t-set="barcode_x" t-value="int(371 - (barcode_len * 11))"/>
 <t t-if="barcode_x &lt; 10">
