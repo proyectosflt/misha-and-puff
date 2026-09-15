@@ -7,6 +7,15 @@
 ^XA
 ^PW812
 ^LL1218
+<!-- TEXT SIZING: ^A0N,h,w squashes the glyphs when w sits far below h, so width is pinned at
+     PROP x height (the ratio this label used at 4x3) and the pair is scaled down only as far
+     as the string length demands. FIT is the per-character advance as a fraction of w: lower
+     it if a long line runs past the edge, raise it if long lines come out too small. -->
+<t t-set="fit" t-value="0.7"/>
+<t t-set="prop" t-value="0.85"/>
+<t t-set="head_wmax" t-value="123"/>
+<t t-set="foot_wmax" t-value="140"/>
+
 <t t-set="quant" t-value="package.quant_ids and package.quant_ids[0]"/>
 <t t-set="tmpl" t-value="quant.product_tmpl_id if quant else False"/>
 <t t-if="tmpl">
@@ -19,19 +28,19 @@
     <t t-set="sub_line" t-value="'-'.join(rest_codes)"/>
     <t t-set="id_str" t-value="str(tmpl.id)"/>
 
-    <!-- Width kept at a fixed 1:2 ratio to height so text never looks stretched/condensed;
-         width is derived from the string length (capped at 72) so short values print as
-         large as the 145-tall line slot allows, long ones shrink just enough to fit 812. -->
-    <t t-set="top_w" t-value="min(int(780 / (len(top_line) or 1)), 72)"/>
-    <t t-set="top_h" t-value="top_w * 2"/>
-    <t t-set="sub_w" t-value="min(int(780 / (len(sub_line) or 1)), 72)"/>
-    <t t-set="sub_h" t-value="sub_w * 2"/>
-    <t t-set="id_w" t-value="min(int(780 / len(id_str)), 72)"/>
-    <t t-set="id_h" t-value="id_w * 2"/>
+    <t t-set="top_w" t-value="min(int(780 / (fit * (len(top_line) or 1))), head_wmax)"/>
+    <t t-set="top_h" t-value="int(top_w / prop)"/>
+    <t t-set="sub_w" t-value="min(int(780 / (fit * (len(sub_line) or 1))), head_wmax)"/>
+    <t t-set="sub_h" t-value="int(sub_w / prop)"/>
+    <t t-set="id_w" t-value="min(int(780 / (fit * len(id_str))), head_wmax)"/>
+    <t t-set="id_h" t-value="int(id_w / prop)"/>
+
+    <t t-set="y2" t-value="25 + top_h + 12"/>
+    <t t-set="y3" t-value="y2 + sub_h + 12"/>
 
 ^FO0,25^FB812,1,0,C^A0N,<t t-out="top_h"/>,<t t-out="top_w"/>^FD<t t-out="top_line"/>^FS
-^FO0,182^FB812,1,0,C^A0N,<t t-out="sub_h"/>,<t t-out="sub_w"/>^FD<t t-out="sub_line"/>^FS
-^FO0,339^FB812,1,0,C^A0N,<t t-out="id_h"/>,<t t-out="id_w"/>^FD<t t-out="id_str"/>^FS
+^FO0,<t t-out="y2"/>^FB812,1,0,C^A0N,<t t-out="sub_h"/>,<t t-out="sub_w"/>^FD<t t-out="sub_line"/>^FS
+^FO0,<t t-out="y3"/>^FB812,1,0,C^A0N,<t t-out="id_h"/>,<t t-out="id_w"/>^FD<t t-out="id_str"/>^FS
 </t>
 
 <!-- DYNAMIC BARCODE CENTERING MATH IN QWEB (module width 3) -->
@@ -42,29 +51,27 @@
     <t t-set="barcode_x" t-value="10"/>
 </t>
 
-^CF0,80,40
+^CF0,65,55
 ^FO<t t-out="barcode_x"/>,520^BY3,3,235
 ^BCN,235,Y,N,N
 ^FD<t t-out="barcode_val"/>^FS
 
 <!-- FOOTER VALUES -->
-^FO10,881^FB250,1,0,C^A0N,90,45^FDCONOS^FS
-^FO280,881^FB250,1,0,C^A0N,90,45^FDKGB^FS
-^FO550,881^FB250,1,0,C^A0N,90,45^FDKGN^FS
+^FO10,881^FB250,1,0,C^A0N,60,51^FDCONOS^FS
+^FO280,881^FB250,1,0,C^A0N,60,51^FDKGB^FS
+^FO550,881^FB250,1,0,C^A0N,60,51^FDKGN^FS
 
 <t t-set="conos_val" t-value="package.cantidad_conos or ''"/>
 <t t-set="bruto_val" t-value="package.peso_bruto or ''"/>
 <t t-set="neto_val" t-value="package.peso_neto or ''"/>
-<t t-set="conos_w" t-value="min(int(235 / (len(str(conos_val)) or 1)), 82)"/>
-<t t-set="conos_h" t-value="conos_w * 2"/>
-<t t-set="bruto_w" t-value="min(int(235 / (len(str(bruto_val)) or 1)), 82)"/>
-<t t-set="bruto_h" t-value="bruto_w * 2"/>
-<t t-set="neto_w" t-value="min(int(235 / (len(str(neto_val)) or 1)), 82)"/>
-<t t-set="neto_h" t-value="neto_w * 2"/>
+<!-- One size for the whole row, driven by the longest of the three -->
+<t t-set="foot_len" t-value="max(len(str(conos_val)), len(str(bruto_val)), len(str(neto_val))) or 1"/>
+<t t-set="foot_w" t-value="min(int(235 / (fit * foot_len)), foot_wmax)"/>
+<t t-set="foot_h" t-value="int(foot_w / prop)"/>
 
-^FO10,983^FB250,1,0,C^A0N,<t t-out="conos_h"/>,<t t-out="conos_w"/>^FD<t t-out="conos_val"/>^FS
-^FO280,983^FB250,1,0,C^A0N,<t t-out="bruto_h"/>,<t t-out="bruto_w"/>^FD<t t-out="bruto_val"/>^FS
-^FO550,983^FB250,1,0,C^A0N,<t t-out="neto_h"/>,<t t-out="neto_w"/>^FD<t t-out="neto_val"/>^FS
+^FO10,983^FB250,1,0,C^A0N,<t t-out="foot_h"/>,<t t-out="foot_w"/>^FD<t t-out="conos_val"/>^FS
+^FO280,983^FB250,1,0,C^A0N,<t t-out="foot_h"/>,<t t-out="foot_w"/>^FD<t t-out="bruto_val"/>^FS
+^FO550,983^FB250,1,0,C^A0N,<t t-out="foot_h"/>,<t t-out="foot_w"/>^FD<t t-out="neto_val"/>^FS
 ^XZ
                 </t>
             </xpath>
