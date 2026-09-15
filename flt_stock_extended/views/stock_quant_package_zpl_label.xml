@@ -18,9 +18,9 @@
     <t t-set="rest_codes" t-value="[tmpl[p.property_field].codigo for p in props if p.property_field not in ('product_tenido_id', 'product_color_id') and tmpl[p.property_field] and tmpl[p.property_field].codigo]"/>
     <t t-set="sub_line" t-value="'-'.join(rest_codes)"/>
 
-^FO0,50^FB812,1,0,C^A0N,60,31^FD<t t-out="top_line"/>^FS
-^FO0,140^FB812,1,0,C^A0N,60,31^FD<t t-out="sub_line"/>^FS
-^FO0,230^FB812,1,0,C^A0N,60,31^FD<t t-out="tmpl.id"/>^FS
+^FO0,40^FB812,1,0,C^A0N,110,80^FD<t t-out="top_line"/>^FS
+^FO0,165^FB812,1,0,C^A0N,55,31^FD<t t-out="sub_line"/>^FS
+^FO0,235^FB812,1,0,C^A0N,140,100^FD<t t-out="tmpl.id"/>^FS
 </t>
 
 <!-- DYNAMIC BARCODE CENTERING MATH IN QWEB (module width 3) -->
@@ -32,18 +32,18 @@
 </t>
 
 ^CF0,65,38
-^FO<t t-out="barcode_x"/>,360^BY3,3,280
-^BCN,280,Y,N,N
+^FO<t t-out="barcode_x"/>,400^BY3,3,230
+^BCN,230,Y,N,N
 ^FD<t t-out="barcode_val"/>^FS
 
-<!-- FOOTER VALUES (UNIFORM FONT SIZE) -->
-^FO10,870^FB250,1,0,C^A0N,45,32^FDCONOS^FS
-^FO280,870^FB250,1,0,C^A0N,45,32^FDKGB^FS
-^FO550,870^FB250,1,0,C^A0N,45,32^FDKGN^FS
+<!-- FOOTER VALUES -->
+^FO10,880^FB250,1,0,C^A0N,45,35^FDCONOS^FS
+^FO280,880^FB250,1,0,C^A0N,45,35^FDKGB^FS
+^FO550,880^FB250,1,0,C^A0N,45,35^FDKGN^FS
 
-^FO10,935^FB250,1,0,C^A0N,90,42^FD<t t-out="package.cantidad_conos or ''"/>^FS
-^FO280,935^FB250,1,0,C^A0N,90,42^FD<t t-out="package.peso_bruto or ''"/>^FS
-^FO550,935^FB250,1,0,C^A0N,90,42^FD<t t-out="package.peso_neto or ''"/>^FS
+^FO10,940^FB250,1,0,C^A0N,85,42^FD<t t-out="package.cantidad_conos or ''"/>^FS
+^FO280,940^FB250,1,0,C^A0N,85,42^FD<t t-out="package.peso_bruto or ''"/>^FS
+^FO550,940^FB250,1,0,C^A0N,85,42^FD<t t-out="package.peso_neto or ''"/>^FS
 ^XZ
                 </t>
             </xpath>
