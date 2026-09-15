@@ -15,20 +15,20 @@ class StockQuantPackage(models.Model):
         copy=False
     )
 
-    @api.depends('quant_ids.product_id.product_tmpl_id.codificacion')
+    @api.depends('quant_ids.product_id.product_tmpl_id')
     def _compute_dynamic_name(self):
         for package in self:
-            if not package.quant_ids or not package.quant_ids[0].product_id.product_tmpl_id.codificacion:
+            if not package.quant_ids or not package.quant_ids[0].product_id.product_tmpl_id:
                 if not package.name:
                     package.name = f"PACK-{str(package.id).zfill(8)}"
                 continue
                 
-            prefix = package.quant_ids[0].product_id.product_tmpl_id.codificacion
+            prefix = str(package.quant_ids[0].product_id.product_tmpl_id.id)
             
             if package.name and package.name.startswith(f"{prefix}-"):
                 continue
 
-            seq_code = f"stock.quant.package.custom.{prefix.lower()}"
+            seq_code = f"stock.quant.package.custom.{prefix}"
             sequence_obj = self.env['ir.sequence'].sudo()
             
             existing_seq = sequence_obj.search([('code', '=', seq_code)], limit=1)
