@@ -74,6 +74,16 @@ class ProductTemplate(models.Model):
         string='Codificación Anterior',
         help='Codificación anterior del producto, si existía'
     )
+    product_template_id = fields.Integer(
+        string='ID',
+        compute='_compute_product_template_id',
+        readonly=True,
+    )
+
+    @api.depends('id')
+    def _compute_product_template_id(self):
+        for record in self:
+            record.product_template_id = record.id
 
     @api.model
     def name_search(self, name='', args=None, operator='ilike', limit=100):

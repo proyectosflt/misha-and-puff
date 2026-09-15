@@ -15,6 +15,11 @@ class ProductProduct(models.Model):
         store=True,
         readonly=True,
     )
+    product_template_id = fields.Integer(
+        related='product_tmpl_id.id',
+        string='ID',
+        readonly=True,
+    )
 
     x_studio_title = fields.Char(string='Title', compute='_compute_studio_fields', store=True)
     x_studio_color_code = fields.Char(string='Color Code', compute='_compute_studio_fields', store=True)
