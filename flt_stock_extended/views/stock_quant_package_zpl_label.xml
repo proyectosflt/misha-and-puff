@@ -17,10 +17,21 @@
     <t t-set="props" t-value="tmpl.product_familia_id.property_ids.sorted(lambda p: p.sequence)"/>
     <t t-set="rest_codes" t-value="[tmpl[p.property_field].codigo for p in props if p.property_field not in ('product_tenido_id', 'product_color_id') and tmpl[p.property_field] and tmpl[p.property_field].codigo]"/>
     <t t-set="sub_line" t-value="'-'.join(rest_codes)"/>
+    <t t-set="id_str" t-value="str(tmpl.id)"/>
 
-^FO0,40^FB812,1,0,C^A0N,110,80^FD<t t-out="top_line"/>^FS
-^FO0,165^FB812,1,0,C^A0N,55,31^FD<t t-out="sub_line"/>^FS
-^FO0,235^FB812,1,0,C^A0N,140,100^FD<t t-out="tmpl.id"/>^FS
+    <!-- Width kept at a fixed 1:2 ratio to height so text never looks stretched/condensed;
+         width is derived from the string length (capped at 72) so short values print as
+         large as the 145-tall line slot allows, long ones shrink just enough to fit 812. -->
+    <t t-set="top_w" t-value="min(int(780 / (len(top_line) or 1)), 72)"/>
+    <t t-set="top_h" t-value="top_w * 2"/>
+    <t t-set="sub_w" t-value="min(int(780 / (len(sub_line) or 1)), 72)"/>
+    <t t-set="sub_h" t-value="sub_w * 2"/>
+    <t t-set="id_w" t-value="min(int(780 / len(id_str)), 72)"/>
+    <t t-set="id_h" t-value="id_w * 2"/>
+
+^FO0,25^FB812,1,0,C^A0N,<t t-out="top_h"/>,<t t-out="top_w"/>^FD<t t-out="top_line"/>^FS
+^FO0,182^FB812,1,0,C^A0N,<t t-out="sub_h"/>,<t t-out="sub_w"/>^FD<t t-out="sub_line"/>^FS
+^FO0,339^FB812,1,0,C^A0N,<t t-out="id_h"/>,<t t-out="id_w"/>^FD<t t-out="id_str"/>^FS
 </t>
 
 <!-- DYNAMIC BARCODE CENTERING MATH IN QWEB (module width 3) -->
@@ -31,19 +42,29 @@
     <t t-set="barcode_x" t-value="10"/>
 </t>
 
-^CF0,65,38
-^FO<t t-out="barcode_x"/>,400^BY3,3,230
-^BCN,230,Y,N,N
+^CF0,80,40
+^FO<t t-out="barcode_x"/>,520^BY3,3,235
+^BCN,235,Y,N,N
 ^FD<t t-out="barcode_val"/>^FS
 
 <!-- FOOTER VALUES -->
-^FO10,880^FB250,1,0,C^A0N,45,35^FDCONOS^FS
-^FO280,880^FB250,1,0,C^A0N,45,35^FDKGB^FS
-^FO550,880^FB250,1,0,C^A0N,45,35^FDKGN^FS
+^FO10,881^FB250,1,0,C^A0N,90,45^FDCONOS^FS
+^FO280,881^FB250,1,0,C^A0N,90,45^FDKGB^FS
+^FO550,881^FB250,1,0,C^A0N,90,45^FDKGN^FS
 
-^FO10,940^FB250,1,0,C^A0N,85,42^FD<t t-out="package.cantidad_conos or ''"/>^FS
-^FO280,940^FB250,1,0,C^A0N,85,42^FD<t t-out="package.peso_bruto or ''"/>^FS
-^FO550,940^FB250,1,0,C^A0N,85,42^FD<t t-out="package.peso_neto or ''"/>^FS
+<t t-set="conos_val" t-value="package.cantidad_conos or ''"/>
+<t t-set="bruto_val" t-value="package.peso_bruto or ''"/>
+<t t-set="neto_val" t-value="package.peso_neto or ''"/>
+<t t-set="conos_w" t-value="min(int(235 / (len(str(conos_val)) or 1)), 82)"/>
+<t t-set="conos_h" t-value="conos_w * 2"/>
+<t t-set="bruto_w" t-value="min(int(235 / (len(str(bruto_val)) or 1)), 82)"/>
+<t t-set="bruto_h" t-value="bruto_w * 2"/>
+<t t-set="neto_w" t-value="min(int(235 / (len(str(neto_val)) or 1)), 82)"/>
+<t t-set="neto_h" t-value="neto_w * 2"/>
+
+^FO10,983^FB250,1,0,C^A0N,<t t-out="conos_h"/>,<t t-out="conos_w"/>^FD<t t-out="conos_val"/>^FS
+^FO280,983^FB250,1,0,C^A0N,<t t-out="bruto_h"/>,<t t-out="bruto_w"/>^FD<t t-out="bruto_val"/>^FS
+^FO550,983^FB250,1,0,C^A0N,<t t-out="neto_h"/>,<t t-out="neto_w"/>^FD<t t-out="neto_val"/>^FS
 ^XZ
                 </t>
             </xpath>
