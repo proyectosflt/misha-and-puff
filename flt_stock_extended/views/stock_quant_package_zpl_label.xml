@@ -19,28 +19,30 @@
 <t t-set="quant" t-value="package.quant_ids and package.quant_ids[0]"/>
 <t t-set="tmpl" t-value="quant.product_tmpl_id if quant else False"/>
 <t t-if="tmpl">
-    <t t-set="tenido" t-value="tmpl.product_tenido_id.codigo or ''"/>
-    <t t-set="color" t-value="tmpl.product_color_id.codigo or ''"/>
-    <t t-set="top_line" t-value="((tenido + '-') if (tenido and color) else tenido) + color"/>
-
+    <t t-set="excluded" t-value="('product_tenido_id', 'product_color_id', 'product_titulo_id')"/>
     <t t-set="props" t-value="tmpl.product_familia_id.property_ids.sorted(lambda p: p.sequence)"/>
-    <t t-set="rest_codes" t-value="[tmpl[p.property_field].codigo for p in props if p.property_field not in ('product_tenido_id', 'product_color_id') and tmpl[p.property_field] and tmpl[p.property_field].codigo]"/>
-    <t t-set="sub_line" t-value="'-'.join(rest_codes)"/>
-    <t t-set="id_str" t-value="str(tmpl.id)"/>
+    <t t-set="rest_codes" t-value="[(tmpl[p.property_field].codigo or '').strip() for p in props if p.property_field not in excluded and tmpl[p.property_field] and (tmpl[p.property_field].codigo or '').strip()]"/>
+    <t t-set="line1" t-value="'-'.join(rest_codes).strip('-')"/>
 
-    <t t-set="top_w" t-value="min(int(780 / (fit * (len(top_line) or 1))), head_wmax)"/>
-    <t t-set="top_h" t-value="int(top_w / prop)"/>
-    <t t-set="sub_w" t-value="min(int(780 / (fit * (len(sub_line) or 1))), head_wmax)"/>
-    <t t-set="sub_h" t-value="int(sub_w / prop)"/>
-    <t t-set="id_w" t-value="min(int(780 / (fit * len(id_str))), head_wmax)"/>
-    <t t-set="id_h" t-value="int(id_w / prop)"/>
+    <t t-set="line2" t-value="(tmpl.product_titulo_id.codigo or '').strip()"/>
 
-    <t t-set="y2" t-value="25 + top_h + 12"/>
-    <t t-set="y3" t-value="y2 + sub_h + 12"/>
+    <t t-set="tenido" t-value="(tmpl.product_tenido_id.codigo or '').strip()"/>
+    <t t-set="color" t-value="(tmpl.product_color_id.codigo or '').strip()"/>
+    <t t-set="line3" t-value="(((tenido + '-') if (tenido and color) else tenido) + color).strip('-')"/>
 
-^FO0,25^FB812,1,0,C^A0N,<t t-out="top_h"/>,<t t-out="top_w"/>^FD<t t-out="top_line"/>^FS
-^FO0,<t t-out="y2"/>^FB812,1,0,C^A0N,<t t-out="sub_h"/>,<t t-out="sub_w"/>^FD<t t-out="sub_line"/>^FS
-^FO0,<t t-out="y3"/>^FB812,1,0,C^A0N,<t t-out="id_h"/>,<t t-out="id_w"/>^FD<t t-out="id_str"/>^FS
+    <t t-set="l1_w" t-value="min(int(780 / (fit * (len(line1) or 1))), head_wmax)"/>
+    <t t-set="l1_h" t-value="int(l1_w / prop)"/>
+    <t t-set="l2_w" t-value="min(int(780 / (fit * (len(line2) or 1))), head_wmax)"/>
+    <t t-set="l2_h" t-value="int(l2_w / prop)"/>
+    <t t-set="l3_w" t-value="min(int(780 / (fit * (len(line3) or 1))), head_wmax)"/>
+    <t t-set="l3_h" t-value="int(l3_w / prop)"/>
+
+    <t t-set="y2" t-value="25 + l1_h + 12"/>
+    <t t-set="y3" t-value="y2 + l2_h + 12"/>
+
+^FO0,25^FB812,1,0,C^A0N,<t t-out="l1_h"/>,<t t-out="l1_w"/>^FD<t t-out="line1"/>^FS
+^FO0,<t t-out="y2"/>^FB812,1,0,C^A0N,<t t-out="l2_h"/>,<t t-out="l2_w"/>^FD<t t-out="line2"/>^FS
+^FO0,<t t-out="y3"/>^FB812,1,0,C^A0N,<t t-out="l3_h"/>,<t t-out="l3_w"/>^FD<t t-out="line3"/>^FS
 </t>
 
 <!-- DYNAMIC BARCODE CENTERING MATH IN QWEB (module width 3) -->
@@ -51,9 +53,13 @@
     <t t-set="barcode_x" t-value="10"/>
 </t>
 
-^CF0,65,55
-^FO<t t-out="barcode_x"/>,520^BY3,3,235
-^BCN,235,Y,N,N
+<!-- ^CF sizes the human-readable line under the bars (^A0N does not reach it) -->
+<t t-set="bc_w" t-value="min(int(700 / (fit * (barcode_len or 1))), 100)"/>
+<t t-set="bc_h" t-value="int(bc_w / prop)"/>
+
+^CF0,<t t-out="bc_h"/>,<t t-out="bc_w"/>
+^FO<t t-out="barcode_x"/>,520^BY3,3,180
+^BCN,180,Y,N,N
 ^FD<t t-out="barcode_val"/>^FS
 
 <!-- FOOTER VALUES -->
