@@ -80,7 +80,7 @@ class ProductTemplate(models.Model):
         readonly=True,
     )
 
-    @api.depends('id')
+    
     def _compute_product_template_id(self):
         for record in self:
             record.product_template_id = record.id
