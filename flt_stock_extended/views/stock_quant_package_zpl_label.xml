@@ -53,31 +53,32 @@
     <t t-set="barcode_x" t-value="10"/>
 </t>
 
-<!-- ^CF sizes the human-readable line under the bars (^A0N does not reach it) -->
-<t t-set="bc_w" t-value="min(int(700 / (fit * (barcode_len or 1))), 100)"/>
+<!-- The built-in interpretation line ignores ^CF here, so it is switched off (4th ^BC arg)
+     and the value is drawn underneath as a normal ^A0N field we can actually size. -->
+<t t-set="bc_w" t-value="min(int(780 / (fit * (barcode_len or 1))), 140)"/>
 <t t-set="bc_h" t-value="int(bc_w / prop)"/>
 
-^CF0,<t t-out="bc_h"/>,<t t-out="bc_w"/>
-^FO<t t-out="barcode_x"/>,520^BY3,3,180
-^BCN,180,Y,N,N
+^FO<t t-out="barcode_x"/>,520^BY3,3,150
+^BCN,150,N,N,N
 ^FD<t t-out="barcode_val"/>^FS
+^FO0,685^FB812,1,0,C^A0N,<t t-out="bc_h"/>,<t t-out="bc_w"/>^FD<t t-out="barcode_val"/>^FS
 
-<!-- FOOTER VALUES -->
-^FO10,881^FB250,1,0,C^A0N,60,51^FDCONOS^FS
-^FO280,881^FB250,1,0,C^A0N,60,51^FDKGB^FS
-^FO550,881^FB250,1,0,C^A0N,60,51^FDKGN^FS
+<!-- FOOTER: three columns spanning the full 812 so the numbers get as much width as possible -->
+^FO0,870^FB270,1,0,C^A0N,73,62^FDCONOS^FS
+^FO271,870^FB270,1,0,C^A0N,73,62^FDKGB^FS
+^FO542,870^FB270,1,0,C^A0N,73,62^FDKGN^FS
 
 <t t-set="conos_val" t-value="package.cantidad_conos or ''"/>
 <t t-set="bruto_val" t-value="package.peso_bruto or ''"/>
 <t t-set="neto_val" t-value="package.peso_neto or ''"/>
 <!-- One size for the whole row, driven by the longest of the three -->
 <t t-set="foot_len" t-value="max(len(str(conos_val)), len(str(bruto_val)), len(str(neto_val))) or 1"/>
-<t t-set="foot_w" t-value="min(int(235 / (fit * foot_len)), foot_wmax)"/>
+<t t-set="foot_w" t-value="min(int(260 / (fit * foot_len)), foot_wmax)"/>
 <t t-set="foot_h" t-value="int(foot_w / prop)"/>
 
-^FO10,983^FB250,1,0,C^A0N,<t t-out="foot_h"/>,<t t-out="foot_w"/>^FD<t t-out="conos_val"/>^FS
-^FO280,983^FB250,1,0,C^A0N,<t t-out="foot_h"/>,<t t-out="foot_w"/>^FD<t t-out="bruto_val"/>^FS
-^FO550,983^FB250,1,0,C^A0N,<t t-out="foot_h"/>,<t t-out="foot_w"/>^FD<t t-out="neto_val"/>^FS
+^FO0,955^FB270,1,0,C^A0N,<t t-out="foot_h"/>,<t t-out="foot_w"/>^FD<t t-out="conos_val"/>^FS
+^FO271,955^FB270,1,0,C^A0N,<t t-out="foot_h"/>,<t t-out="foot_w"/>^FD<t t-out="bruto_val"/>^FS
+^FO542,955^FB270,1,0,C^A0N,<t t-out="foot_h"/>,<t t-out="foot_w"/>^FD<t t-out="neto_val"/>^FS
 ^XZ
                 </t>
             </xpath>
