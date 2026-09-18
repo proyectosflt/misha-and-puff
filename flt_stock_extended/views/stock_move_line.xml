@@ -60,4 +60,27 @@
             </xpath> -->
         </field>
     </record>
+
+    <record id="mrp_subcontracting_move_line_tree_inherit" model="ir.ui.view">
+    <field name="name">mrp.subcontracting.move.line.tree.inherit</field>
+    <field name="model">stock.move.line</field>
+    <!-- Inherit the specific move line tree used by mrp_subcontracting -->
+    <field name="inherit_id" ref="mrp_subcontracting.mrp_subcontracting_stock_move_line_tree_view"/>
+    <field name="arch" type="xml">
+        <!-- Adjust the xpath target depending on your exact Odoo version (e.g., 'qty_done' or 'quantity') -->
+        <xpath expr="//field[@name='quantity']" position="before">
+            <field name="tara_bolsa"/>
+            <field name="cono_id"/>
+            <field name="cantidad_conos"/>
+            <field name="tara_cono"/>
+            <field name="tara_cono_total"/>
+            <field name="peso_bruto"/>
+            <field name="peso_neto"/>
+        </xpath>
+        <xpath expr="//list" position="inside">
+            <button name="action_duplicar" string="Duplicar" type="object"
+                    column_invisible="parent.state in ('done', 'cancel')"/>
+        </xpath>
+    </field>
+</record>
 </odoo>
