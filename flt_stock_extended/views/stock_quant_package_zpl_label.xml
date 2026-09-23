@@ -69,8 +69,8 @@
 ^FO542,870^FB270,1,0,C^A0N,73,62^FDKGN^FS
 
 <t t-set="conos_val" t-value="package.cantidad_conos or ''"/>
-<t t-set="bruto_val" t-value="package.peso_bruto or ''"/>
-<t t-set="neto_val" t-value="package.peso_neto or ''"/>
+<t t-set="bruto_val" t-value="'{:.3f}'.format(package.peso_bruto or 0.0)"/>
+<t t-set="neto_val" t-value="'{:.3f}'.format(package.peso_neto or 0.0)"/>
 <!-- One size for the whole row, driven by the longest of the three -->
 <t t-set="foot_len" t-value="max(len(str(conos_val)), len(str(bruto_val)), len(str(neto_val))) or 1"/>
 <t t-set="foot_w" t-value="min(int(260 / (fit * foot_len)), foot_wmax)"/>
