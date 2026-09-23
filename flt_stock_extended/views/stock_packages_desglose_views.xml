@@ -29,6 +29,7 @@
                 </header>
                 <sheet>
                     <group>
+                        <field name="create_date" string="Fecha de creación" readonly="1"/>
                         <group string="Totales Teóricos (Origen)">
                             <field name="theoretical_conos" readonly="1"/>
                             <field name="theoretical_bruto" readonly="1"/>

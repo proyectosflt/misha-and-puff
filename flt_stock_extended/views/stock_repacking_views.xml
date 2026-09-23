@@ -28,6 +28,7 @@
         <field name="model">stock.repack</field>
         <field name="arch" type="xml">
             <list string="Empacados por conteo">
+                <field name="create_date" string="Fecha de creación"/>
                 <field name="product_id"/>
                 <field name="location_id"/>
                 <field name="theoretical_qty"/>
@@ -49,6 +50,7 @@
                 </header>
                 <sheet>
                     <group>
+                        <field name="create_date" string="Fecha de creación" readonly="1"/>
                         <group>
                             <field name="product_id"/>
                             <field name="location_id"/>
