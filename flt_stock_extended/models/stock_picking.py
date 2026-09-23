@@ -36,16 +36,62 @@ class StockPicking(models.Model):
                     'user_id': user.id,
                 })
 
-    def _is_fully_validated(self):
-        """El albarán está listo para validarse cuando todos sus movimientos
-        (sin contar los cancelados) están validados."""
-        self.ensure_one()
-        if self.state in ('done', 'cancel'):
-            return False
-        moves = self.move_ids.filtered(lambda m: m.state != 'cancel')
-        return bool(moves) and all(m.validation_state == 'validated' for m in moves)
-
     def button_validate(self):
-        for picking in self:
-            picking.move_ids.filtered(lambda m: m.state != 'cancel')._check_tolerancia()
-        return super(StockPicking, self.with_context(flt_bypass_line_lock=True)).button_validate()
+        is_purchase_admin = self.env.user.has_group('purchase.group_purchase_manager')
+        is_sales_admin = self.env.user.has_group('sales.group_sales_manager')
+        
+        # Verificar si es una recepción (albarán de entrada) y si el usuario NO es Administrador
+        if self.picking_type_id.code == 'incoming' and not is_purchase_admin:
+            for move in self.move_ids:
+                tolerancia = move.tolerancia_compra or 0.0
+                max_allowed = move.product_uom_qty + tolerancia
+                tolerancia_date = move.product_id.product_tmpl_id.fecha_minima_tolerancia_compra
+                purchase_date_as_date = fields.Date.to_date(move.purchase_line_id.order_id.date_approve)
+                
+                if tolerancia_date and purchase_date_as_date and purchase_date_as_date < tolerancia_date:
+                    continue 
+                
+                if move.quantity > max_allowed:
+                    # Enviar notificación/actividad a Administradores de Compra
+                    msg_title = "Validación de Recepción en Exceso"
+                    msg_body = (
+                        f"El usuario {self.env.user.name} está intentando recibir unidades en exceso "
+                        f"para el producto <b>{move.product_id.display_name}</b> en el traslado <b>{self.name}</b>.<br/>"
+                        f"Demanda: {move.product_uom_qty} | Tolerancia: {tolerancia} | Realizado: {move.quantity}.<br/>"
+                        f"Por favor, revise este albarán directamente."
+                    )
+                    self._notify_administrators('purchase.group_purchase_manager', msg_title, msg_body)
+                    
+                    raise UserError(_(
+                        "Se ha excedido la tolerancia permitida para el producto '%s'.\n"
+                        "Se ha enviado una notificación automática a los Administradores de Compras para su revisión directamente en la plataforma."
+                    ) % move.product_id.display_name)
+
+        # Verificar si es una entrega (albarán de salida) y si el usuario NO es Administrador de Ventas
+        if self.picking_type_id.code == 'outgoing' and not is_sales_admin:
+            for move in self.move_ids:
+                tolerancia = move.tolerancia_venta or 0.0
+                max_allowed = move.product_uom_qty + tolerancia
+                tolerancia_date = move.product_id.product_tmpl_id.fecha_minima_tolerancia_venta
+                sale_date_as_date = fields.Date.to_date(move.sale_line_id.order_id.date_order)
+                
+                if tolerancia_date and sale_date_as_date and sale_date_as_date < tolerancia_date:
+                    continue 
+                
+                if move.quantity > max_allowed:
+                    # Enviar notificación/actividad a Administradores de Venta
+                    msg_title = "Validación de Entrega en Exceso"
+                    msg_body = (
+                        f"El usuario {self.env.user.name} está intentando entregar unidades en exceso "
+                        f"para el producto <b>{move.product_id.display_name}</b> en el traslado <b>{self.name}</b>.<br/>"
+                        f"Demanda: {move.product_uom_qty} | Tolerancia: {tolerancia} | Realizado: {move.quantity}.<br/>"
+                        f"Por favor, revise este albarán directamente."
+                    )
+                    self._notify_administrators('sales.group_sales_manager', msg_title, msg_body)
+
+                    raise UserError(_(
+                        "Se ha excedido la tolerancia permitida para el producto '%s'.\n"
+                        "Se ha enviado una notificación automática a los Administradores de Ventas para su revisión directamente en la plataforma."
+                    ) % move.product_id.display_name)
+                    
+        return super(StockPicking, self).button_validate()

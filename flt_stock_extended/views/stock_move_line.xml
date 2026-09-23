@@ -8,44 +8,25 @@
             <xpath expr="//field[@name='result_package_id' and not(@column_invisible='True')]" position="before">
                 <field name="package_id" column_invisible="parent.picking_type_id == 1"/>
             </xpath>
-            <xpath expr="//field[@name='result_package_id' and not(@column_invisible='True')]" position="attributes">
-                <attribute name="readonly">validation_state != 'pending'</attribute>
-            </xpath>
             <xpath expr="//field[@name='quantity']" position="before">
                 <!-- <field name="tara_bolsa" column_invisible="parent.picking_type_id != 1"/>
                 <field name="cantidad_conos" column_invisible="parent.picking_type_id != 1"/>
                 <field name="tara_cono" column_invisible="parent.picking_type_id != 1"/>
                 <field name="peso_bruto" column_invisible="parent.picking_type_id != 1"/>
                 <field name="peso_neto" column_invisible="parent.picking_type_id != 1"/> -->
-                <field name="package_type_id" readonly="validation_state != 'pending'"/>
-                <field name="tara_bolsa" readonly="validation_state != 'pending'"/>
-                <field name="cono_id" readonly="validation_state != 'pending'"/>
-                <field name="cantidad_conos" readonly="validation_state != 'pending'"/>
-                <field name="tara_cono" readonly="validation_state != 'pending'"/>
-                <field name="tara_cono_total" readonly="validation_state != 'pending'"/>
-                <field name="peso_bruto" readonly="validation_state != 'pending'"/>
-                <field name="peso_neto" readonly="validation_state != 'pending'"/>
+                <field name="tara_bolsa"/>
+                <field name="cono_id"/>
+                <field name="cantidad_conos"/>
+                <field name="tara_cono"/>
+                <field name="tara_cono_total"/>
+                <field name="peso_bruto"/>
+                <field name="peso_neto"/>
             </xpath>
             <xpath expr="//field[@name='quantity']" position="attributes">
                 <attribute name="optional">hide</attribute>
             </xpath>
             <xpath expr="//list" position="inside">
-                <field name="validation_state" widget="badge"
-                       decoration-success="validation_state == 'validated'"
-                       decoration-warning="validation_state == 'pending'"
-                       decoration-danger="validation_state == 'cancel'"/>
                 <button name="action_duplicar" string="Duplicar" type="object"
-                        column_invisible="parent.state in ('done', 'cancel')"/>
-                <button name="action_validate_line" string="Validar" type="object" icon="fa-check"
-                        invisible="validation_state != 'pending'"
-                        column_invisible="parent.state in ('done', 'cancel')"/>
-                <button name="action_print_label" string="Imprimir ZPL" type="object" icon="fa-print"
-                        invisible="validation_state != 'validated'"/>
-                <button name="action_reset_line" string="Reabrir" type="object" icon="fa-undo"
-                        invisible="validation_state == 'pending'"
-                        column_invisible="parent.state in ('done', 'cancel')"/>
-                <button name="action_cancel_line" string="Cancelar" type="object" icon="fa-times"
-                        invisible="validation_state != 'pending'"
                         column_invisible="parent.state in ('done', 'cancel')"/>
             </xpath>
 
@@ -61,39 +42,45 @@
              <xpath expr="//field[@name='result_package_id' and not(@column_invisible='True')]" position="before">
                 <field name="package_id"/>
             </xpath>
-            <xpath expr="//field[@name='result_package_id' and not(@column_invisible='True')]" position="attributes">
-                <attribute name="readonly">validation_state != 'pending'</attribute>
-            </xpath>
             <xpath expr="//field[@name='quantity']" position="before">
-                <field name="package_type_id" readonly="validation_state != 'pending'"/>
-                <field name="tara_bolsa" readonly="validation_state != 'pending'"/>
-                <field name="cono_id" readonly="validation_state != 'pending'"/>
-                <field name="cantidad_conos" readonly="validation_state != 'pending'"/>
-                <field name="tara_cono" readonly="validation_state != 'pending'"/>
-                <field name="tara_cono_total" readonly="validation_state != 'pending'"/>
-                <field name="peso_bruto" readonly="validation_state != 'pending'"/>
-                <field name="peso_neto" readonly="validation_state != 'pending'"/>
+                <field name="tara_bolsa"/>
+                <field name="cono_id"/>
+                <field name="cantidad_conos"/>
+                <field name="tara_cono"/>
+                <field name="tara_cono_total"/>
+                <field name="peso_bruto"/>
+                <field name="peso_neto"/>
             </xpath>
             <xpath expr="//field[@name='quantity']" position="attributes">
                 <attribute name="optional">hide</attribute>
             </xpath>
-            <xpath expr="//list" position="inside">
-                <field name="validation_state" widget="badge"
-                       decoration-success="validation_state == 'validated'"
-                       decoration-warning="validation_state == 'pending'"
-                       decoration-danger="validation_state == 'cancel'"/>
-                <button name="action_validate_line" string="Validar" type="object" icon="fa-check"
-                        invisible="validation_state != 'pending'"
+            <!-- <xpath expr="//list" position="inside">
+                <button name="action_duplicar" string="Duplicar" type="object"
                         column_invisible="parent.state in ('done', 'cancel')"/>
-                <button name="action_print_label" string="Imprimir ZPL" type="object" icon="fa-print"
-                        invisible="validation_state != 'validated'"/>
-                <button name="action_reset_line" string="Reabrir" type="object" icon="fa-undo"
-                        invisible="validation_state == 'pending'"
-                        column_invisible="parent.state in ('done', 'cancel')"/>
-                <button name="action_cancel_line" string="Cancelar" type="object" icon="fa-times"
-                        invisible="validation_state != 'pending'"
-                        column_invisible="parent.state in ('done', 'cancel')"/>
-            </xpath>
+            </xpath> -->
         </field>
     </record>
+
+    <record id="mrp_subcontracting_move_line_tree_inherit" model="ir.ui.view">
+    <field name="name">mrp.subcontracting.move.line.tree.inherit</field>
+    <field name="model">stock.move.line</field>
+    <!-- Inherit the specific move line tree used by mrp_subcontracting -->
+    <field name="inherit_id" ref="mrp_subcontracting.mrp_subcontracting_stock_move_line_tree_view"/>
+    <field name="arch" type="xml">
+        <!-- Adjust the xpath target depending on your exact Odoo version (e.g., 'qty_done' or 'quantity') -->
+        <xpath expr="//field[@name='quantity']" position="before">
+            <field name="tara_bolsa"/>
+            <field name="cono_id"/>
+            <field name="cantidad_conos"/>
+            <field name="tara_cono"/>
+            <field name="tara_cono_total"/>
+            <field name="peso_bruto"/>
+            <field name="peso_neto"/>
+        </xpath>
+        <xpath expr="//list" position="inside">
+            <button name="action_duplicar" string="Duplicar" type="object"
+                    column_invisible="parent.state in ('done', 'cancel')"/>
+        </xpath>
+    </field>
+</record>
 </odoo>
