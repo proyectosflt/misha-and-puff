@@ -185,6 +185,8 @@ class ProductTemplate(models.Model):
             for rec in self:
                 if rec.codificacion and rec.name != rec.codificacion:
                     rec.with_context(skip_name_sync=True).write({'name': rec.codificacion})
+                if not rec.product_template_id:
+                    rec.product_template_id = rec.id
         # Trigger recomputation on variants when template is updated
         self.product_variant_ids._compute_studio_fields()
         return res
