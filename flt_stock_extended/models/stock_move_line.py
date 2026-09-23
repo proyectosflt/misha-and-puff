@@ -9,7 +9,7 @@ class StockMoveLine(models.Model):
     cono_id = fields.Many2one('tipo.cono', string='Tipo de Cono')
     tara_bolsa = fields.Float(string="Tara bolsa", compute='_compute_tara_bolsa', store=True, readonly=False, digits='Stock Weight')
     tara_cono = fields.Float(string="Tara cono unitaria", compute='_compute_tara_cono', store=True, readonly=False, digits='Stock Weight')
-    tara_cono_total = fields.Float(string="Tara cono total", compute='_compute_tara_cono_total', store=True, readonly=False, digits='Stock Weight')
+    tara_cono_total = fields.Float(string="Tara total", compute='_compute_tara_cono_total', store=True, readonly=False, digits='Stock Weight')
     peso_bruto = fields.Float(string="Peso bruto", digits='Stock Weight')
     peso_neto = fields.Float(string="Peso neto", compute='_compute_peso_neto', store=True, readonly=False, digits='Stock Weight')
 
@@ -32,20 +32,20 @@ class StockMoveLine(models.Model):
             if not record.tara_cono and record.cono_id:
                 record.tara_cono = record.cono_id.tara_cono or 0.0
 
-    @api.depends('tara_cono', 'cantidad_conos')
+    @api.depends('tara_bolsa', 'tara_cono', 'cantidad_conos')
     def _compute_tara_cono_total(self):
         for record in self:
-            record.tara_cono_total = (record.tara_cono or 0.0) * (record.cantidad_conos or 0)
+            record.tara_cono_total = (record.tara_bolsa or 0.0) + (record.tara_cono or 0.0) * (record.cantidad_conos or 0)
             
     
 
-    @api.depends('peso_bruto', 'tara_bolsa', 'tara_cono', 'cantidad_conos')
+    @api.depends('peso_bruto', 'tara_cono_total')
     def _compute_peso_neto(self):
         for record in self:
             if not record.exists() or record.state == 'done':
                 continue
             try:
-                value = (record.peso_bruto or 0.0) - (record.tara_bolsa or 0.0) - ((record.tara_cono or 0.0) * (record.cantidad_conos or 0))
+                value = (record.peso_bruto or 0.0) - (record.tara_cono_total or 0.0)
                 record.peso_neto = value
                 if value != 0:
                     record.quantity = value

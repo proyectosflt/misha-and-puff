@@ -123,7 +123,7 @@ class StockPackagesDesgloseDest(models.Model):
     peso_bruto = fields.Float(string="Peso bruto", digits='Stock Weight')
     tara_bolsa = fields.Float(compute='_compute_tara_bolsa', readonly=False, store=True, digits='Stock Weight')
     tara_cono = fields.Float(compute='_compute_tara_cono', readonly=False, store=True, digits='Stock Weight')
-    tara_cono_total = fields.Float(compute='_compute_tara_cono_total', store=True, digits='Stock Weight')
+    tara_cono_total = fields.Float(string="Tara total", compute='_compute_tara_cono_total', store=True, digits='Stock Weight')
     peso_neto = fields.Float(compute='_compute_peso_neto', store=True, digits='Stock Weight')
     
     package_id = fields.Many2one('stock.quant.package', string="Paquete Creado", readonly=True, copy=False)
@@ -144,15 +144,15 @@ class StockPackagesDesgloseDest(models.Model):
         for line in self:
             line.tara_cono = line.cono_id.tara_cono or 0.0
 
-    @api.depends('tara_cono', 'cantidad_conos')
+    @api.depends('tara_bolsa', 'tara_cono', 'cantidad_conos')
     def _compute_tara_cono_total(self):
         for line in self:
-            line.tara_cono_total = (line.tara_cono or 0.0) * (line.cantidad_conos or 0)
+            line.tara_cono_total = (line.tara_bolsa or 0.0) + (line.tara_cono or 0.0) * (line.cantidad_conos or 0)
 
-    @api.depends('peso_bruto', 'tara_bolsa', 'tara_cono_total')
+    @api.depends('peso_bruto', 'tara_cono_total')
     def _compute_peso_neto(self):
         for line in self:
-            line.peso_neto = (line.peso_bruto or 0.0) - (line.tara_bolsa or 0.0) - (line.tara_cono_total or 0.0)
+            line.peso_neto = (line.peso_bruto or 0.0) - (line.tara_cono_total or 0.0)
 
     def action_apply_line(self):
         for line in self:
