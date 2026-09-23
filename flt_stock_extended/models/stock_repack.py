@@ -17,10 +17,12 @@ class StockRepack(models.Model):
     location_id = fields.Many2one('stock.location', required=True,
                                    domain=[('usage', '=', 'internal')], string="Ubicación de Origen")
     theoretical_qty = fields.Float(compute='_compute_theoretical_qty',
-                                   digits='Stock Weight', string="Cantidad teórica")
+                                   digits='Stock Weight', string="Stock actual sin empacar")
+    cantidad_empacada = fields.Float(compute='_compute_cantidad_empacada',
+                                     digits='Stock Weight', string="Cantidad empacada")
     line_ids = fields.One2many('stock.repack.line', 'repack_id', string="Líneas de empaque")
     remaining_qty = fields.Float(compute='_compute_remaining_qty',
-                                  digits='Stock Weight', string="Cantidad restante")
+                                  digits='Stock Weight', string="Cantidad faltante por empacar")
 
     @api.depends('product_id', 'location_id')
     def _compute_theoretical_qty(self):
@@ -34,10 +36,15 @@ class StockRepack(models.Model):
                 ])
                 w.theoretical_qty = sum(quants.mapped('quantity'))
 
-    @api.depends('theoretical_qty', 'line_ids.peso_neto')
+    @api.depends('line_ids.peso_neto')
+    def _compute_cantidad_empacada(self):
+        for w in self:
+            w.cantidad_empacada = sum(w.line_ids.mapped('peso_neto'))
+
+    @api.depends('cantidad_empacada', 'theoretical_qty')
     def _compute_remaining_qty(self):
         for w in self:
-            w.remaining_qty = w.theoretical_qty - sum(w.line_ids.mapped('peso_neto'))
+            w.remaining_qty = w.cantidad_empacada - w.theoretical_qty
 
     def action_finalizar(self):
         self.ensure_one()
