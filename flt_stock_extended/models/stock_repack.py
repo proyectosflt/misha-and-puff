@@ -22,7 +22,7 @@ class StockRepack(models.Model):
                                      digits='Stock Weight', string="Cantidad empacada")
     line_ids = fields.One2many('stock.repack.line', 'repack_id', string="Líneas de empaque")
     remaining_qty = fields.Float(compute='_compute_remaining_qty',
-                                  digits='Stock Weight', string="Cantidad faltante por empacar")
+                                  digits='Stock Weight', string="Diferencia")
 
     @api.depends('product_id', 'location_id')
     def _compute_theoretical_qty(self):
