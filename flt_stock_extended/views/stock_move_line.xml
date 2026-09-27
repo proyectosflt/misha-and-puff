@@ -6,16 +6,16 @@
         <field name="inherit_id" ref="stock.view_stock_move_line_operation_tree"/>
         <field name="arch" type="xml">
             <xpath expr="//field[@name='result_package_id' and not(@column_invisible='True')]" position="attributes">
-                <attribute name="column_invisible">parent.picking_type_code != 'incoming'</attribute>
+                <!-- <attribute name="column_invisible">parent.picking_type_code != 'incoming'</attribute> -->
                 <attribute name="readonly">1</attribute>
                 <attribute name="string">Paquete creado</attribute>
             </xpath>
             <xpath expr="//field[@name='product_uom_id']" position="after">
                 <field name="result_package_id" position="move"/>
             </xpath>
-            <xpath expr="//field[@name='result_package_id' and not(@column_invisible='True')]" position="before">
+            <!-- <xpath expr="//field[@name='result_package_id' and not(@column_invisible='True')]" position="before">
                 <field name="package_id" column_invisible="parent.picking_type_id == 1"/>
-            </xpath>
+            </xpath> -->
             <xpath expr="//field[@name='quantity']" position="before">
                 <!-- <field name="tara_bolsa" column_invisible="parent.picking_type_id != 1"/>
                 <field name="cantidad_conos" column_invisible="parent.picking_type_id != 1"/>
