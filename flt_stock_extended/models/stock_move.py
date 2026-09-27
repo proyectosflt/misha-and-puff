@@ -4,9 +4,9 @@ from odoo import models, fields, api
 class StockMove(models.Model):
     _inherit = 'stock.move'
 
-    x_studio_title = fields.Char(related='product_id.product_tmpl_id.product_titulo_id', string="Title", readonly=True)
+    x_studio_title = fields.Char(related='product_id.product_tmpl_id.product_titulo_id.name', string="Title", readonly=True)
     descripcion = fields.Text(related='product_id.product_tmpl_id.descripcion', string="Descripción", readonly=True)
-    x_studio_color_code = fields.Char(related='product_id.product_tmpl_id.product_color_id', string="Color Code", readonly=True)
+    x_studio_color_code = fields.Char(related='product_id.product_tmpl_id.product_color_id.codigo', string="Color Code", readonly=True)
     x_studio_color_name = fields.Char(related='product_id.product_tmpl_id.product_color_name', string="Color Name", readonly=True)
     color_family_id = fields.Many2one(related='product_id.product_tmpl_id.color_family_id', string="Familia de Color", readonly=True)
     item_number = fields.Integer(string="Item", compute='_compute_item_number')
