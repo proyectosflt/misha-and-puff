@@ -9,8 +9,10 @@
             <list string="Desglose y reempacado">
                 <field name="create_date" string="Fecha"/>
                 <field name="theoretical_conos"/>
+                <field name="packed_conos"/>
                 <field name="remaining_conos"/>
                 <field name="theoretical_neto"/>
+                <field name="packed_neto"/>
                 <field name="remaining_neto"/>
                 <field name="state"/>
             </list>
@@ -30,12 +32,17 @@
                 <sheet>
                     <group>
                         <field name="create_date" string="Fecha de creación" readonly="1"/>
-                        <group string="Totales Teóricos (Origen)">
+                        <group string="Origen">
                             <field name="theoretical_conos" readonly="1"/>
                             <field name="theoretical_bruto" readonly="1"/>
                             <field name="theoretical_neto" readonly="1"/>
                         </group>
-                        <group string="Pendiente por Empacar (Diferencias)">
+                        <group string="Empacado">
+                            <field name="packed_conos" readonly="1"/>
+                            <field name="packed_bruto" readonly="1"/>
+                            <field name="packed_neto" readonly="1"/>
+                        </group>
+                        <group string="Diferencias">
                             <!-- We can use decorators to highlight errors if there are remaining cones -->
                             <field name="remaining_conos" readonly="1" decoration-danger="remaining_conos != 0" decoration-success="remaining_conos == 0"/>
                             <field name="remaining_bruto" readonly="1"/>

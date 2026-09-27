@@ -16,13 +16,17 @@ class StockPackagesDesglose(models.Model):
     source_line_ids = fields.One2many('stock.packages.desglose.source', 'desglose_id', string="Paquetes de Origen")
     dest_line_ids = fields.One2many('stock.packages.desglose.dest', 'desglose_id', string="Nuevos Paquetes (Destino)")
 
-    theoretical_conos = fields.Integer(compute='_compute_theoreticals', string="Conos Teóricos")
-    theoretical_bruto = fields.Float(compute='_compute_theoreticals', string="Peso Bruto Teórico", digits='Stock Weight')
-    theoretical_neto = fields.Float(compute='_compute_theoreticals', string="Peso Neto Teórico", digits='Stock Weight')
+    theoretical_conos = fields.Integer(compute='_compute_theoreticals', string="Conos")
+    theoretical_bruto = fields.Float(compute='_compute_theoreticals', string="Peso Bruto", digits='Stock Weight')
+    theoretical_neto = fields.Float(compute='_compute_theoreticals', string="Peso Neto", digits='Stock Weight')
 
-    remaining_conos = fields.Integer(compute='_compute_remainings', string="Conos Restantes")
-    remaining_bruto = fields.Float(compute='_compute_remainings', string="Peso Bruto Restante", digits='Stock Weight')
-    remaining_neto = fields.Float(compute='_compute_remainings', string="Peso Neto Restante", digits='Stock Weight')
+    packed_conos = fields.Integer(compute='_compute_packed', string="Conos")
+    packed_bruto = fields.Float(compute='_compute_packed', string="Peso Bruto", digits='Stock Weight')
+    packed_neto = fields.Float(compute='_compute_packed', string="Peso Neto", digits='Stock Weight')
+
+    remaining_conos = fields.Integer(compute='_compute_remainings', string="Conos")
+    remaining_bruto = fields.Float(compute='_compute_remainings', string="Peso Bruto", digits='Stock Weight')
+    remaining_neto = fields.Float(compute='_compute_remainings', string="Peso Neto", digits='Stock Weight')
 
     @api.depends('source_line_ids.cantidad_conos', 'source_line_ids.peso_bruto', 'source_line_ids.peso_neto')
     def _compute_theoreticals(self):
@@ -31,13 +35,20 @@ class StockPackagesDesglose(models.Model):
             rec.theoretical_bruto = sum(rec.source_line_ids.mapped('peso_bruto'))
             rec.theoretical_neto = sum(rec.source_line_ids.mapped('peso_neto'))
 
+    @api.depends('dest_line_ids.cantidad_conos', 'dest_line_ids.peso_bruto', 'dest_line_ids.peso_neto')
+    def _compute_packed(self):
+        for rec in self:
+            rec.packed_conos = sum(rec.dest_line_ids.mapped('cantidad_conos'))
+            rec.packed_bruto = sum(rec.dest_line_ids.mapped('peso_bruto'))
+            rec.packed_neto = sum(rec.dest_line_ids.mapped('peso_neto'))
+
     @api.depends('theoretical_conos', 'theoretical_bruto', 'theoretical_neto',
-                 'dest_line_ids.cantidad_conos', 'dest_line_ids.peso_bruto', 'dest_line_ids.peso_neto')
+                 'packed_conos', 'packed_bruto', 'packed_neto')
     def _compute_remainings(self):
         for rec in self:
-            rec.remaining_conos = rec.theoretical_conos - sum(rec.dest_line_ids.mapped('cantidad_conos'))
-            rec.remaining_bruto = rec.theoretical_bruto - sum(rec.dest_line_ids.mapped('peso_bruto'))
-            rec.remaining_neto = rec.theoretical_neto - sum(rec.dest_line_ids.mapped('peso_neto'))
+            rec.remaining_conos = rec.packed_conos - rec.theoretical_conos
+            rec.remaining_bruto = rec.packed_bruto - rec.theoretical_bruto
+            rec.remaining_neto = rec.packed_neto - rec.theoretical_neto
 
     def action_finalizar(self):
         self.ensure_one()
