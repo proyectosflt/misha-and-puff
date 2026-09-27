@@ -11,7 +11,7 @@
         'views/external_layout_guide_remission_letter.xml',
         'views/report_guide_remission.xml',
         'views/edi_status_wizard_views.xml',
-        'views/account_move_views.xml',
+        # 'views/account_move_views.xml',
         # 'views/documents_menu.xml',
         # 'views/custom_ubl_templates.xml',
         # 'views/stock_picking_edi.xml',
