@@ -15,7 +15,7 @@
         # 'views/documents_menu.xml',
         # 'views/custom_ubl_templates.xml',
         # 'views/stock_picking_edi.xml',
-        'views/stock_picking_views.xml',
+        # 'views/stock_picking_views.xml',
         # 'views/res_company_views.xml'
     ],
     'installable': True,
