@@ -40,5 +40,15 @@
     <record id="stock.menu_packaging_types" model="ir.ui.menu">
         <field name="name">Tipo de Bolsa</field>
     </record>
+
+    <function model="ir.ui.menu" name="write" context="{'lang': 'es_PE'}">
+        <value eval="[ref('stock.menu_packaging_types')]"/>
+        <value eval="{'name': 'Tipo de Bolsa'}"/>
+    </function>
+
+    <function model="ir.actions.act_window" name="write" context="{'lang': 'es_PE'}">
+        <value eval="[ref('stock.action_package_type_view')]"/>
+        <value eval="{'name': 'Tipo de Bolsa'}"/>
+    </function>
  
 </odoo>
