@@ -43,9 +43,9 @@
                 <attribute name="sum">Total Cantidad Neto</attribute>
             </xpath>
             <xpath expr="//field[@name='move_ids_without_package']/list/field[@name='quantity']" position="after">
-                <field name="neto_prov" optional="show" sum="Total Neto Prov"/>
+                <field name="neto_prov" optional="show" column_invisible="parent.picking_type_code != 'incoming'" sum="Total Neto Prov"/>
                 <field name="diferencia_demanda" optional="show" widget="badge" decoration-success="diferencia_demanda &gt; 0" decoration-danger="diferencia_demanda &lt;= 0" sum="Total Dif. Demanda"/>
-                <field name="diferencia_prov" optional="show" widget="badge" decoration-success="diferencia_prov &gt; 0" decoration-danger="diferencia_prov &lt;= 0" sum="Total Dif. Prov"/>
+                <field name="diferencia_prov" optional="show" column_invisible="parent.picking_type_code != 'incoming'" widget="badge" decoration-success="diferencia_prov &gt; 0" decoration-danger="diferencia_prov &lt;= 0" sum="Total Dif. Prov"/>
             </xpath>
         </field>
     </record>
