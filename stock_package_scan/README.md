@@ -1,56 +1,55 @@
-# Stock Package Scan
+# Escaneo de paquetes
 
-A small Odoo 18 module that opens a barcode-app-style screen: scan (or
-type) a product's barcode to list every package that currently holds
-that product, then scan each package to check it off.
+Módulo para Odoo 18 que abre una pantalla de escaneo de códigos de barras:
+escanee (o escriba) el código de barras de un producto para listar todos los
+paquetes que lo contienen y, después, escanee cada paquete para marcarlo como
+completado.
 
-## Requirements
+## Requisitos
 
-- Odoo 18. Community is enough — this only depends on `stock` and the
-  core `barcode` module (the same one behind hardware-scanner input in
-  Inventory / POS). No Enterprise `stock_barcode` needed. If `depends`
-  fails to find `barcode` on your install, check the exact technical
-  name in Apps (it's the small module, not the full Barcode app).
+- Odoo 18. La edición Community es suficiente. El módulo solo depende de
+  `stock` y del módulo `stock_barcode`, que proporciona la entrada de
+  lectores de códigos de barras en Inventario y Punto de venta. Si Odoo no
+  encuentra `stock_barcode`, compruebe su nombre técnico en Aplicaciones.
 
-## How it works
+## Funcionamiento
 
-- `stock.package.scan` is the session header; `stock.package.scan.line`
-  is one row per package.
-- Every scan (product or package) goes through one input box and one
-  server method, `stock.package.scan.process_barcode()`:
-  1. If the barcode matches a package already listed and not yet
-     scanned, that line is marked scanned.
-  2. Otherwise the barcode is looked up as a product (or a product
-     packaging) barcode. Every `stock.quant` for that product with a
-     `package_id` set and `quantity > 0` is found, and any package not
-     already in the list is added as a new line.
-- Packages are matched to a scanned barcode by their `name` field —
-  the identifier `stock.quant.package` gets by default from its
-  sequence (e.g. `PACK0000123`). If your printed package labels encode
-  something else, add a dedicated field on `stock.quant.package` and
-  match on that instead in `_find_product_by_barcode`/`process_barcode`.
-- Scanning a second product barcode in the same session *adds* its
-  packages to the existing list rather than replacing it — handy for
-  building a multi-product pick/check list in one pass. Call
-  `action_reset()` (or start a new session) to clear it instead.
-- The client action (`static/src/client_action/`) creates a new
-  `stock.package.scan` record the moment it opens with no `active_id`
-  in context — matching the "open it and go" feel of the Barcode app.
-  Opening it from a saved record's form (the "Open Scanner" button)
-  passes `active_id` and resumes that session instead.
+- `stock.package.scan` representa la sesión y `stock.package.scan.line`
+  contiene una línea por paquete.
+- Todos los escaneos, tanto de productos como de paquetes, se procesan desde
+  una única entrada y el método de servidor
+  `stock.package.scan.process_barcode()`:
+  1. Si el código coincide con un paquete de la lista que aún no se ha
+     escaneado, la línea se marca como escaneada.
+  2. De lo contrario, se busca como código de barras de un producto o de un
+     embalaje de producto. Se buscan todos los registros `stock.quant` de ese
+     producto con `package_id` definido y `quantity > 0`; cada paquete que aún
+     no esté en la lista se añade como una línea nueva.
+- Los paquetes se identifican por el campo `name`, que normalmente se genera
+  con la secuencia de `stock.quant.package` (por ejemplo, `PACK0000123`). Si
+  las etiquetas impresas usan otro identificador, añada un campo específico
+  en `stock.quant.package` y utilícelo en `_find_product_by_barcode` o
+  `process_barcode`.
+- Al escanear otro producto durante la misma sesión, sus paquetes se agregan
+  a la lista existente en lugar de reemplazarla. Para vaciar la lista, ejecute
+  `action_reset()` o inicie una sesión nueva.
+- La acción de cliente (`static/src/client_action/`) crea un registro nuevo de
+  `stock.package.scan` al abrirse sin `active_id` en el contexto. Al abrirla
+  desde el formulario de una sesión guardada mediante el botón «Abrir
+  escáner», recibe el `active_id` y reanuda esa sesión.
 
-## Extending
+## Posibles ampliaciones
 
-- For camera-based scanning on phones without external hardware, look
-  at `web`'s mobile barcode scanner service and offer it as a second
-  input option alongside the hardware-scanner listener already wired
-  up here.
-- Add a `picking_type_id` / warehouse concept if this should be tied
-  to a specific operation type rather than a free-standing tool.
-- Add scan sound/vibration feedback the way the Barcode app does,
-  using the Web Audio API inside the client action.
-- For GS1/nomenclature-aware parsing instead of a flat `barcode`-field
-  match, route scans through `barcode.nomenclature` before
-  `_find_product_by_barcode`.
-- Drop a 140x130 `icon.png` in `static/description/` and reference it
-  with `web_icon` on the root menu for a custom Apps-switcher tile.
+- Para escanear con la cámara de teléfonos sin un lector externo, consulte
+  el servicio de escaneo móvil de códigos de barras de `web` y ofrézcalo como
+  alternativa al detector de lectores físicos ya integrado.
+- Añada un concepto `picking_type_id` o de almacén si la herramienta debe
+  vincularse a un tipo de operación específico.
+- Añada sonidos o vibración al escanear, como en la aplicación de códigos de
+  barras, mediante la API Web Audio en la acción de cliente.
+- Para interpretar nomenclaturas GS1 en lugar de buscar directamente en el
+  campo `barcode`, procese los escaneos con `barcode.nomenclature` antes de
+  llamar a `_find_product_by_barcode`.
+- Para mostrar un icono propio en el selector de aplicaciones, añada un
+  archivo `icon.png` de 140x130 en `static/description/` y especifique
+  `web_icon` en el menú raíz.

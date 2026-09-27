@@ -8,12 +8,12 @@ class StockPackageScan(models.Model):
     _description = 'Escaneo de contenido de paquetes'
     _order = 'id desc'
 
-    name = fields.Char(default=lambda self: _('Nuevo'), copy=False, readonly=True)
+    name = fields.Char(string='Referencia', default=lambda self: _('Nuevo'), copy=False, readonly=True)
     state = fields.Selection([
         ('draft', 'Borrador'),
         ('in_progress', 'En progreso'),
         ('done', 'Hecho'),
-    ], default='draft', required=True, copy=False)
+    ], string='Estado', default='draft', required=True, copy=False)
 
     product_id = fields.Many2one(
         'product.product', string='Último producto buscado',
@@ -28,13 +28,13 @@ class StockPackageScan(models.Model):
     user_id = fields.Many2one(
         'res.users', string='Escaneado por', default=lambda self: self.env.user)
     company_id = fields.Many2one(
-        'res.company', default=lambda self: self.env.company, required=True)
-    date = fields.Datetime(default=fields.Datetime.now)
+        'res.company', string='Compañía', default=lambda self: self.env.company, required=True)
+    date = fields.Datetime(string='Fecha de escaneo', default=fields.Datetime.now)
 
     line_ids = fields.One2many(
         'stock.package.scan.line', 'scan_id', string='Líneas de paquete')
-    line_count = fields.Integer(compute='_compute_line_stats')
-    scanned_count = fields.Integer(compute='_compute_line_stats')
+    line_count = fields.Integer(string='Paquetes encontrados', compute='_compute_line_stats')
+    scanned_count = fields.Integer(string='Paquetes escaneados', compute='_compute_line_stats')
     progress = fields.Float(compute='_compute_line_stats', string='Progreso (%)')
 
     @api.depends('line_ids.scanned')

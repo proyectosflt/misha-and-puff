@@ -12,8 +12,7 @@ como la aplicación de códigos de barras integrada: una entrada, una pantalla,
 retroalimentación visual instantánea por línea.
 """,
     'version': '18.0.1.0.0',
-    'category': 'Inventory',
-    'author': 'Your Company',
+    'category': 'Inventario',
     'license': 'LGPL-3',
     'depends': [
         'stock',

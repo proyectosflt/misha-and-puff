@@ -8,7 +8,8 @@ class StockPackageScanLine(models.Model):
     _order = 'scanned asc, id asc'
 
     scan_id = fields.Many2one(
-        'stock.package.scan', required=True, ondelete='cascade', index=True)
+        'stock.package.scan', string='Sesión de escaneo', required=True,
+        ondelete='cascade', index=True)
     package_id = fields.Many2one(
         'stock.quant.package', required=True, string='Paquete', ondelete='restrict')
     location_id = fields.Many2one(
@@ -17,9 +18,9 @@ class StockPackageScanLine(models.Model):
         string='Cantidad encontrada',
         help="Cantidad del producto buscado que había en este paquete "
              "cuando se añadió a la lista.")
-    scanned = fields.Boolean(default=False)
-    scanned_date = fields.Datetime()
-    scanned_by = fields.Many2one('res.users')
+    scanned = fields.Boolean(string='Escaneado', default=False)
+    scanned_date = fields.Datetime(string='Fecha de escaneo')
+    scanned_by = fields.Many2one('res.users', string='Escaneado por')
 
     _sql_constraints = [
         ('scan_package_uniq', 'unique(scan_id, package_id)',
