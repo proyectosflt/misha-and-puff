@@ -40,5 +40,5 @@
     <record id="stock.menu_packaging_types" model="ir.ui.menu">
         <field name="name">Tipo de Bolsa</field>
     </record>
-
+ 
 </odoo>

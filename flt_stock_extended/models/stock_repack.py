@@ -116,7 +116,7 @@ class StockRepackLine(models.Model):
         domain=[('usage', '=', 'internal')],
         default=lambda self: self._default_location_id()
     )
-    package_type_id = fields.Many2one('stock.package.type', string="Tipo de paquete", required=True)
+    package_type_id = fields.Many2one('stock.package.type', string="Tipo de bolsa", required=True)
     cono_id = fields.Many2one('tipo.cono', string="Tipo de cono")
     cantidad_conos = fields.Integer(string="Conos")
     peso_bruto = fields.Float(string="Peso bruto", digits='Stock Weight')
