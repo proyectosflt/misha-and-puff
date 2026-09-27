@@ -8,7 +8,7 @@ class StockMoveLine(models.Model):
     cantidad_conos = fields.Integer(string="Conos")
     cono_id = fields.Many2one('tipo.cono', string='Tipo de Cono')
     tara_bolsa = fields.Float(string="Tara bolsa", compute='_compute_tara_bolsa', store=True, readonly=False, digits='Stock Weight')
-    tara_cono = fields.Float(string="Tara cono unitaria", compute='_compute_tara_cono', store=True, readonly=False, digits='Stock Weight')
+    tara_cono = fields.Float(string="Tara cono", compute='_compute_tara_cono', store=True, readonly=False, digits='Stock Weight')
     tara_cono_total = fields.Float(string="Tara total", compute='_compute_tara_cono_total', store=True, readonly=False, digits='Stock Weight')
     peso_bruto = fields.Float(string="Peso bruto", digits='Stock Weight')
     peso_neto = fields.Float(string="Peso neto", compute='_compute_peso_neto', store=True, readonly=False, digits='Stock Weight')
