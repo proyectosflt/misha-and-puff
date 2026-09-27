@@ -9,7 +9,7 @@
         <field name="arch" type="xml">
             <!-- Modificamos el orden por defecto de la lista -->
             <xpath expr="//list" position="attributes">
-                <attribute name="default_order">commitment_day asc, pri_tp_sort asc, pri_cp_sort asc</attribute>
+                <attribute name="default_order">no_priority asc, commitment_day asc, pri_tp_sort asc, pri_cp_sort asc</attribute>
             </xpath>
             <!-- Añadimos las columnas visuales -->
             <field name="partner_id" position="after">
@@ -29,7 +29,7 @@
         <field name="arch" type="xml">
             <!-- Modificamos el orden por defecto de la lista -->
             <xpath expr="//list" position="attributes">
-                <attribute name="default_order">scheduled_day asc, pri_tp_sort asc, pri_cp_sort asc</attribute>
+                <attribute name="default_order">no_priority asc, scheduled_day asc, pri_tp_sort asc, pri_cp_sort asc</attribute>
             </xpath>
             <!-- Añadimos las columnas visuales -->
             <field name="partner_id" position="after">
