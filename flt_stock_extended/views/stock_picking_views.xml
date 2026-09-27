@@ -17,9 +17,9 @@
             </xpath>
             <xpath expr="//field[@name='move_ids_without_package']/list/field[@name='product_id']" position="after">
                 <field name="descripcion" optional="show"/>
-                <field name="product_titulo_id" optional="show"/>
-                <field name="product_color_id" optional="show" string="Código Color"/>
-                <field name="product_color_name" optional="show"/>
+                <field name="x_studio_title" optional="show" string="Título"/>
+                <field name="x_studio_color_code" optional="show" string="Código Color"/>
+                <field name="x_studio_color_name" optional="show" string="Nombre Color"/>
                 <field name="color_family_id" optional="show"/>
             </xpath>
             
