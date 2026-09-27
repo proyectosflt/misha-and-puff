@@ -8,12 +8,12 @@
         <field name="arch" type="xml">
             <list string="Desglose y reempacado">
                 <field name="create_date" string="Fecha"/>
-                <field name="theoretical_conos"/>
-                <field name="packed_conos"/>
-                <field name="remaining_conos"/>
-                <field name="theoretical_neto"/>
-                <field name="packed_neto"/>
-                <field name="remaining_neto"/>
+                <field name="theoretical_conos" string="Conos (Origen)"/>
+                <field name="packed_conos" string="Conos (Empacado)"/>
+                <field name="remaining_conos" string="Conos (Diferencia)"/>
+                <field name="theoretical_neto" string="Neto (Origen)"/>
+                <field name="packed_neto" string="Neto (Empacado)"/>
+                <field name="remaining_neto" string="Neto (Diferencia)"/>
                 <field name="state"/>
             </list>
         </field>
@@ -30,19 +30,19 @@
                     <field name="state" widget="statusbar" statusbar_visible="draft,done"/>
                 </header>
                 <sheet>
-                    <group>
-                        <field name="create_date" string="Fecha de creación" readonly="1"/>
-                        <group string="Origen">
+                    <field name="create_date" string="Fecha de creación" readonly="1"/>
+                    <group col="6">
+                        <group string="Origen" colspan="2">
                             <field name="theoretical_conos" readonly="1"/>
                             <field name="theoretical_bruto" readonly="1"/>
                             <field name="theoretical_neto" readonly="1"/>
                         </group>
-                        <group string="Empacado">
+                        <group string="Empacado" colspan="2">
                             <field name="packed_conos" readonly="1"/>
                             <field name="packed_bruto" readonly="1"/>
                             <field name="packed_neto" readonly="1"/>
                         </group>
-                        <group string="Diferencias">
+                        <group string="Diferencias" colspan="2">
                             <!-- We can use decorators to highlight errors if there are remaining cones -->
                             <field name="remaining_conos" readonly="1" decoration-danger="remaining_conos != 0" decoration-success="remaining_conos == 0"/>
                             <field name="remaining_bruto" readonly="1"/>
