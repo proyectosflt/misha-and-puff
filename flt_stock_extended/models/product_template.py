@@ -102,8 +102,10 @@ class ProductTemplate(models.Model):
             ('default_code', operator, name),
             ('barcode', operator, name),
             ('codificacion_anterior', operator, name),
-            ('id', operator, name)
         ]
+
+        if name.isdigit():
+            domain = ['|'] + domain + [('id', '=', int(name))]
 
         if args:
             domain = ['&'] + args + domain
