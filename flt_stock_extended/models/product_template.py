@@ -15,6 +15,10 @@ class ProductTemplate(models.Model):
         string='Descripción',
         help='Descripción del producto'
     )
+
+    x_studio_design_name = fields.Char(string='Design Name')
+    x_studio_content = fields.Char(string='Content')
+    x_studio_percent = fields.Char(string='Percent')
     
     product_familia_id = fields.Many2one('product.familia', string='Familia')
     product_rubro_id = fields.Many2one('product.rubro', string='Rubro', domain="[('familia_ids', 'in', product_familia_id)]")

@@ -20,6 +20,11 @@
             <xpath expr="//field[@name='categ_id']" position="after">
                 <field name="descripcion"/>
             </xpath>
+            <xpath expr="//field[@name='descripcion']" position="after">
+                <field name="x_studio_design_name"/>
+                <field name="x_studio_content"/>
+                <field name="x_studio_percent"/>
+            </xpath>
             <xpath expr="//group[@name='group_general']" position="inside">
                 <field name="show_rubro" invisible="1"/>
                 <field name="show_material" invisible="1"/>
