@@ -24,7 +24,6 @@ class ProductProduct(models.Model):
     x_studio_title = fields.Char(string='Title', compute='_compute_studio_fields', store=True)
     x_studio_color_code = fields.Char(string='Color Code', compute='_compute_studio_fields', store=True)
     x_studio_color_name = fields.Char(string='Color Name', compute='_compute_studio_fields', store=True)
-    color_family_id = fields.Many2one('color.family', string='Familia de Color', compute='_compute_studio_fields', store=True)
     default_code = fields.Char(compute='_compute_studio_fields', store=True)
 
     @api.model
@@ -55,11 +54,9 @@ class ProductProduct(models.Model):
                  'product_template_variant_value_ids.attribute_id.name',
                  'product_template_variant_value_ids.product_attribute_value_id.name',
                  'product_template_variant_value_ids.product_attribute_value_id.nombre',
-                 'product_template_variant_value_ids.product_attribute_value_id.color_family_id',
                  'product_tmpl_id.attribute_line_ids',
                  'product_tmpl_id.attribute_line_ids.value_ids',
                  'product_tmpl_id.attribute_line_ids.value_ids.nombre',
-                 'product_tmpl_id.attribute_line_ids.value_ids.color_family_id',
                  'product_tmpl_id.attribute_line_ids.attribute_id.name',
                  'name',
                  'product_tmpl_id.name')
@@ -68,7 +65,6 @@ class ProductProduct(models.Model):
             title = False
             color_code = False
             color_name = False
-            color_family = False
             
             # First, check variant-specific values (for multi-variant attributes)
             ptavs = product.product_template_variant_value_ids
@@ -78,7 +74,6 @@ class ProductProduct(models.Model):
                     title = ptav.product_attribute_value_id.name
                 elif attr_name == 'Color':
                     val = ptav.product_attribute_value_id
-                    color_family = val.color_family_id
                     color_code = val.name
                     color_name = val.nombre
             
@@ -92,14 +87,12 @@ class ProductProduct(models.Model):
                         title = attr_line.value_ids[0].name
                     elif attr_name == 'Color' and not color_code and len(attr_line.value_ids) == 1:
                         val = attr_line.value_ids[0]
-                        color_family = val.color_family_id
                         color_code = val.name
                         color_name = val.nombre
             
             product.x_studio_title = title
             product.x_studio_color_code = color_code
             product.x_studio_color_name = color_name
-            product.color_family_id = color_family
             
             # Use product.name which delegates to template name
             # or fallback to product_tmpl_id.name directly
