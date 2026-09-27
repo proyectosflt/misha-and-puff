@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="stock_package_type_tree_inherit_flt" model="ir.ui.view">
+        <field name="name">stock.package.type.list.inherit.flt</field>
+        <field name="model">stock.package.type</field>
+        <field name="inherit_id" ref="stock.stock_package_type_tree"/>
+        <field name="arch" type="xml">
+            <xpath expr="//list" position="attributes">
+                <attribute name="string">Tipo de Bolsa</attribute>
+            </xpath>
+            <xpath expr="//field[@name='name']" position="after">
+                <field name="base_weight" optional="show"/>
+            </xpath>
+            <xpath expr="//field[@name='package_carrier_type']" position="attributes">
+                <attribute name="optional">hide</attribute>
+            </xpath>
+            <xpath expr="//field[@name='shipper_package_code']" position="attributes">
+                <attribute name="optional">hide</attribute>
+            </xpath>
+            <xpath expr="//field[@name='height']" position="attributes">
+                <attribute name="optional">hide</attribute>
+            </xpath>
+            <xpath expr="//field[@name='width']" position="attributes">
+                <attribute name="optional">hide</attribute>
+            </xpath>
+            <xpath expr="//field[@name='packaging_length']" position="attributes">
+                <attribute name="optional">hide</attribute>
+            </xpath>
+            <xpath expr="//field[@name='max_weight']" position="attributes">
+                <attribute name="optional">hide</attribute>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="stock.action_package_type_view" model="ir.actions.act_window">
+        <field name="name">Tipo de Bolsa</field>
+    </record>
+
+    <record id="stock.menu_packaging_types" model="ir.ui.menu">
+        <field name="name">Tipo de Bolsa</field>
+    </record>
+
+</odoo>

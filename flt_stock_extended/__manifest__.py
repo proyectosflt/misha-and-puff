@@ -3,7 +3,7 @@
     'name': 'Stock Extended',
     'category': 'Stock',
     'summary': 'Add new features to stock module',
-    'depends': ['base', 'stock', 'purchase', 'sale', 'sale_stock', 'purchase_stock', 'mail'],
+    'depends': ['base', 'stock', 'purchase', 'sale', 'sale_stock', 'purchase_stock', 'stock_delivery', 'mail'],
     'data': [
         'security/ir.model.access.csv',
         'views/stock_move_line.xml',
@@ -19,6 +19,7 @@
         'views/product_attribute_value_views.xml',
         'views/tipo_cono_views.xml',
         'views/menu_items.xml',
+        'views/stock_package_type_views.xml',
         'views/purchase_order_views.xml',
         'views/sale_order_views.xml',
         'data/cron_job.xml',
