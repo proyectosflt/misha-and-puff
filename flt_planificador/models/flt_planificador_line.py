@@ -66,7 +66,7 @@ class FltPlanificadorLine(models.Model):
         for line in following_lines:
             line.sequence += 1
 
-        new_line = self.copy(default={
+        self.copy(default={
             'planificador_id': self.planificador_id.id,
             'sequence': current_sequence + 1,
             'state': 'pendiente',
@@ -75,12 +75,10 @@ class FltPlanificadorLine(models.Model):
             'pri_prod': pri_prod_value,
         })
 
+        # Recarga la vista actual (mantiene dominio/contexto del planificador)
         return {
-            'type': 'ir.actions.act_window',
-            'res_model': 'flt.planificador.line',
-            'view_mode': 'list,form',
-            'res_id': new_line.id,
-            'target': 'current',
+            'type': 'ir.actions.client',
+            'tag': 'soft_reload',
         }
 
     @staticmethod
