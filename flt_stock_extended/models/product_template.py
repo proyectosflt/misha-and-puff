@@ -25,6 +25,7 @@ class ProductTemplate(models.Model):
     product_model_id = fields.Many2one('product.model', string='Modelo', domain="[('familia_ids', 'in', product_familia_id)]")
     product_tenido_id = fields.Many2one('product.tenido', string='Teñido', domain="[('familia_ids', 'in', product_familia_id)]")
     product_color_id = fields.Many2one('product.color', string='Color', domain="[('familia_ids', 'in', product_familia_id)]")
+    product_color_name = fields.Char(string='Nombre color', related='product_color_id.name', store=True, readonly=True)
     color_family_id = fields.Many2one('color.family', string='Familia de Color', related='product_color_id.color_family_id', store=True, readonly=True)
     product_medida_id = fields.Many2one('product.medida', string='Medida', domain="[('familia_ids', 'in', product_familia_id)]")
     product_texto_id = fields.Many2one('product.texto', string='Texto', domain="[('familia_ids', 'in', product_familia_id)]")
