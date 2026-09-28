@@ -16,6 +16,55 @@ class StockMoveLine(models.Model):
     peso_bruto = fields.Float(string="Peso bruto", digits='Stock Weight')
     peso_neto = fields.Float(string="Peso neto", compute='_compute_peso_neto', store=True, readonly=False, digits='Stock Weight')
 
+    @api.model_create_multi
+    def create(self, vals_list):
+        lines = super().create(vals_list)
+        lines._sync_package_values()
+        return lines
+
+    def write(self, vals):
+        result = super().write(vals)
+        if 'package_id' in vals:
+            self._sync_package_values()
+        return result
+
+    @api.onchange('package_id')
+    def _onchange_package_id(self):
+        for line in self:
+            if line.package_id and line.picking_type_code != 'incoming':
+                for field_name, value in line._get_package_values().items():
+                    line[field_name] = value
+
+    def _get_package_values(self):
+        self.ensure_one()
+        package = self.package_id
+        quants = package.quant_ids
+        cantidad_conos = sum(quants.mapped('cantidad_conos'))
+        tara_cono_total = sum(quant.cantidad_conos * quant.tara_cono for quant in quants)
+        tara_cono = tara_cono_total / cantidad_conos if cantidad_conos else 0.0
+
+        cone_tares = {quant.tara_cono for quant in quants if quant.cantidad_conos}
+        cono = False
+        if len(cone_tares) == 1:
+            cono = self.env['tipo.cono'].search([('tara_cono', '=', tara_cono)], limit=1)
+
+        return {
+            'cantidad_conos': cantidad_conos,
+            'cono_id': cono.id or False,
+            'package_type_id': package.package_type_id.id or False,
+            'tara_bolsa': package.package_type_id.base_weight or 0.0,
+            'tara_cono': tara_cono,
+            'tara_cono_total': (package.package_type_id.base_weight or 0.0) + tara_cono_total,
+            'peso_bruto': package.peso_bruto,
+            'peso_neto': package.peso_neto,
+            'quantity': package.peso_neto,
+        }
+
+    def _sync_package_values(self):
+        for line in self:
+            if line.package_id and line.picking_type_code != 'incoming':
+                super(StockMoveLine, line).write(line._get_package_values())
+
     @api.depends('package_type_id', 'result_package_id.package_type_id')
     def _compute_tara_bolsa(self):
         for record in self:
