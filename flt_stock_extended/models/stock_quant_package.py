@@ -15,6 +15,25 @@ class StockQuantPackage(models.Model):
         copy=False
     )
 
+    def _get_next_name_for_product(self, product):
+        prefix = str(product.product_tmpl_id.id)
+        seq_code = f"stock.quant.package.custom.{prefix}"
+        sequence_obj = self.env['ir.sequence'].sudo()
+        sequence = sequence_obj.search([('code', '=', seq_code)], limit=1)
+
+        if not sequence:
+            sequence = sequence_obj.create({
+                'name': f"Package Sequence for {prefix}",
+                'code': seq_code,
+                'implementation': 'standard',
+                'padding': 8,
+                'number_increment': 1,
+                'number_next': 1,
+                'use_date_range': False
+            })
+
+        return f"{prefix}-{sequence.next_by_id()}"
+
     @api.depends('quant_ids.product_id.product_tmpl_id')
     def _compute_dynamic_name(self):
         for package in self:
@@ -28,24 +47,7 @@ class StockQuantPackage(models.Model):
             if package.name and package.name.startswith(f"{prefix}-"):
                 continue
 
-            seq_code = f"stock.quant.package.custom.{prefix}"
-            sequence_obj = self.env['ir.sequence'].sudo()
-            
-            existing_seq = sequence_obj.search([('code', '=', seq_code)], limit=1)
-            
-            if not existing_seq:
-                existing_seq = sequence_obj.create({
-                    'name': f"Package Sequence for {prefix}",
-                    'code': seq_code,
-                    'implementation': 'standard',
-                    'padding': 8,
-                    'number_increment': 1,
-                    'number_next': 1,
-                    'use_date_range': False
-                })
-            
-            correlative = existing_seq.next_by_id()
-            package.name = f"{prefix}-{correlative}"
+            package.name = package._get_next_name_for_product(package.quant_ids[0].product_id)
 
     @api.depends('quant_ids.quantity', 'quant_ids.cantidad_conos', 'quant_ids.tara_cono', 'package_type_id.base_weight')
     def _compute_totals(self):

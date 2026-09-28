@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from odoo import api, models, fields
+from odoo.exceptions import UserError
 
 
 class StockMoveLine(models.Model):
@@ -7,20 +8,23 @@ class StockMoveLine(models.Model):
 
     cantidad_conos = fields.Integer(string="Conos")
     cono_id = fields.Many2one('tipo.cono', string='Tipo de Cono')
+    package_type_id = fields.Many2one('stock.package.type', string='Tipo de bolsa')
+    picking_type_code = fields.Selection(related='picking_type_id.code')
     tara_bolsa = fields.Float(string="Tara bolsa", compute='_compute_tara_bolsa', store=True, readonly=False, digits='Stock Weight')
     tara_cono = fields.Float(string="Tara cono", compute='_compute_tara_cono', store=True, readonly=False, digits='Stock Weight')
     tara_cono_total = fields.Float(string="Tara total", compute='_compute_tara_cono_total', store=True, readonly=False, digits='Stock Weight')
     peso_bruto = fields.Float(string="Peso bruto", digits='Stock Weight')
     peso_neto = fields.Float(string="Peso neto", compute='_compute_peso_neto', store=True, readonly=False, digits='Stock Weight')
 
-    @api.depends('result_package_id.package_type_id')
+    @api.depends('package_type_id', 'result_package_id.package_type_id')
     def _compute_tara_bolsa(self):
         for record in self:
             if not record.exists() or record.state == 'done':
                 continue 
             try:
-                if not record.tara_bolsa and record.result_package_id.package_type_id:
-                    record.tara_bolsa = record.result_package_id.package_type_id.base_weight or 0.0
+                package_type = record.package_type_id or record.result_package_id.package_type_id
+                if not record.tara_bolsa and package_type:
+                    record.tara_bolsa = package_type.base_weight or 0.0
             except Exception:
                 continue
 
@@ -60,6 +64,43 @@ class StockMoveLine(models.Model):
                 'peso_neto': 0.0,
                 'quantity': 0.0,
             })
+
+    def action_apply_package(self):
+        self.ensure_one()
+        if self.picking_id.picking_type_code != 'incoming':
+            raise UserError("Solo se pueden crear paquetes desde recepciones.")
+        if self.picking_id.state in ('done', 'cancel'):
+            raise UserError("No se pueden crear paquetes en un traslado cerrado.")
+        if self.result_package_id:
+            raise UserError("Esta línea ya tiene un paquete asignado.")
+        if not self.package_type_id:
+            raise UserError("Debe seleccionar un tipo de bolsa antes de crear el paquete.")
+
+        package = self.env['stock.quant.package'].create({
+            'package_type_id': self.package_type_id.id,
+        })
+        package.name = package._get_next_name_for_product(self.product_id)
+        self.result_package_id = package
+
+    def action_print_zpl_label(self):
+        self.ensure_one()
+        if self.picking_id.picking_type_code != 'incoming' or self.picking_id.state == 'cancel':
+            raise UserError("La etiqueta ZPL desde la línea solo está disponible para recepciones activas.")
+        if not self.result_package_id:
+            raise UserError("Debe crear el paquete antes de imprimir la etiqueta.")
+
+        if self.picking_id.state == 'done':
+            report = self.env['ir.actions.report'].search([
+                ('report_name', '=', 'stock.label_package_template_view')
+            ], limit=1)
+            if not report:
+                raise UserError("No se encontró la acción de informe para la etiqueta del paquete.")
+            return report.report_action(self.result_package_id)
+
+        report = self.env.ref('flt_stock_extended.action_report_move_line_package_zpl', raise_if_not_found=False)
+        if not report:
+            raise UserError("No se encontró el informe ZPL para la línea de movimiento.")
+        return report.report_action(self)
 
     def _action_done(self):
         """Override to pass custom fields in context for stock.quant updates"""

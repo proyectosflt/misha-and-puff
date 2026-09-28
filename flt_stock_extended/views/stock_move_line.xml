@@ -15,6 +15,7 @@
             </xpath> -->
             <xpath expr="//field[@name='result_package_id' and not(@column_invisible='True')]" position="before">
                 <field name="package_id" column_invisible="parent.picking_type_id == 1"/>
+                <field name="package_type_id" column_invisible="parent.picking_type_id != 1"/>
             </xpath>
             <xpath expr="//field[@name='quantity']" position="before">
                 <!-- <field name="tara_bolsa" column_invisible="parent.picking_type_id != 1"/>
@@ -36,6 +37,12 @@
             <xpath expr="//list" position="inside">
                 <button name="action_duplicar" string="Duplicar" type="object"
                         column_invisible="parent.state in ('done', 'cancel')"/>
+                <button name="action_apply_package" string="Aplicar" type="object" icon="fa-check"
+                    column_invisible="parent.picking_type_id != 1"
+                    invisible="result_package_id or parent.state in ('done', 'cancel')"/>
+                <button name="action_print_zpl_label" string="Imprimir ZPL" type="object" icon="fa-print"
+                    column_invisible="parent.picking_type_id != 1"
+                    invisible="not result_package_id or parent.state == 'cancel'"/>
             </xpath>
 
         </field>
@@ -57,6 +64,7 @@
             </xpath>
              <xpath expr="//field[@name='result_package_id' and not(@column_invisible='True')]" position="before">
                 <field name="package_id"/>
+                <field name="package_type_id"/>
             </xpath>
             <xpath expr="//field[@name='quantity']" position="before">
                 <field name="tara_bolsa"/>
@@ -70,10 +78,15 @@
             <xpath expr="//field[@name='quantity']" position="attributes">
                 <attribute name="optional">hide</attribute>
             </xpath>
-            <!-- <xpath expr="//list" position="inside">
-                <button name="action_duplicar" string="Duplicar" type="object"
-                        column_invisible="parent.state in ('done', 'cancel')"/>
-            </xpath> -->
+            <xpath expr="//list" position="inside">
+                <field name="picking_id" column_invisible="True"/>
+                <field name="picking_type_code" column_invisible="True"/>
+                <field name="state" column_invisible="True"/>
+                <button name="action_apply_package" string="Aplicar" type="object" icon="fa-check"
+                    invisible="picking_type_code != 'incoming' or result_package_id or state in ('done', 'cancel')"/>
+                <button name="action_print_zpl_label" string="Imprimir ZPL" type="object" icon="fa-print"
+                    invisible="picking_type_code != 'incoming' or not result_package_id or state == 'cancel'"/>
+            </xpath>
         </field>
     </record>
 
