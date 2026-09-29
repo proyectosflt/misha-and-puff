@@ -38,7 +38,7 @@ class StockPicking(models.Model):
 
     def button_validate(self):
         is_purchase_admin = self.env.user.has_group('purchase.group_purchase_manager')
-        is_sales_admin = self.env.user.has_group('sales.group_sales_manager')
+        is_sales_admin = self.env.user.has_group('sales_team.group_sale_manager')
         
         # Verificar si es una recepción (albarán de entrada) y si el usuario NO es Administrador
         if self.picking_type_id.code == 'incoming' and not is_purchase_admin:
@@ -87,7 +87,7 @@ class StockPicking(models.Model):
                         f"Demanda: {move.product_uom_qty} | Tolerancia: {tolerancia} | Realizado: {move.quantity}.<br/>"
                         f"Por favor, revise este albarán directamente."
                     )
-                    self._notify_administrators('sales.group_sales_manager', msg_title, msg_body)
+                    self._notify_administrators('sales_team.group_sale_manager', msg_title, msg_body)
 
                     raise UserError(_(
                         "Se ha excedido la tolerancia permitida para el producto '%s'.\n"
