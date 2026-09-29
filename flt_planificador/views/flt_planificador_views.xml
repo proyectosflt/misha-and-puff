@@ -39,18 +39,23 @@
                         icon="fa-cogs"/>
             </header>
             
-            <field name="fecha_planificada"/>
-            <field name="pri_tp"/>
-            <field name="temporada"/>
-            <field name="programa"/>
-            <field name="pri_cp"/>
-            <field name="partner_id"/>
-            <field name="pri_prod"/>
-            <field name="product_id"/>
-            <field name="cantidad_requerida"/>
-            <field name="sale_order_id"/>
-            <field name="picking_ids" widget="many2many_tags"/>
-            <field name="state" 
+                 <field name="fecha_planificada" optional="show" readonly="state == 'procesada'"/>
+                 <field name="pri_tp" optional="show" readonly="state == 'procesada'"/>
+                 <field name="temporada" optional="show" readonly="state == 'procesada'"/>
+                 <field name="programa" optional="show" readonly="state == 'procesada'"/>
+                 <field name="pri_cp" optional="show" readonly="state == 'procesada'"/>
+                 <field name="partner_id" optional="show" readonly="state == 'procesada'"/>
+                 <field name="pri_prod" optional="show" readonly="state == 'procesada'"/>
+                 <field name="product_id" optional="show" readonly="state == 'procesada'"/>
+                 <field name="cantidad_requerida" optional="show" readonly="state == 'procesada'"/>
+                 <field name="product_uom_id" optional="show"/>
+                 <field name="sale_order_id" optional="show"/>
+                 <field name="delivery_status" widget="badge" optional="show"
+                     decoration-warning="delivery_status == 'pending' or delivery_status == 'partial'"
+                     decoration-info="delivery_status == 'started'"
+                     decoration-success="delivery_status == 'full'"/>
+                 <field name="picking_ids" widget="many2many_tags" optional="hide"/>
+                 <field name="state" readonly="1" optional="show"
                    widget="badge" 
                    decoration-warning="state == 'pendiente'" 
                    decoration-success="state == 'procesada'"/>

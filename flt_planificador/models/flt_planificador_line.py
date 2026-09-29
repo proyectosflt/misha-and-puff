@@ -1,4 +1,5 @@
 from odoo import models, fields
+from odoo.exceptions import UserError
 
 class FltPlanificadorLine(models.Model):
     _name = 'flt.planificador.line'
@@ -20,8 +21,19 @@ class FltPlanificadorLine(models.Model):
     pri_prod = fields.Char(string='Pri Prod')
     product_id = fields.Many2one('product.product', string='Producto', required=True)
     cantidad_requerida = fields.Float(string='Cantidad Requerida', required=True)
+    product_uom_id = fields.Many2one(
+        'uom.uom',
+        string='UdM',
+        related='product_id.uom_id',
+        readonly=True,
+    )
     
     sale_order_id = fields.Many2one('sale.order', string='Venta', readonly=True)
+    delivery_status = fields.Selection(
+        related='sale_order_id.delivery_status',
+        string='Estado de entrega',
+        readonly=True,
+    )
     # Definimos la tabla relacional explícitamente para el M2M
     picking_ids = fields.Many2many(
         'stock.picking', 
@@ -44,6 +56,11 @@ class FltPlanificadorLine(models.Model):
     # Cambiar de Char a Integer
     pri_tp = fields.Integer(string='Pri T/P')
     pri_cp = fields.Integer(string='Pri C/P')
+
+    def write(self, vals):
+        if any(line.state == 'procesada' for line in self):
+            raise UserError('No se pueden editar líneas ya procesadas.')
+        return super().write(vals)
 
     def action_copy_line(self):
         self.ensure_one()
