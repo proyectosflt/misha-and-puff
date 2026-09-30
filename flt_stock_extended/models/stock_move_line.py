@@ -35,28 +35,17 @@ class StockMoveLine(models.Model):
                 for field_name, value in line._get_package_values().items():
                     line[field_name] = value
 
-    @api.onchange('location_id', 'product_id')
-    def _onchange_location_or_product_id(self):
-        Quant = self.env['stock.quant']
+    @api.onchange('quant_id')
+    def _onchange_quant_id_sync_package(self):
         for line in self:
-            if (line.picking_type_code == 'incoming' or line.package_id
-                    or not line.location_id or not line.product_id):
+            quant = line.quant_id
+            if (not quant or not quant.package_id
+                    or line.picking_type_code == 'incoming'):
                 continue
 
-            quants = Quant.search([
-                ('location_id', 'child_of', line.location_id.id),
-                ('product_id', '=', line.product_id.id),
-                ('package_id', '!=', False),
-                ('quantity', '>', 0),
-            ])
-            if line.lot_id:
-                quants = quants.filtered(lambda quant: quant.lot_id == line.lot_id)
-
-            packages = quants.mapped('package_id')
-            if len(packages) == 1:
-                line.package_id = packages
-                for field_name, value in line._get_package_values().items():
-                    line[field_name] = value
+            line.package_id = quant.package_id
+            for field_name, value in line._get_package_values().items():
+                line[field_name] = value
 
     def _get_package_values(self):
         self.ensure_one()
