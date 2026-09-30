@@ -23,6 +23,11 @@
                 <field name="tara_cono" column_invisible="parent.picking_type_id != 1"/>
                 <field name="peso_bruto" column_invisible="parent.picking_type_id != 1"/>
                 <field name="peso_neto" column_invisible="parent.picking_type_id != 1"/> -->
+                <field name="reference" column_invisible="1"/>
+                <field name="date" column_invisible="1"/>
+                <field name="product_barcode" column_invisible="1"/>
+                <field name="location_processed" column_invisible="1"/>
+                <field name="lots_visible" column_invisible="1"/>
                 <field name="tara_bolsa"/>
                 <field name="cono_id"/>
                 <field name="cantidad_conos"/>
