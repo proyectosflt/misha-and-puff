@@ -116,6 +116,7 @@
                     column_invisible="parent.state in ('done', 'cancel')"/>
         </xpath>
     </field>
+</record>
 
     <record id="view_stock_move_operations_force_list" model="ir.ui.view">
     <field name="name">stock.move.operations.force.list</field>
@@ -126,6 +127,5 @@
             <attribute name="mode">list</attribute>
         </xpath>
     </field>
-</record>
 </record>
 </odoo>
