@@ -30,7 +30,7 @@
                 <field name="lots_visible" column_invisible="1"/>
                 <field name="tara_bolsa"/>
                 <field name="cono_id"/>
-                <field name="cantidad_conos"/>
+                <field name="cantidad_conos"/> 
                 <field name="tara_cono"/>
                 <field name="tara_cono_total"/>
                 <field name="peso_bruto"/>
