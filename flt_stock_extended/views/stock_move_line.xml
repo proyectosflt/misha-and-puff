@@ -14,7 +14,7 @@
                 <field name="result_package_id" position="move"/>
             </xpath> -->
             <xpath expr="//field[@name='result_package_id' and not(@column_invisible='True')]" position="before">
-                <field name="package_id" column_invisible="parent.picking_type_id == 1"/>
+                <!-- <field name="package_id" column_invisible="parent.picking_type_id == 1"/> -->
                 <field name="package_type_id" column_invisible="parent.picking_type_id != 1"/>
             </xpath>
             <xpath expr="//field[@name='quantity']" position="before">
@@ -68,7 +68,7 @@
                 <field name="result_package_id" position="move"/>
             </xpath>
              <xpath expr="//field[@name='result_package_id' and not(@column_invisible='True')]" position="before">
-                <field name="package_id"/>
+                <!-- <field name="package_id"/> -->
                 <field name="package_type_id"/>
             </xpath>
             <xpath expr="//field[@name='quantity']" position="before">
