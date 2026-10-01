@@ -62,7 +62,7 @@ class StockMoveLine(models.Model):
 
         return {
             'cantidad_conos': cantidad_conos,
-            'cono_id': cono.id or False,
+            'cono_id': cono.id if cono else False,
             'package_type_id': package.package_type_id.id or False,
             'tara_bolsa': package.package_type_id.base_weight or 0.0,
             'tara_cono': tara_cono,
