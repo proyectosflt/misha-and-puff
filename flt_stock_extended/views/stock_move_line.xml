@@ -30,11 +30,11 @@
                 <field name="lots_visible" column_invisible="1"/>
                 <field name="tara_bolsa"/> 
                 <field name="cono_id"/>
-                <field name="cantidad_conos"/> 
                 <field name="tara_cono"/>
-                <field name="tara_cono_total"/>
-                <field name="peso_bruto"/>
-                <field name="peso_neto"/>
+                <field name="cantidad_conos" sum="Total conos"/> 
+                <field name="tara_cono_total" sum="Total tara conos"/>
+                <field name="peso_bruto" sum="Total peso bruto"/>
+                <field name="peso_neto" sum="Total peso neto"/>
             </xpath>
             <xpath expr="//field[@name='quantity']" position="attributes">
                 <attribute name="optional">hide</attribute>
@@ -105,8 +105,8 @@
         <xpath expr="//field[@name='quantity']" position="before">
             <field name="tara_bolsa"/>
             <field name="cono_id"/>
-            <field name="cantidad_conos"/>
             <field name="tara_cono"/>
+            <field name="cantidad_conos"/>
             <field name="tara_cono_total"/>
             <field name="peso_bruto"/>
             <field name="peso_neto"/>
@@ -131,7 +131,8 @@
         </xpath>
         <xpath expr="//form/group/group[2]" position="inside">
             <field name="tolerancia_venta" string="Tolerancia venta" invisible="picking_code != 'outgoing'"/>
-            <field name="diferencia_demanda" string="Diferencia" readonly="1" invisible="picking_code != 'outgoing'"/>
+            <field name="tolerancia_compra" string="Tolerancia compra" invisible="picking_code != 'incoming'"/>
+            <field name="diferencia_demanda" string="Diferencia" readonly="1"/>
         </xpath>
     </field>
 </record>
