@@ -25,6 +25,11 @@
         'data/cron_job.xml',
         'views/stock_quant_package_zpl_label.xml'
     ],
+    'assets': {
+        'web.assets_backend': [
+            'flt_stock_extended/static/src/js/picking_leave_warning.js',
+        ],
+    },
     'installable': True,
     'application': False,
     'auto_install': False,
