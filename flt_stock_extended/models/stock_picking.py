@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-
 import odoo
 from odoo import models, fields, api
-from odoo.exceptions import UserError
-from odoo.tools.translate import _
 
 
 class StockPicking(models.Model):
@@ -61,11 +59,6 @@ class StockPicking(models.Model):
                         f"Por favor, revise este albarán directamente."
                     )
                     self._notify_administrators('purchase.group_purchase_manager', msg_title, msg_body)
-                    
-                    raise UserError(_(
-                        "Se ha excedido la tolerancia permitida para el producto '%s'.\n"
-                        "Se ha enviado una notificación automática a los Administradores de Compras para su revisión directamente en la plataforma."
-                    ) % move.product_id.display_name)
 
         # Verificar si es una entrega (albarán de salida) y si el usuario NO es Administrador de Ventas
         if self.picking_type_id.code == 'outgoing' and not is_sales_admin:
@@ -88,10 +81,5 @@ class StockPicking(models.Model):
                         f"Por favor, revise este albarán directamente."
                     )
                     self._notify_administrators('sales_team.group_sale_manager', msg_title, msg_body)
-
-                    raise UserError(_(
-                        "Se ha excedido la tolerancia permitida para el producto '%s'.\n"
-                        "Se ha enviado una notificación automática a los Administradores de Ventas para su revisión directamente en la plataforma."
-                    ) % move.product_id.display_name)
                     
         return super(StockPicking, self).button_validate()
