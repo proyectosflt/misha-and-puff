@@ -120,6 +120,14 @@
                                             <td><strong>Peso</strong></td>
                                             <td>: <span t-esc="sum(o.move_ids_without_package.mapped('quantity'))"/> <span>kg</span></td>
                                         </tr>
+                                        <tr>
+                                            <td><strong>Paquetes</strong></td>
+                                            <td>: <span t-esc="sum(o.move_ids_without_package.mapped('paquetes'))"/> <span>unid</span></td>
+                                        </tr>
+                                        <tr>
+                                            <td><strong>Conos</strong></td>
+                                            <td>: <span t-esc="sum(o.move_ids_without_package.mapped('conos'))"/> <span>unid</span></td>
+                                        </tr>
                                     </tbody>
                                 </table>
                             </div>
@@ -157,8 +165,12 @@
                                     <thead class="section-header">
                                         <tr>
                                             <th class="text-center" style="width: 5%;">IT</th>
-                                            <th class="text-center" style="width: 15%;">PRODUCTO</th>
+                                            <th class="text-center" style="width: 20%;">PRODUCTO</th>
                                             <th class="text-center" style="width: 15%;">DESCRIPCIÓN</th>
+                                            <th class="text-center" style="width: 5%;">TITULO</th>
+                                            <th class="text-center" style="width: 10%;">CODIGO COLOR</th>
+                                            <th class="text-center" style="width: 10%;">NOMBRE COLOR</th>
+                                            <th class="text-center" style="width: 10%;">FAMILIA COLOR</th>
                                             <th class="text-center" style="width: 10%;">CANTIDAD</th>
                                             <th class="text-center" style="width: 15%;">UNID. DE MEDIDA</th>
                                         </tr>
@@ -170,6 +182,10 @@
                                                 <td class="text-center"><span t-esc="line_index + 1"/></td>
                                                 <td><span t-field="line.name"/></td>
                                                 <td><span t-field="line.descripcion"/></td>
+                                                <td><span t-field="line.x_studio_title"/></td>
+                                                <td><span t-field="line.x_studio_color_code"/></td>
+                                                <td><span t-field="line.x_studio_color_name"/></td>
+                                                <td><span t-field="line.color_family_id.name"/></td>
                                                 <td class="text-right"><span t-field="line.quantity"/></td>
                                                 <td class="text-center"><span t-field="line.product_uom.name"/></td>
                                             </tr>
