@@ -167,11 +167,11 @@
                                             <th class="text-center" style="width: 5%;">IT</th>
                                             <th class="text-center" style="width: 20%;">PRODUCTO</th>
                                             <th class="text-center" style="width: 15%;">DESCRIPCIÓN</th>
-                                            <th class="text-center" style="width: 5%;">TITULO</th>
+                                            <th class="text-center" style="width: 7%;">TITULO</th>
                                             <th class="text-center" style="width: 10%;">CODIGO COLOR</th>
                                             <th class="text-center" style="width: 10%;">NOMBRE COLOR</th>
                                             <th class="text-center" style="width: 10%;">FAMILIA COLOR</th>
-                                            <th class="text-center" style="width: 10%;">CANTIDAD</th>
+                                            <th class="text-center" style="width: 8%;">CANTIDAD</th>
                                             <th class="text-center" style="width: 15%;">UNID. DE MEDIDA</th>
                                         </tr>
                                     </thead>
@@ -192,6 +192,10 @@
                                         </t>
                                         <t t-foreach="range(max(0, 10 - len(lines)))" t-as="i">
                                             <tr style="height: 20px;">
+                                                <td></td>
+                                                <td></td>
+                                                <td></td>
+                                                <td></td>
                                                 <td></td>
                                                 <td></td>
                                                 <td></td>
