@@ -109,16 +109,16 @@
                                             <td>: <span t-field="o.scheduled_date" t-options='{"widget": "datetime", "format": "HH:mm"}'/></td>
                                         </tr>
                                         <tr>
-                                            <td><strong>Orden Compra</strong></td>
-                                            <td>: <span t-field="o.orden_compra"/></td>
+                                            <td><strong>Orden</strong></td>
+                                            <td>: <span t-field="o.origin"/></td>
                                         </tr>
                                         <tr>
                                             <td><strong>Vendedor</strong></td>
-                                            <td>: <span t-field="o.user_id"/></td>
+                                            <td>: <span t-esc="o.sale_id.user_id.name"/></td>
                                         </tr>
                                         <tr>
                                             <td><strong>Peso</strong></td>
-                                            <td>: <span t-field="o.weight"/> <span>kg</span></td>
+                                            <td>: <span t-esc="sum(o.move_ids_without_package.mapped('quantity'))"/> <span>kg</span></td>
                                         </tr>
                                     </tbody>
                                 </table>
@@ -157,10 +157,10 @@
                                     <thead class="section-header">
                                         <tr>
                                             <th class="text-center" style="width: 5%;">IT</th>
-                                            <th class="text-center" style="width: 15%;">CODIGO</th>
+                                            <th class="text-center" style="width: 15%;">PRODUCTO</th>
+                                            <th class="text-center" style="width: 15%;">DESCRIPCIÓN</th>
                                             <th class="text-center" style="width: 10%;">CANTIDAD</th>
                                             <th class="text-center" style="width: 15%;">UNID. DE MEDIDA</th>
-                                            <th class="text-center">DESCRIPCIÓN</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -168,10 +168,10 @@
                                         <t t-foreach="lines" t-as="line">
                                             <tr>
                                                 <td class="text-center"><span t-esc="line_index + 1"/></td>
-                                                <td><span t-field="line.product_id.default_code"/></td>
-                                                <td class="text-right"><span t-field="line.product_uom_qty"/></td>
-                                                <td class="text-center"><span t-field="line.product_uom.name"/></td>
                                                 <td><span t-field="line.name"/></td>
+                                                <td><span t-field="line.descripcion"/></td>
+                                                <td class="text-right"><span t-field="line.quantity"/></td>
+                                                <td class="text-center"><span t-field="line.product_uom.name"/></td>
                                             </tr>
                                         </t>
                                         <t t-foreach="range(max(0, 10 - len(lines)))" t-as="i">
