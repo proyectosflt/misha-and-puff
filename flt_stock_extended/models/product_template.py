@@ -2,7 +2,7 @@
 from odoo.exceptions import ValidationError
 import csv
 import logging
-from odoo import models, fields, api
+from odoo import _, models, fields, api
 from odoo.modules.module import get_module_resource
 from odoo.osv import expression
 
@@ -10,6 +10,18 @@ _logger = logging.getLogger(__name__)
 
 class ProductTemplate(models.Model):
     _inherit = 'product.template'
+
+    @api.constrains('name')
+    def _check_unique_name(self):
+        for template in self:
+            duplicate = self.sudo().search([
+                ('name', '=', template.name),
+                ('id', '!=', template.id),
+            ], limit=1)
+            if duplicate:
+                raise ValidationError(
+                    _('El nombre del producto debe ser único.')
+                )
     
     descripcion = fields.Text(
         string='Descripción',
