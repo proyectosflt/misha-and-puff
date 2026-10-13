@@ -164,28 +164,28 @@
                                 <table class="table table-sm o_main_table items-table">
                                     <thead class="section-header">
                                         <tr>
-                                            <th class="text-center" style="width: 5%;">IT</th>
-                                            <th class="text-center" style="width: 17%;">PRODUCTO</th>
-                                            <th class="text-center" style="width: 21%;">DESCRIPCIÓN</th>
-                                            <th class="text-center" style="width: 8%;">PAQUETES</th>
-                                            <th class="text-center" style="width: 8%;">CONOS</th>
-                                            <th class="text-center" style="width: 11%;">PESO BRUTO</th>
-                                            <th class="text-center" style="width: 13%;">PESO NETO</th>
-                                            <th class="text-center" style="width: 17%;">UNID. DE MEDIDA</th>
+                                            <th class="text-right" style="width: 5%;">IT</th>
+                                            <th class="text-left" style="width: 17%;">PRODUCTO</th>
+                                            <th class="text-left" style="width: 21%;">DESCRIPCIÓN</th>
+                                            <th class="text-right" style="width: 8%;">PAQUETES</th>
+                                            <th class="text-right" style="width: 8%;">CONOS</th>
+                                            <th class="text-right" style="width: 11%;">PESO BRUTO</th>
+                                            <th class="text-right" style="width: 13%;">PESO NETO</th>
+                                            <th class="text-left" style="width: 17%;">UNID. DE MEDIDA</th>
                                         </tr>
                                     </thead>
                                     <tbody>
                                         <t t-set="lines" t-value="o.move_ids_without_package"/>
                                         <t t-foreach="lines" t-as="line">
                                             <tr>
-                                                <td class="text-center"><span t-esc="line_index + 1"/></td>
-                                                <td><span t-field="line.name"/></td>
-                                                <td><span t-field="line.descripcion"/></td>
-                                                <td class="text-center"><span t-field="line.paquetes"/></td>
-                                                <td class="text-center"><span t-field="line.conos"/></td>
+                                                <td class="text-right"><span t-esc="line_index + 1"/></td>
+                                                <td class="text-left"><span t-field="line.name"/></td>
+                                                <td class="text-left"><span t-field="line.descripcion"/></td>
+                                                <td class="text-right"><span t-field="line.paquetes"/></td>
+                                                <td class="text-right"><span t-field="line.conos"/></td>
                                                 <td class="text-right"><span t-field="line.cantidad_bruto"/></td>
                                                 <td class="text-right"><span t-field="line.quantity"/></td>
-                                                <td class="text-center"><span t-field="line.product_uom.name"/></td>
+                                                <td class="text-left"><span t-field="line.product_uom.name"/></td>
                                             </tr>
                                         </t>
                                         <t t-foreach="range(max(0, 10 - len(lines)))" t-as="i">
