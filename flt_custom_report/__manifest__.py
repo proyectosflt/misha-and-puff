@@ -4,7 +4,7 @@
     'version': '1.0',
     'category': 'Accounting',
     'author': 'Samuel Gomez - FLT',
-    'depends': ['account', 'stock','l10n_pe_edi', 'dv_l10n_pe_edi_stock_template'],
+    'depends': ['account', 'stock', 'flt_stock_extended', 'l10n_pe_edi', 'dv_l10n_pe_edi_stock_template'],
     'data': [
         'security/ir.model.access.csv',
         'views/report_invoice.xml',

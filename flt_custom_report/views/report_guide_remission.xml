@@ -165,14 +165,13 @@
                                     <thead class="section-header">
                                         <tr>
                                             <th class="text-center" style="width: 5%;">IT</th>
-                                            <th class="text-center" style="width: 20%;">PRODUCTO</th>
-                                            <th class="text-center" style="width: 15%;">DESCRIPCIÓN</th>
-                                            <th class="text-center" style="width: 7%;">TITULO</th>
-                                            <th class="text-center" style="width: 10%;">CODIGO COLOR</th>
-                                            <th class="text-center" style="width: 10%;">NOMBRE COLOR</th>
-                                            <th class="text-center" style="width: 10%;">FAMILIA COLOR</th>
-                                            <th class="text-center" style="width: 8%;">CANTIDAD</th>
-                                            <th class="text-center" style="width: 15%;">UNID. DE MEDIDA</th>
+                                            <th class="text-center" style="width: 17%;">PRODUCTO</th>
+                                            <th class="text-center" style="width: 21%;">DESCRIPCIÓN</th>
+                                            <th class="text-center" style="width: 8%;">PAQUETES</th>
+                                            <th class="text-center" style="width: 8%;">CONOS</th>
+                                            <th class="text-center" style="width: 11%;">PESO BRUTO</th>
+                                            <th class="text-center" style="width: 13%;">PESO NETO</th>
+                                            <th class="text-center" style="width: 17%;">UNID. DE MEDIDA</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -182,17 +181,15 @@
                                                 <td class="text-center"><span t-esc="line_index + 1"/></td>
                                                 <td><span t-field="line.name"/></td>
                                                 <td><span t-field="line.descripcion"/></td>
-                                                <td><span t-field="line.x_studio_title"/></td>
-                                                <td><span t-field="line.x_studio_color_code"/></td>
-                                                <td><span t-field="line.x_studio_color_name"/></td>
-                                                <td><span t-field="line.color_family_id.name"/></td>
+                                                <td class="text-center"><span t-field="line.paquetes"/></td>
+                                                <td class="text-center"><span t-field="line.conos"/></td>
+                                                <td class="text-right"><span t-field="line.cantidad_bruto"/></td>
                                                 <td class="text-right"><span t-field="line.quantity"/></td>
                                                 <td class="text-center"><span t-field="line.product_uom.name"/></td>
                                             </tr>
                                         </t>
                                         <t t-foreach="range(max(0, 10 - len(lines)))" t-as="i">
                                             <tr style="height: 20px;">
-                                                <td></td>
                                                 <td></td>
                                                 <td></td>
                                                 <td></td>
