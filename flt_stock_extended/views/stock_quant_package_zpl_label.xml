@@ -55,11 +55,11 @@
 ^FO0,685^FB812,1,0,C^A0N,<t t-out="bc_h"/>,<t t-out="bc_w"/>^FD<t t-out="barcode_val"/>^FS
 
 <t t-set="is_unit_uom" t-value="line.product_id.uom_id == env.ref('uom.product_uom_unit')"/>
-<t t-set="header1" t-value="'CANTIDAD' if is_unit_uom else 'CONOS'"/>
-<t t-set="header2" t-value="'U. MEDIDA' if is_unit_uom else 'KGB'"/>
+<t t-set="header1" t-value="'CANT.' if is_unit_uom else 'CONOS'"/>
+<t t-set="header2" t-value="'U. MED.' if is_unit_uom else 'KGB'"/>
 <t t-set="header3" t-value="'KG' if is_unit_uom else 'KGN'"/>
 <t t-set="conos_val" t-value="'{:g}'.format(line.quantity or 0.0) if is_unit_uom else (line.cantidad_conos or '')"/>
-<t t-set="bruto_val" t-value="line.product_uom_id.name if is_unit_uom else '{:.3f}'.format(line.peso_bruto or 0.0)"/>
+<t t-set="bruto_val" t-value="('UNID' if line.product_uom_id.name == 'Unidades' else line.product_uom_id.name) if is_unit_uom else '{:.3f}'.format(line.peso_bruto or 0.0)"/>
 <t t-set="neto_val" t-value="'{:.3f}'.format((line.quantity or 0.0) * (line.product_id.weight or 0.0)) if is_unit_uom else '{:.3f}'.format(line.peso_neto or 0.0)"/>
 ^FO0,870^FB270,1,0,C^A0N,73,62^FD<t t-out="header1"/>^FS
 ^FO271,870^FB270,1,0,C^A0N,73,62^FD<t t-out="header2"/>^FS
@@ -138,11 +138,11 @@
 
 <!-- FOOTER: three columns spanning the full 812 so the numbers get as much width as possible -->
 <t t-set="is_unit_uom" t-value="quant and quant.product_id.uom_id == env.ref('uom.product_uom_unit')"/>
-<t t-set="header1" t-value="'CANTIDAD' if is_unit_uom else 'CONOS'"/>
-<t t-set="header2" t-value="'U. MEDIDA' if is_unit_uom else 'KGB'"/>
+<t t-set="header1" t-value="'CANT.' if is_unit_uom else 'CONOS'"/>
+<t t-set="header2" t-value="'U. MED.' if is_unit_uom else 'KGB'"/>
 <t t-set="header3" t-value="'KG' if is_unit_uom else 'KGN'"/>
 <t t-set="conos_val" t-value="'{:g}'.format(quant.quantity or 0.0) if is_unit_uom else (package.cantidad_conos or '')"/>
-<t t-set="bruto_val" t-value="quant.product_id.uom_id.name if is_unit_uom else '{:.3f}'.format(package.peso_bruto or 0.0)"/>
+<t t-set="bruto_val" t-value="('UNID' if quant.product_id.uom_id.name == 'Unidades' else quant.product_id.uom_id.name) if is_unit_uom else '{:.3f}'.format(package.peso_bruto or 0.0)"/>
 <t t-set="neto_val" t-value="'{:.3f}'.format((quant.quantity or 0.0) * (quant.product_id.weight or 0.0)) if is_unit_uom else '{:.3f}'.format(package.peso_neto or 0.0)"/>
 ^FO0,870^FB270,1,0,C^A0N,73,62^FD<t t-out="header1"/>^FS
 ^FO271,870^FB270,1,0,C^A0N,73,62^FD<t t-out="header2"/>^FS
