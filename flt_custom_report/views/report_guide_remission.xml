@@ -168,11 +168,11 @@
                                             <th style="width: 14%; text-align: left;">PRODUCTO</th>
                                             <th style="width: 18%; text-align: left;">DESCRIPCIÓN</th>
                                             <th style="width: 12%; text-align: left;">F. COLOR</th>
-                                            <th style="width: 7%; text-align: right;">PAQUETES</th>
+                                            <th style="width: 8%; text-align: right;">PAQUETES</th>
                                             <th style="width: 7%; text-align: right;">CONOS</th>
                                             <th style="width: 10%; text-align: right;">PESO BRUTO</th>
                                             <th style="width: 11%; text-align: right;">PESO NETO</th>
-                                            <th style="width: 16%; text-align: left;">UNID. DE MEDIDA</th>
+                                            <th style="width: 15%; text-align: left;">UNID. DE MEDIDA</th>
                                         </tr>
                                     </thead>
                                     <tbody>
