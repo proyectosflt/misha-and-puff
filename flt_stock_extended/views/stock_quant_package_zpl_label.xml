@@ -54,12 +54,16 @@
 ^FD<t t-out="barcode_val"/>^FS
 ^FO0,685^FB812,1,0,C^A0N,<t t-out="bc_h"/>,<t t-out="bc_w"/>^FD<t t-out="barcode_val"/>^FS
 
-^FO0,870^FB270,1,0,C^A0N,73,62^FDCONOS^FS
-^FO271,870^FB270,1,0,C^A0N,73,62^FDKGB^FS
-^FO542,870^FB270,1,0,C^A0N,73,62^FDKGN^FS
-<t t-set="conos_val" t-value="line.cantidad_conos or ''"/>
-<t t-set="bruto_val" t-value="'{:.3f}'.format(line.peso_bruto or 0.0)"/>
-<t t-set="neto_val" t-value="'{:.3f}'.format(line.peso_neto or 0.0)"/>
+<t t-set="is_unit_uom" t-value="line.product_id.uom_id == env.ref('uom.product_uom_unit')"/>
+<t t-set="header1" t-value="'CANTIDAD' if is_unit_uom else 'CONOS'"/>
+<t t-set="header2" t-value="'U. MEDIDA' if is_unit_uom else 'KGB'"/>
+<t t-set="header3" t-value="'KG' if is_unit_uom else 'KGN'"/>
+<t t-set="conos_val" t-value="'{:g}'.format(line.quantity or 0.0) if is_unit_uom else (line.cantidad_conos or '')"/>
+<t t-set="bruto_val" t-value="line.product_uom_id.name if is_unit_uom else '{:.3f}'.format(line.peso_bruto or 0.0)"/>
+<t t-set="neto_val" t-value="'{:.3f}'.format((line.quantity or 0.0) * (line.product_id.weight or 0.0)) if is_unit_uom else '{:.3f}'.format(line.peso_neto or 0.0)"/>
+^FO0,870^FB270,1,0,C^A0N,73,62^FD<t t-out="header1"/>^FS
+^FO271,870^FB270,1,0,C^A0N,73,62^FD<t t-out="header2"/>^FS
+^FO542,870^FB270,1,0,C^A0N,73,62^FD<t t-out="header3"/>^FS
 <t t-set="foot_len" t-value="max(len(str(conos_val)), len(str(bruto_val)), len(str(neto_val))) or 1"/>
 <t t-set="foot_w" t-value="min(int(260 / (fit * foot_len)), foot_wmax)"/>
 <t t-set="foot_h" t-value="int(foot_w / prop)"/>
@@ -133,13 +137,16 @@
 ^FO0,685^FB812,1,0,C^A0N,<t t-out="bc_h"/>,<t t-out="bc_w"/>^FD<t t-out="barcode_val"/>^FS
 
 <!-- FOOTER: three columns spanning the full 812 so the numbers get as much width as possible -->
-^FO0,870^FB270,1,0,C^A0N,73,62^FDCONOS^FS
-^FO271,870^FB270,1,0,C^A0N,73,62^FDKGB^FS
-^FO542,870^FB270,1,0,C^A0N,73,62^FDKGN^FS
-
-<t t-set="conos_val" t-value="package.cantidad_conos or ''"/>
-<t t-set="bruto_val" t-value="'{:.3f}'.format(package.peso_bruto or 0.0)"/>
-<t t-set="neto_val" t-value="'{:.3f}'.format(package.peso_neto or 0.0)"/>
+<t t-set="is_unit_uom" t-value="quant and quant.product_id.uom_id == env.ref('uom.product_uom_unit')"/>
+<t t-set="header1" t-value="'CANTIDAD' if is_unit_uom else 'CONOS'"/>
+<t t-set="header2" t-value="'U. MEDIDA' if is_unit_uom else 'KGB'"/>
+<t t-set="header3" t-value="'KG' if is_unit_uom else 'KGN'"/>
+<t t-set="conos_val" t-value="'{:g}'.format(quant.quantity or 0.0) if is_unit_uom else (package.cantidad_conos or '')"/>
+<t t-set="bruto_val" t-value="quant.product_id.uom_id.name if is_unit_uom else '{:.3f}'.format(package.peso_bruto or 0.0)"/>
+<t t-set="neto_val" t-value="'{:.3f}'.format((quant.quantity or 0.0) * (quant.product_id.weight or 0.0)) if is_unit_uom else '{:.3f}'.format(package.peso_neto or 0.0)"/>
+^FO0,870^FB270,1,0,C^A0N,73,62^FD<t t-out="header1"/>^FS
+^FO271,870^FB270,1,0,C^A0N,73,62^FD<t t-out="header2"/>^FS
+^FO542,870^FB270,1,0,C^A0N,73,62^FD<t t-out="header3"/>^FS
 <!-- One size for the whole row, driven by the longest of the three -->
 <t t-set="foot_len" t-value="max(len(str(conos_val)), len(str(bruto_val)), len(str(neto_val))) or 1"/>
 <t t-set="foot_w" t-value="min(int(260 / (fit * foot_len)), foot_wmax)"/>
