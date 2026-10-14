@@ -165,13 +165,14 @@
                                     <thead class="section-header">
                                         <tr>
                                             <th style="width: 5%; text-align: right;">IT</th>
-                                            <th style="width: 17%; text-align: left;">PRODUCTO</th>
-                                            <th style="width: 21%; text-align: left;">DESCRIPCIÓN</th>
-                                            <th style="width: 8%; text-align: right;">PAQUETES</th>
-                                            <th style="width: 8%; text-align: right;">CONOS</th>
-                                            <th style="width: 11%; text-align: right;">PESO BRUTO</th>
-                                            <th style="width: 13%; text-align: right;">PESO NETO</th>
-                                            <th style="width: 17%; text-align: left;">UNID. DE MEDIDA</th>
+                                            <th style="width: 14%; text-align: left;">PRODUCTO</th>
+                                            <th style="width: 18%; text-align: left;">DESCRIPCIÓN</th>
+                                            <th style="width: 12%; text-align: left;">F. COLOR</th>
+                                            <th style="width: 7%; text-align: right;">PAQUETES</th>
+                                            <th style="width: 7%; text-align: right;">CONOS</th>
+                                            <th style="width: 10%; text-align: right;">PESO BRUTO</th>
+                                            <th style="width: 11%; text-align: right;">PESO NETO</th>
+                                            <th style="width: 16%; text-align: left;">UNID. DE MEDIDA</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -181,6 +182,7 @@
                                                 <td style="text-align: right;"><span t-esc="line_index + 1"/></td>
                                                 <td style="text-align: left;"><span t-field="line.name"/></td>
                                                 <td style="text-align: left;"><span t-field="line.descripcion"/></td>
+                                                <td style="text-align: left;"><span t-field="line.color_family_id"/></td>
                                                 <td style="text-align: right;"><span t-field="line.paquetes"/></td>
                                                 <td style="text-align: right;"><span t-field="line.conos"/></td>
                                                 <td style="text-align: right;"><span t-field="line.cantidad_bruto"/></td>
@@ -190,6 +192,7 @@
                                         </t>
                                         <t t-foreach="range(max(0, 10 - len(lines)))" t-as="i">
                                             <tr style="height: 20px;">
+                                                <td></td>
                                                 <td></td>
                                                 <td></td>
                                                 <td></td>
