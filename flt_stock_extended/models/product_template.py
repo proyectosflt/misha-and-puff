@@ -25,7 +25,9 @@ class ProductTemplate(models.Model):
     
     descripcion = fields.Text(
         string='Descripción',
-        help='Descripción del producto'
+        compute='_compute_descripcion',
+        store=True,
+        help='Descripción del producto basada en los nombres de sus atributos'
     )
 
     x_studio_design_name = fields.Char(string='Design Name')
@@ -150,6 +152,38 @@ class ProductTemplate(models.Model):
             #     codes.append(str(record.id))
 
             record.codificacion = '-'.join(codes) if codes else ''
+
+    @api.depends('product_familia_id', 'product_familia_id.property_ids.sequence', 'product_familia_id.property_ids.property_field',
+                 'product_familia_id.name',
+                 'product_rubro_id', 'product_rubro_id.name',
+                 'product_material_id', 'product_material_id.name',
+                 'product_detalle_id', 'product_detalle_id.name',
+                 'product_titulo_id', 'product_titulo_id.name',
+                 'product_type_id', 'product_type_id.name',
+                 'product_model_id', 'product_model_id.name',
+                 'product_tenido_id', 'product_tenido_id.name',
+                 'product_color_id', 'product_color_id.name',
+                 'product_medida_id', 'product_medida_id.name',
+                 'product_texto_id', 'product_texto_id.name',
+                 'product_talla_id', 'product_talla_id.name',
+                 'product_otros_id', 'product_otros_id.name')
+    def _compute_descripcion(self):
+        for record in self:
+            if not record.product_familia_id or not record.product_familia_id.property_ids:
+                record.descripcion = ''
+                continue
+
+            names = []
+            sorted_properties = record.product_familia_id.property_ids.sorted(key=lambda p: p.sequence)
+
+            for prop in sorted_properties:
+                field_value = record[prop.property_field]
+                if field_value and hasattr(field_value, 'name'):
+                    name = (field_value.name or '').strip()
+                    if name:
+                        names.append(name)
+
+            record.descripcion = '-'.join(names) if names else ''
 
     @api.depends('product_familia_id')
     def _compute_attribute_visibility(self):
