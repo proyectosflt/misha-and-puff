@@ -22,21 +22,10 @@
                     <input type="text"
                            class="form-control o_package_scan_input"
                            t-ref="barcodeInput"
-                           placeholder="Escanee o escriba un código de barras o nombre de producto"
+                           placeholder="Escanee o escriba el código de barras de un paquete"
                            t-model="state.manualValue"
-                           t-on-input="onManualInput"
                            t-on-keydown="onManualKeydown"
                            autocomplete="off"/>
-                </div>
-                <div t-if="state.productSuggestions.length" class="list-group position-absolute w-100 shadow-sm mt-1 z-3" style="top: 100%; left: 0;">
-                    <button type="button"
-                            class="list-group-item list-group-item-action"
-                            t-foreach="state.productSuggestions"
-                            t-as="suggestion"
-                            t-key="suggestion.id"
-                            t-on-click="() => this.onSuggestionSelect(suggestion)">
-                        <t t-esc="suggestion.name"/>
-                    </button>
                 </div>
             </div>
         </div>
@@ -44,7 +33,7 @@
         <div class="o_package_scan_lines flex-grow-1 overflow-auto p-3">
             <div t-if="!state.lines.length" class="text-center text-muted mt-5">
                 <i class="fa fa-search fa-2x mb-2"/>
-                <p>Escanee un código de barras de producto para listar los paquetes que lo contienen.</p>
+                <p>Escanee un paquete para identificar su producto y listar los demás paquetes disponibles.</p>
             </div>
 
             <div t-foreach="state.lines" t-as="line" t-key="line.id"

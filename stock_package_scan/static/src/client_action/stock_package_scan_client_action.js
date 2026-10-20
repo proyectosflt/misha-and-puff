@@ -31,7 +31,6 @@ export class StockPackageScanClientAction extends Component {
       scannedCount: 0,
       lineCount: 0,
       manualValue: "",
-      productSuggestions: [],
       isLoading: true,
     });
 
@@ -73,73 +72,10 @@ export class StockPackageScanClientAction extends Component {
     this.submitBarcode(ev.detail.barcode);
   };
 
-  async onManualInput(ev) {
-    const value = ev.target.value || "";
-    this.state.manualValue = value;
-
-    if (!value.trim()) {
-      this.state.productSuggestions = [];
-      return;
-    }
-
-    await this.searchProductSuggestions(value.trim());
-  }
-
   async onManualKeydown(ev) {
     if (ev.key === "Enter" && this.state.manualValue.trim()) {
-      if (
-        this.state.productSuggestions.length &&
-        this.state.manualValue.trim() === this.state.productSuggestions[0].name
-      ) {
-        await this.onSuggestionSelect(this.state.productSuggestions[0]);
-      } else {
-        await this.submitBarcode(this.state.manualValue.trim());
-      }
+      await this.submitBarcode(this.state.manualValue.trim());
       this.state.manualValue = "";
-      this.state.productSuggestions = [];
-    }
-  }
-
-  async searchProductSuggestions(term) {
-    try {
-      const suggestions = await this.orm.call(
-        "product.product",
-        "name_search",
-        [term, [], "ilike", 10],
-      );
-      this.state.productSuggestions = suggestions.map(
-        ([productId, productName]) => ({
-          id: productId,
-          name: productName,
-        }),
-      );
-    } catch (error) {
-      this.state.productSuggestions = [];
-    }
-  }
-
-  async onSuggestionSelect(suggestion) {
-    try {
-      const [product] = await this.orm.read(
-        "product.product",
-        [suggestion.id],
-        ["barcode", "display_name"],
-      );
-      if (product?.barcode) {
-        await this.submitBarcode(product.barcode);
-      } else {
-        this.notification.add(
-          "No hay código de barras disponible para este producto.",
-          { type: "warning" },
-        );
-      }
-    } catch (error) {
-      this.notification.add(error.data?.message || error.message, {
-        type: "danger",
-      });
-    } finally {
-      this.state.manualValue = "";
-      this.state.productSuggestions = [];
       this.focusInput();
     }
   }

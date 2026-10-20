@@ -16,15 +16,13 @@ class StockPackageScan(models.Model):
     ], string='Estado', default='draft', required=True, copy=False)
 
     product_id = fields.Many2one(
-        'product.product', string='Último producto buscado',
-        help="Cada vez que se escanea un código de barras de producto, los paquetes que "
-             "lo contienen se añaden a las líneas de abajo. Escanear un segundo "
-             "producto se suma a la misma lista en lugar de reemplazarla.")
+        'product.product', string='Producto',
+        help="Se identifica al escanear uno de sus paquetes.")
     location_id = fields.Many2one(
         'stock.location', string='Limitar a ubicación',
         domain=[('usage', '=', 'internal')],
-        help="Opcional. Solo se proponen los paquetes dentro de esta ubicación "
-             "(y sus sububicaciones) cuando se busca un producto.")
+        help="Opcional. Solo se muestran paquetes dentro de esta ubicación "
+             "(y sus sububicaciones).")
     user_id = fields.Many2one(
         'res.users', string='Escaneado por', default=lambda self: self.env.user)
     company_id = fields.Many2one(
@@ -82,9 +80,7 @@ class StockPackageScan(models.Model):
     # Scanning logic — called from the client action for every barcode read
     # ------------------------------------------------------------------
     def process_barcode(self, barcode):
-        """Single entry point for the scanner UI. Works out whether the
-        scanned barcode is a package line waiting to be checked off, or a
-        product to search for, and acts accordingly.
+        """Resolve scanned package barcodes and mark listed packages scanned.
 
         Returns a dict with:
           - 'result': 'success' | 'warning' | 'error'
@@ -114,35 +110,50 @@ class StockPackageScan(models.Model):
                             done=self.scanned_count, total=self.line_count),
             }
 
-        # 2) Otherwise, try to resolve it as a product (or packaging) barcode
-        product = self._find_product_by_barcode(barcode)
-        if product:
+        # A package barcode identifies its product through the stock quants
+        # currently held in that package.
+        package = self.env['stock.quant.package'].search(
+            [('name', '=', barcode)], limit=1)
+        if package:
+            quants = self.env['stock.quant'].search([
+                ('package_id', '=', package.id),
+                ('quantity', '>', 0),
+                ('location_id.usage', '=', 'internal'),
+            ])
+            products = quants.product_id
+            if len(products) != 1:
+                return {
+                    'result': 'error',
+                    'message': _('No se pudo identificar un único producto en el paquete %(package)s.',
+                                package=package.name),
+                }
+
+            product = products
             added = self._load_packages_for_product(product)
-            if not added:
+            scanned_line = self.line_ids.filtered(
+                lambda line: line.package_id == package)
+            if scanned_line and not scanned_line.scanned:
+                scanned_line.action_mark_scanned()
+                if self.state == 'draft':
+                    self.state = 'in_progress'
+
+            if not added and not scanned_line:
                 return {
                     'result': 'warning',
-                    'message': _('No se encontraron paquetes que contengan %(product)s.',
+                    'message': _('No se encontraron otros paquetes disponibles para %(product)s.',
                                 product=product.display_name),
                 }
             return {
                 'result': 'success',
-                'message': _('%(count)s paquete(s) añadidos para %(product)s.',
-                            count=added, product=product.display_name),
+                'message': _('%(count)s paquete(s) nuevo(s) añadidos para %(product)s.',
+                            count=added,
+                            product=product.display_name),
             }
 
         return {
             'result': 'error',
-            'message': _('Código de barras %(barcode)s no reconocido.', barcode=barcode),
+            'message': _('Código de paquete %(barcode)s no reconocido.', barcode=barcode),
         }
-
-    def _find_product_by_barcode(self, barcode):
-        self.ensure_one()
-        product = self.env['product.product'].search([('barcode', '=', barcode)], limit=1)
-        if product:
-            return product
-        # Fallback: a case/pallet packaging barcode rather than the unit barcode
-        packaging = self.env['product.packaging'].search([('barcode', '=', barcode)], limit=1)
-        return packaging.product_id if packaging else self.env['product.product']
 
     def _load_packages_for_product(self, product):
         """Add one line per package currently holding `product` that isn't
