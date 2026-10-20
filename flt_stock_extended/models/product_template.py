@@ -16,7 +16,7 @@ class ProductTemplate(models.Model):
         for template in self:
             duplicate = self.sudo().search([
                 ('name', '=', template.name),
-                ('id', '!=', template.id),
+                ('product_template_id', '!=', template.product_template_id),
             ], limit=1)
             if duplicate:
                 raise ValidationError(
@@ -96,6 +96,7 @@ class ProductTemplate(models.Model):
     product_template_id = fields.Integer(
         string='ID',
         compute='_compute_product_template_id',
+        store=True,
         readonly=True,
     )
 
@@ -119,7 +120,7 @@ class ProductTemplate(models.Model):
         ]
 
         if name.isdigit():
-            domain = ['|'] + domain + [('id', '=', int(name))]
+            domain = ['|'] + domain + [('product_template_id', '=', int(name))]
 
         if args:
             domain = ['&'] + args + domain

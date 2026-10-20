@@ -54,7 +54,7 @@ class PurchaseOrder(models.Model):
 
                     # 3. Search for an existing Subcontracting BoM with this exact materia prima component
                     boms = Bom.search([
-                        ('product_tmpl_id', '=', product.product_tmpl_id.id),
+                        ('product_tmpl_id.product_template_id', '=', product.product_template_id),
                         ('type', '=', 'subcontract'),
                         ('bom_line_ids.product_id', '=', materia_prima.id)
                     ])
@@ -84,7 +84,7 @@ class PurchaseOrder(models.Model):
                     
                     # Shift sequences of any competing BoMs to ensure our target is strictly first
                     competing_boms = Bom.search([
-                        ('product_tmpl_id', '=', product.product_tmpl_id.id),
+                        ('product_tmpl_id.product_template_id', '=', product.product_template_id),
                         ('id', '!=', target_bom.id),
                         ('sequence', '<=', 1)
                     ])

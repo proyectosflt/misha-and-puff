@@ -16,8 +16,9 @@ class ProductProduct(models.Model):
         readonly=True,
     )
     product_template_id = fields.Integer(
-        related='product_tmpl_id.id',
+        related='product_tmpl_id.product_template_id',
         string='ID',
+        store=True,
         readonly=True,
     )
 
@@ -42,7 +43,7 @@ class ProductProduct(models.Model):
         ]
         
         if name.isdigit():
-            domain = ['|'] + domain + [('product_tmpl_id', '=', int(name))]
+            domain = ['|'] + domain + [('product_template_id', '=', int(name))]
 
         if args:
             domain = ['&'] + args + domain
@@ -126,5 +127,4 @@ class ProductProduct(models.Model):
     def _onchange_uom_id_weight(self):
         if self.uom_id.name == 'kg' and self.weight == 0:
             self.weight = 1.0
-
 

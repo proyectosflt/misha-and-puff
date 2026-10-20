@@ -16,7 +16,7 @@ class StockQuantPackage(models.Model):
     )
 
     def _get_next_name_for_product(self, product):
-        prefix = str(product.product_tmpl_id.id)
+        prefix = str(product.product_tmpl_id.product_template_id)
         seq_code = f"stock.quant.package.custom.{prefix}"
         sequence_obj = self.env['ir.sequence'].sudo()
         sequence = sequence_obj.search([('code', '=', seq_code)], limit=1)
@@ -34,7 +34,7 @@ class StockQuantPackage(models.Model):
 
         return f"{prefix}-{sequence.next_by_id()}"
 
-    @api.depends('quant_ids.product_id.product_tmpl_id')
+    @api.depends('quant_ids.product_id.product_tmpl_id.product_template_id')
     def _compute_dynamic_name(self):
         for package in self:
             if not package.quant_ids or not package.quant_ids[0].product_id.product_tmpl_id:
@@ -42,7 +42,7 @@ class StockQuantPackage(models.Model):
                     package.name = f"PACK-{str(package.id).zfill(8)}"
                 continue
                 
-            prefix = str(package.quant_ids[0].product_id.product_tmpl_id.id)
+            prefix = str(package.quant_ids[0].product_id.product_tmpl_id.product_template_id)
             
             if package.name and package.name.startswith(f"{prefix}-"):
                 continue
