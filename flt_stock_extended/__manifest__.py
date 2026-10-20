@@ -29,6 +29,7 @@
     'assets': {
         'web.assets_backend': [
             'flt_stock_extended/static/src/js/picking_leave_warning.js',
+            'flt_stock_extended/static/src/js/product_search_dropdown.js',
         ],
     },
     'installable': True,

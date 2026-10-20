@@ -5,6 +5,7 @@ import logging
 from odoo import _, models, fields, api
 from odoo.modules.module import get_module_resource
 from odoo.osv import expression
+from .product_search_utils import format_product_search_result
 
 _logger = logging.getLogger(__name__)
 
@@ -125,7 +126,13 @@ class ProductTemplate(models.Model):
         if args:
             domain = ['&'] + args + domain
 
-        templates = self.search_fetch(domain, ['display_name'], limit=limit)
+        templates = self.search_fetch(
+            domain,
+            ['display_name', 'codificacion_anterior', 'product_template_id'],
+            limit=limit,
+        )
+        if self.env.context.get('_flt_product_search_dropdown'):
+            return [(tmpl.id, format_product_search_result(tmpl)) for tmpl in templates]
         return [(tmpl.id, tmpl.display_name) for tmpl in templates]
 
     @api.depends('product_familia_id', 'product_familia_id.property_ids.sequence', 'product_familia_id.property_ids.property_field', 

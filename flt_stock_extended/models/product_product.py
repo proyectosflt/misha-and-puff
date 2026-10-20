@@ -2,6 +2,7 @@
 from odoo import models, fields, api
 from odoo.exceptions import ValidationError
 from odoo.osv import expression
+from .product_search_utils import format_product_search_result
 
 
 class ProductProduct(models.Model):
@@ -48,7 +49,13 @@ class ProductProduct(models.Model):
         if args:
             domain = ['&'] + args + domain
 
-        products = self.search_fetch(domain, ['display_name'], limit=limit)
+        products = self.search_fetch(
+            domain,
+            ['display_name', 'codificacion_anterior', 'product_template_id'],
+            limit=limit,
+        )
+        if self.env.context.get('_flt_product_search_dropdown'):
+            return [(product.id, format_product_search_result(product)) for product in products]
         return [(product.id, product.display_name) for product in products]
 
     @api.depends('product_template_variant_value_ids',
@@ -127,4 +134,3 @@ class ProductProduct(models.Model):
     def _onchange_uom_id_weight(self):
         if self.uom_id.name == 'kg' and self.weight == 0:
             self.weight = 1.0
-
