@@ -33,6 +33,15 @@ class StockQuant(models.Model):
         readonly=True,
         digits='Stock Weight',
     )
+    agrupacion_total = fields.Char(
+        string="Total",
+        compute='_compute_agrupacion_total',
+        store=True,
+    )
+
+    def _compute_agrupacion_total(self):
+        for quant in self:
+            quant.agrupacion_total = "Total"
 
     @api.depends('package_id')
     def _compute_paquetes(self):
