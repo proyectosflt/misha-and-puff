@@ -17,8 +17,8 @@
         <field name="inherit_id" ref="stock.view_stock_quant_tree_inventory_editable"/>
         <field name="arch" type="xml">
             <xpath expr="//field[@name='quantity']" position="after">
-                <field name="gross_weight"/>
-                <field name="cone_quantity"/>
+                <field name="gross_weight" optional="hide"/>
+                <field name="cone_quantity" optional="hide"/>
             </xpath>
         </field>
     </record>
