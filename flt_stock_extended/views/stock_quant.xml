@@ -53,7 +53,7 @@
         <field name="model">stock.quant</field>
         <field name="inherit_id" ref="stock.quant_search_view"/>
         <field name="arch" type="xml">
-            <xpath expr="//group[@string='Group By']" position="inside">
+            <xpath expr="//filter[@name='productgroup']" position="after">
                 <filter name="group_by_agrupacion_total" string="Total"
                         context="{'group_by': 'agrupacion_total'}"/>
                 <filter name="group_by_product_titulo_id" string="Título"
