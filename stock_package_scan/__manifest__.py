@@ -17,6 +17,7 @@ retroalimentación visual instantánea por línea.
     'depends': [
         'stock',
         'stock_barcode',
+        'flt_stock_extended',
     ],
     'data': [
         'security/ir.model.access.csv',
