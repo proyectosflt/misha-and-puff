@@ -26,7 +26,7 @@ class StockQuant(models.Model):
         string="# Paquetes",
         compute='_compute_paquetes',
         store=True,
-    )
+    ) 
     peso_bruto = fields.Float(
         string="Cantidad bruto",
         related='package_id.peso_bruto',
