@@ -74,5 +74,5 @@
                 <field name="tara_cono"/>
             </xpath>
         </field>
-    </record>
+    </record> 
 </odoo>
