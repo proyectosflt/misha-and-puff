@@ -18,6 +18,11 @@ class StockPackageScan(models.Model):
     product_id = fields.Many2one(
         'product.product', string='Producto',
         help="Se identifica al escanear uno de sus paquetes.")
+    descripcion = fields.Text(
+            string="Descripción",
+            related='product_id.product_tmpl_id.descripcion',
+            readonly=True,
+        )
     location_id = fields.Many2one(
         'stock.location', string='Limitar a ubicación',
         domain=[('usage', '=', 'internal')],

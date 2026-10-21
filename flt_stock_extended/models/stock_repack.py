@@ -14,6 +14,11 @@ class StockRepack(models.Model):
     ], string="Estado", default='draft', required=True, copy=False, tracking=True)
 
     product_id = fields.Many2one('product.product', required=True, string="Producto")
+    descripcion = fields.Text(
+            string="Descripción",
+            related='product_id.product_tmpl_id.descripcion',
+            readonly=True,
+        )
     location_id = fields.Many2one('stock.location', required=True,
                                    domain=[('usage', '=', 'internal')], string="Ubicación de Origen")
     theoretical_qty = fields.Float(compute='_compute_theoretical_qty',

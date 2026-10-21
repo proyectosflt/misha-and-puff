@@ -54,6 +54,7 @@
                         <field name="create_date" string="Fecha de creación" readonly="1"/>
                         <group>
                             <field name="product_id"/>
+                            <field name="descripcion"/>
                             <field name="location_id"/>
                         </group>
                         <group>
