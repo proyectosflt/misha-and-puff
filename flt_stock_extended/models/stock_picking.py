@@ -107,8 +107,11 @@ class StockPicking(models.Model):
 
         for package_move in package_moves:
             inventory_location = package_move.location_id
-            reversal = self.env['stock.move'].create({
+            reversal = self.env['stock.move'].with_context(
+                default_picking_id=False,
+            ).create({
                 'name': self._PACKAGE_APPLICATION_REVERSAL_NAME,
+                'picking_id': False,
                 'origin': self.name,
                 'origin_returned_move_id': package_move.id,
                 'product_id': package_move.product_id.id,
