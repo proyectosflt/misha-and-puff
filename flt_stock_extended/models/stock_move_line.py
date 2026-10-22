@@ -80,25 +80,19 @@ class StockMoveLine(models.Model):
             if line.package_id and line.picking_type_code != 'incoming':
                 super(StockMoveLine, line).write(line._get_package_values())
 
-    @api.depends('package_type_id', 'result_package_id.package_type_id')
+    @api.depends('package_type_id')
     def _compute_tara_bolsa(self):
         for record in self:
             if not record.exists() or record.state == 'done':
                 continue 
-            try:
-                package_type = record.package_type_id or record.result_package_id.package_type_id
-                if not record.tara_bolsa and package_type:
-                    record.tara_bolsa = package_type.base_weight or 0.0
-            except Exception:
-                continue
+            record.tara_bolsa = record.package_type_id.base_weight or 0.0
 
     @api.depends('cono_id')
     def _compute_tara_cono(self):
         for record in self:
             if not record.exists() or record.state == 'done':
                 continue
-            if not record.tara_cono and record.cono_id:
-                record.tara_cono = record.cono_id.tara_cono or 0.0
+            record.tara_cono = record.cono_id.tara_cono or 0.0
 
     @api.depends('tara_bolsa', 'tara_cono', 'cantidad_conos')
     def _compute_tara_cono_total(self):
