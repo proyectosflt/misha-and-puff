@@ -6,6 +6,8 @@ from odoo.exceptions import UserError
 class StockMoveLine(models.Model):
     _inherit = 'stock.move.line'
 
+    _PACKAGE_APPLICATION_MOVE_NAME = "Relizado sin validar recepción"
+
     cantidad_conos = fields.Integer(string="Conos")
     cono_id = fields.Many2one('tipo.cono', string='Tipo de Cono')
     package_type_id = fields.Many2one('stock.package.type', string='Tipo de bolsa')
@@ -19,12 +21,13 @@ class StockMoveLine(models.Model):
     @api.model_create_multi
     def create(self, vals_list):
         lines = super().create(vals_list)
-        lines._sync_package_values()
+        if not self.env.context.get('skip_package_values_sync'):
+            lines._sync_package_values()
         return lines
 
     def write(self, vals):
         result = super().write(vals)
-        if 'package_id' in vals:
+        if 'package_id' in vals and not self.env.context.get('skip_package_values_sync'):
             self._sync_package_values()
         return result
 
@@ -142,6 +145,53 @@ class StockMoveLine(models.Model):
         })
         package.name = package._get_next_name_for_product(self.product_id)
         self.result_package_id = package
+
+        quantity = self.quantity
+        if quantity <= 0:
+            raise UserError("La cantidad de la línea debe ser mayor que cero para aplicar el paquete.")
+
+        inventory_location = self.product_id.with_company(
+            self.company_id
+        ).property_stock_inventory
+        if not inventory_location:
+            raise UserError("El producto no tiene configurada una ubicación de ajuste de inventario.")
+
+        move = self.env['stock.move'].create({
+            'name': self._PACKAGE_APPLICATION_MOVE_NAME,
+            'origin': self.picking_id.name,
+            'product_id': self.product_id.id,
+            'product_uom': self.product_uom_id.id,
+            'product_uom_qty': quantity,
+            'company_id': self.company_id.id,
+            'location_id': inventory_location.id,
+            'location_dest_id': self.location_dest_id.id,
+            'restrict_partner_id': self.owner_id.id,
+            'is_inventory': True,
+            'picked': True,
+            'state': 'confirmed',
+            'move_line_ids': [(0, 0, {
+                'product_id': self.product_id.id,
+                'product_uom_id': self.product_uom_id.id,
+                'quantity': quantity,
+                'company_id': self.company_id.id,
+                'location_id': inventory_location.id,
+                'location_dest_id': self.location_dest_id.id,
+                'lot_id': self.lot_id.id,
+                'lot_name': self.lot_name,
+                'package_id': False,
+                'result_package_id': package.id,
+                'owner_id': self.owner_id.id,
+                'picked': True,
+                'cantidad_conos': self.cantidad_conos,
+                'cono_id': self.cono_id.id,
+                'package_type_id': self.package_type_id.id,
+                'tara_bolsa': self.tara_bolsa,
+                'tara_cono': self.tara_cono,
+                'peso_bruto': self.peso_bruto,
+                'peso_neto': self.peso_neto,
+            })],
+        })
+        move._action_done()
 
     def action_print_zpl_label(self):
         self.ensure_one()
