@@ -10,9 +10,9 @@
                 <attribute name="readonly">1</attribute>
                 <attribute name="string">Paquete creado</attribute>
             </xpath>
-            <!-- <xpath expr="//field[@name='product_uom_id']" position="after">
+            <xpath expr="//field[@name='quantity']" position="after">
                 <field name="result_package_id" position="move"/>
-            </xpath> -->
+            </xpath>
             <xpath expr="//field[@name='result_package_id' and not(@column_invisible='True')]" position="before">
                 <!-- <field name="package_id" column_invisible="parent.picking_type_id == 1"/> -->
                 <field name="package_type_id" column_invisible="parent.picking_type_id != 1"/>
@@ -64,7 +64,7 @@
                 <!-- <attribute name="readonly">1</attribute> -->
                 <attribute name="string">Paquete</attribute>
             </xpath>
-             <xpath expr="//field[@name='product_uom_id']" position="after">
+             <xpath expr="//field[@name='quantity']" position="after">
                 <field name="result_package_id" position="move"/>
             </xpath>
              <xpath expr="//field[@name='result_package_id' and not(@column_invisible='True')]" position="before">
