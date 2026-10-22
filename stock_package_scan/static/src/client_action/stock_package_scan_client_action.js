@@ -17,6 +17,7 @@ export class StockPackageScanClientAction extends Component {
 
   setup() {
     this.orm = useService("orm");
+    this.action = useService("action");
     this.notification = useService("notification");
     // "barcode" is the service the core `barcode` module registers to
     // turn hardware-scanner keystrokes into `barcode_scanned` events.
@@ -54,6 +55,16 @@ export class StockPackageScanClientAction extends Component {
 
   focusInput() {
     this.inputRef.el?.focus();
+  }
+
+  openForm() {
+    this.action.doAction({
+      type: "ir.actions.act_window",
+      res_model: "stock.package.scan",
+      res_id: this.state.scanId,
+      views: [[false, "form"]],
+      target: "current",
+    });
   }
 
   async initSession() {
@@ -113,7 +124,15 @@ export class StockPackageScanClientAction extends Component {
     this.state.lines = await this.orm.searchRead(
       "stock.package.scan.line",
       [["scan_id", "=", this.state.scanId]],
-      ["package_id", "location_id", "product_qty", "scanned"],
+      [
+        "package_id",
+        "product_uom_id",
+        "location_id",
+        "cantidad_conos",
+        "peso_bruto",
+        "product_qty",
+        "scanned",
+      ],
       { order: "scanned asc, id asc" },
     );
   }

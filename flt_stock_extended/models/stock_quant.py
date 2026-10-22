@@ -22,6 +22,16 @@ class StockQuant(models.Model):
         string="Color",
         readonly=True,
     )
+    procuct_color_family_id = fields.Many2one(
+        related='product_id.product_tmpl_id.color_family_id',
+        string="Familia de color",
+        readonly=True,
+    )
+    product_color_name = fields.Char(
+        related='product_id.product_tmpl_id.product_color_id.name',
+        string="Nombre color",
+        readonly=True,
+    )
     paquetes = fields.Integer(
         string="# Paquetes",
         compute='_compute_paquetes',

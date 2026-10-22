@@ -19,6 +19,26 @@ class StockRepack(models.Model):
             related='product_id.product_tmpl_id.descripcion',
             readonly=True,
         )
+    product_titulo_id = fields.Many2one(
+            related='product_id.product_tmpl_id.product_titulo_id',
+            string="Título",
+            readonly=True,
+        )
+    product_color_id = fields.Many2one(
+        related='product_id.product_tmpl_id.product_color_id',
+        string="Color",
+        readonly=True,
+    )
+    procuct_color_family_id = fields.Many2one(
+        related='product_id.product_tmpl_id.color_family_id',
+        string="Familia de color",
+        readonly=True,
+    )
+    product_color_name = fields.Char(
+        related='product_id.product_tmpl_id.product_color_id.name',
+        string="Nombre color",
+        readonly=True,
+    )
     location_id = fields.Many2one('stock.location', required=True,
                                    domain=[('usage', '=', 'internal')], string="Ubicación de Origen")
     theoretical_qty = fields.Float(compute='_compute_theoretical_qty',

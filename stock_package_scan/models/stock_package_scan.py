@@ -23,6 +23,26 @@ class StockPackageScan(models.Model):
             related='product_id.product_tmpl_id.descripcion',
             readonly=True,
         )
+    product_titulo_id = fields.Many2one(
+        related='product_id.product_tmpl_id.product_titulo_id',
+        string="Título",
+        readonly=True,
+    )
+    product_color_id = fields.Many2one(
+        related='product_id.product_tmpl_id.product_color_id',
+        string="Color",
+        readonly=True,
+    )
+    procuct_color_family_id = fields.Many2one(
+        related='product_id.product_tmpl_id.color_family_id',
+        string="Familia de color",
+        readonly=True,
+    )
+    product_color_name = fields.Char(
+        related='product_id.product_tmpl_id.product_color_id.name',
+        string="Nombre color",
+        readonly=True,
+    )
     location_id = fields.Many2one(
         'stock.location', string='Limitar a ubicación',
         domain=[('usage', '=', 'internal')],
@@ -180,7 +200,7 @@ class StockPackageScan(models.Model):
         vals_list = [{
             'scan_id': self.id,
             'package_id': package.id,
-            'product_qty': sum(quants.filtered(lambda q: q.package_id == package).mapped('quantity')),
+            'product_qty': package.peso_neto,
         } for package in new_packages]
 
         if vals_list:

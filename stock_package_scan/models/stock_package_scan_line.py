@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from odoo import fields, models
+from odoo import api, fields, models
 
 
 class StockPackageScanLine(models.Model):
@@ -12,10 +12,18 @@ class StockPackageScanLine(models.Model):
         ondelete='cascade', index=True)
     package_id = fields.Many2one(
         'stock.quant.package', required=True, string='Paquete', ondelete='restrict')
+    product_uom_id = fields.Many2one(
+        'uom.uom', string='Unidad de medida',
+        compute='_compute_product_uom_id')
     location_id = fields.Many2one(
         related='package_id.location_id', string='Ubicación actual', store=True)
+    cantidad_conos = fields.Integer(
+        related='package_id.cantidad_conos', string='Conos')
+    peso_bruto = fields.Float(
+        related='package_id.peso_bruto', string='Cantidad bruto',
+        digits='Stock Weight')
     product_qty = fields.Float(
-        string='Cantidad encontrada',
+        string='Cantidad neto',
         help="Cantidad del producto buscado que había en este paquete "
              "cuando se añadió a la lista.")
     scanned = fields.Boolean(string='Escaneado', default=False)
@@ -26,6 +34,12 @@ class StockPackageScanLine(models.Model):
         ('scan_package_uniq', 'unique(scan_id, package_id)',
          'Un paquete solo puede aparecer una vez por sesión de escaneo.'),
     ]
+
+    @api.depends('package_id.quant_ids.product_uom_id')
+    def _compute_product_uom_id(self):
+        for line in self:
+            quant = line.package_id.quant_ids[:1]
+            line.product_uom_id = quant.product_uom_id if quant else False
 
     def action_mark_scanned(self):
         self.write({

@@ -7,9 +7,16 @@
         <div class="o_package_scan_header p-3 border-bottom">
             <div class="d-flex justify-content-between align-items-center mb-2">
                 <h4 class="mb-0" t-esc="state.name"/>
-                <span class="badge text-bg-secondary" t-if="state.lineCount">
-                    <t t-esc="state.scannedCount"/> / <t t-esc="state.lineCount"/> escaneados
-                </span>
+                <div class="d-flex align-items-center gap-2">
+                    <span class="badge text-bg-secondary" t-if="state.lineCount">
+                        <t t-esc="state.scannedCount"/> / <t t-esc="state.lineCount"/> escaneados
+                    </span>
+                    <button type="button" class="btn btn-outline-secondary btn-sm"
+                            t-on-click="openForm">
+                        <i class="fa fa-external-link me-1"/>
+                        Abrir formulario
+                    </button>
+                </div>
             </div>
             <p class="text-muted mb-2" t-if="state.productName">
                 Mostrando paquetes para: <strong t-esc="state.productName"/>
@@ -42,8 +49,17 @@
                 <div>
                     <div class="fw-bold" t-esc="line.package_id[1]"/>
                     <div class="text-muted small" t-if="line.location_id" t-esc="line.location_id[1]"/>
-                    <div class="text-muted small" t-if="line.product_qty">
-                        Cant.: <t t-esc="line.product_qty"/>
+                    <div class="text-muted small" t-if="line.product_uom_id">
+                        Unidad de medida: <t t-esc="line.product_uom_id[1]"/>
+                    </div>
+                    <div class="text-muted small">
+                        Conos: <t t-esc="line.cantidad_conos"/>
+                    </div>
+                    <div class="text-muted small">
+                        Cantidad bruto: <t t-esc="line.peso_bruto"/>
+                    </div>
+                    <div class="text-muted small">
+                        Cantidad neto: <t t-esc="line.product_qty"/>
                     </div>
                 </div>
                 <i t-attf-class="fa fa-2x {{ line.scanned ? 'fa-check-circle text-success' : 'fa-circle-o text-muted' }}"/>

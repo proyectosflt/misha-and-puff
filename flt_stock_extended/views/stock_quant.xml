@@ -21,19 +21,19 @@
                 <field name="descripcion" optional="show"/>
                 <field name="product_titulo_id" optional="show"/>
                 <field name="product_color_id" optional="show"/>
+                <field name="product_color_name" optional="show"/>
+                <field name="procuct_color_family_id" optional="show"/>
             </xpath>
             <xpath expr="//field[@name='package_id']" position="after">
                 <field name="paquetes" groups="stock.group_tracking_lot" optional="show" sum="Total paquetes"/>
+                <field name="cantidad_conos" string="Conos" optional="show" sum="Total conos"/>
             </xpath>
             <xpath expr="//field[@name='quantity']" position="attributes">
                 <attribute name="string">Cantidad neto</attribute>
                 <attribute name="sum">Total neto</attribute>
             </xpath>
-            <xpath expr="//field[@name='quantity']" position="after">
+            <xpath expr="//field[@name='quantity']" position="before">
                 <field name="peso_bruto" optional="show" sum="Total bruto"/>
-            </xpath>
-            <xpath expr="//field[@name='product_uom_id']" position="after">
-                <field name="cantidad_conos" string="Conos" optional="show" sum="Total conos"/>
             </xpath>
             <xpath expr="//field[@name='inventory_quantity']" position="attributes">
                 <attribute name="optional">hide</attribute>

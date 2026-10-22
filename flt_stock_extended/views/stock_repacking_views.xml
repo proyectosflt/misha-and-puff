@@ -55,6 +55,10 @@
                         <group>
                             <field name="product_id"/>
                             <field name="descripcion"/>
+                            <field name="product_titulo_id"/>
+                            <field name="product_color_id"/>
+                            <field name="product_color_name"/>
+                            <field name="procuct_color_family_id"/>
                             <field name="location_id"/>
                         </group>
                         <group>
