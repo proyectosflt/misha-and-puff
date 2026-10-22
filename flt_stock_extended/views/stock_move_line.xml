@@ -14,7 +14,7 @@
                 <field name="result_package_id" column_invisible="parent.picking_type_id != 1"
                        readonly="1" string="Paquete creado"/>
             </xpath>
-            <xpath expr="//field[@name='location_dest_id' and not(@column_invisible='True')]" position="before">
+            <xpath expr="//field[@name='location_dest_id' and not(@column_invisible='True')]" position="after">
                 <!-- <field name="package_id" column_invisible="parent.picking_type_id == 1"/> -->
                 <field name="package_type_id" column_invisible="parent.picking_type_id != 1"/>
             </xpath>
@@ -68,7 +68,7 @@
                 <field name="result_package_id" column_invisible="picking_type_code != 'incoming'"
                        string="Paquete"/>
             </xpath>
-             <xpath expr="//field[@name='location_dest_id' and not(@column_invisible='True')]" position="before">
+             <xpath expr="//field[@name='location_dest_id' and not(@column_invisible='True')]" position="after">
                 <!-- <field name="package_id"/> -->
                 <field name="package_type_id"/>
             </xpath>
