@@ -49,9 +49,6 @@
                 <div>
                     <div class="fw-bold" t-esc="line.package_id[1]"/>
                     <div class="text-muted small" t-if="line.location_id" t-esc="line.location_id[1]"/>
-                    <div class="text-muted small" t-if="line.product_uom_id">
-                        Unidad de medida: <t t-esc="line.product_uom_id[1]"/>
-                    </div>
                     <div class="text-muted small">
                         Conos: <t t-esc="line.cantidad_conos"/>
                     </div>
@@ -60,6 +57,9 @@
                     </div>
                     <div class="text-muted small">
                         Cantidad neto: <t t-esc="line.product_qty"/>
+                    </div>
+                    <div class="text-muted small" t-if="line.product_uom_id">
+                        Unidad de medida: <t t-esc="line.product_uom_id[1]"/>
                     </div>
                 </div>
                 <i t-attf-class="fa fa-2x {{ line.scanned ? 'fa-check-circle text-success' : 'fa-circle-o text-muted' }}"/>

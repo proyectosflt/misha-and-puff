@@ -43,10 +43,10 @@
                                 <list editable="bottom" decoration-success="scanned == True">
                                     <field name="package_id" readonly="1"/>
                                     <field name="location_id" readonly="1"/>
-                                    <field name="product_uom_id" string="Unidad de medida" readonly="1"/>
                                     <field name="cantidad_conos" string="Conos" readonly="1"/>
                                     <field name="peso_bruto" string="Cantidad bruto" readonly="1"/>
                                     <field name="product_qty" string="Cantidad neto" readonly="1"/>
+                                    <field name="product_uom_id" string="Unidad de medida" readonly="1"/>
                                     <field name="scanned" widget="boolean_toggle"/>
                                     <field name="scanned_date" readonly="1"/>
                                     <field name="scanned_by" readonly="1"/>
