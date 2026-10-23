@@ -128,13 +128,22 @@
         <xpath expr="//field[@name='product_uom_qty']/ancestor::div[@class='o_row']" position="after">
             <field name="quantity" string="Cantidad" readonly="1" invisible="picking_code != 'outgoing'"/>
         </xpath>
+        <xpath expr="//form/group" position="attributes">
+            <attribute name="col">6</attribute>
+        </xpath>
+        <xpath expr="//form/group/group[1]" position="attributes">
+            <attribute name="colspan">2</attribute>
+        </xpath>
+        <xpath expr="//form/group/group[2]" position="attributes">
+            <attribute name="colspan">2</attribute>
+        </xpath>
         <xpath expr="//form/group/group[2]" position="inside">
             <field name="tolerancia_venta" string="Tolerancia venta" invisible="picking_code != 'outgoing'"/>
             <field name="tolerancia_compra" string="Tolerancia compra" invisible="picking_code != 'incoming'"/>
             <field name="diferencia_demanda" string="Diferencia demanda" readonly="1"/>
         </xpath>
         <xpath expr="//form/group/group[2]" position="after">
-            <group string="Proveedor" invisible="picking_code != 'incoming'">
+            <group colspan="2" invisible="picking_code != 'incoming'">
                 <field name="neto_prov" string="Neto proveedor"/>
                 <field name="diferencia_prov" string="Diferencia proveedor" readonly="1"/>
             </group>
