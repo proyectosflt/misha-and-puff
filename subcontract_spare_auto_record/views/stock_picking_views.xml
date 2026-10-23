@@ -11,7 +11,7 @@
                         class="oe_stat_button"
                         icon="fa-undo"
                         invisible="subcontract_return_count == 0">
-                    <field name="subcontract_return_count" widget="statinfo" string="Unused Returns"/>
+                    <field name="subcontract_return_count" widget="statinfo" string="Retorno sobrante"/>
                 </button>
             </xpath>
         </field>
