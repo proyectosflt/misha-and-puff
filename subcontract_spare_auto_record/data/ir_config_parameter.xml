@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo noupdate="1">
+    <record id="config_param_spare_factor" model="ir.config_parameter">
+        <field name="key">subcontract_spare_auto_record.spare_factor</field>
+        <field name="value">1.05</field>
+    </record>
+</odoo>
