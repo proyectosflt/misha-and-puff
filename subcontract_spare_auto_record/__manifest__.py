@@ -6,6 +6,7 @@
     'depends': ['purchase', 'mrp_subcontracting', 'flt_stock_extended'],
     'data': [
         'data/ir_config_parameter.xml',
+        'views/stock_picking_views.xml',
     ],
     'license': 'LGPL-3',
     'installable': True,

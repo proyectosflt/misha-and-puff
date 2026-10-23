@@ -8,7 +8,7 @@ from odoo.tools import float_compare
 class PurchaseOrder(models.Model):
     _inherit = 'purchase.order'
 
-    def _create_subcontract_unused_components_return(self):
+    def _create_subcontract_unused_components_return(self, last_receipt=None):
         """Create (in draft) a transfer returning the components sent to the subcontractor
         and not consumed, once the PO has no more pending subcontract receipts.
 
@@ -83,6 +83,7 @@ class PurchaseOrder(models.Model):
                     'origin': origin,
                     'company_id': order.company_id.id,
                     'subcontract_return_po_id': order.id,
+                    'subcontract_return_origin_id': last_receipt.id if last_receipt else False,
                     'move_ids': [Command.create({
                         'name': product.display_name,
                         'product_id': product.id,
