@@ -110,11 +110,11 @@
                                         </tr>
                                         <tr>
                                             <td><strong>Orden</strong></td>
-                                            <td>: <span t-field="o.origin"/></td>
+                                            <td>: <t t-if="o.sale_id" t-esc="o.sale_id.name"/><t t-elif="o.purchase_id" t-esc="o.purchase_id.name"/></td>
                                         </tr>
                                         <tr>
                                             <td><strong>Vendedor</strong></td>
-                                            <td>: <span t-esc="o.sale_id.user_id.name"/></td>
+                                            <td>: <t t-if="o.sale_id" t-esc="o.sale_id.user_id.name"/><t t-elif="o.purchase_id" t-esc="o.purchase_id.user_id.name"/></td>
                                         </tr>
                                         <tr>
                                             <td><strong>Peso</strong></td>

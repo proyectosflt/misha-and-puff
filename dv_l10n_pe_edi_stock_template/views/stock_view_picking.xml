@@ -10,7 +10,7 @@
                 <field name="invoice_document_number" />
             </xpath>
             <xpath expr="//group//group[1]" position="inside">
-                <field name="orden_compra"/>
+                <!-- <field name="orden_compra"/> -->
 				<field name="sale_order_notes"  widget="html"/>
             </xpath>
         </field>
