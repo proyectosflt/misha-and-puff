@@ -123,6 +123,13 @@ class StockMoveLine(models.Model):
         for record in self:
             record.quantity = record.peso_neto
 
+    def _reopen_move_details(self):
+        """Reopen the detailed operations dialog so it never closes after a button."""
+        move = self.mapped('move_id')[:1]
+        if move:
+            return move.action_show_details()
+        return False
+
     def action_duplicar(self):
         for record in self:
             record.copy({
@@ -131,6 +138,7 @@ class StockMoveLine(models.Model):
                 'peso_neto': 0.0,
                 'quantity': 0.0,
             })
+        return self._reopen_move_details()
 
     def action_apply_package(self):
         self.ensure_one()
@@ -198,6 +206,8 @@ class StockMoveLine(models.Model):
             })],
         })
         move._action_done()
+        
+        return self._reopen_move_details()
 
     def action_print_zpl_label(self):
         self.ensure_one()

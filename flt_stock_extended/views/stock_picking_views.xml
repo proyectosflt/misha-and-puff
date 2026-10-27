@@ -8,6 +8,7 @@
             <xpath expr="//field[@name='origin']" position="replace">
                 <field name="origin" invisible="1"/>
                 <field name="purchase_id" readonly="1" string="Orden de Compra" invisible="not purchase_id"/>
+                <field name="subcontracting_purchase_id" readonly="1" string="Orden de Compra" invisible="not subcontracting_purchase_id"/>
                 <field name="sale_id" readonly="1" string="Orden de Venta" invisible="not sale_id"/>
                 <field name="numero_guia_remision" invisible="picking_type_code != 'incoming'"/>
             </xpath>

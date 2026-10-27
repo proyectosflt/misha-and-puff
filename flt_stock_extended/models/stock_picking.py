@@ -13,6 +13,24 @@ class StockPicking(models.Model):
         string='Número guía de remisión',
         help='Número de la guía de remisión'
     )
+    
+    subcontracting_purchase_id = fields.Many2one(
+        "purchase.order",
+        string="Subcontracting Source PO",
+        compute="_compute_subcontracting_purchase_id",
+        store=True,
+        index=True,
+        copy=False,
+    )
+
+    @api.depends(
+        "move_ids.move_orig_ids.production_id.move_finished_ids.move_dest_ids.purchase_line_id",
+        "move_ids.move_dest_ids.raw_material_production_id.move_finished_ids.move_dest_ids.purchase_line_id",
+    )
+    def _compute_subcontracting_purchase_id(self):
+        for picking in self:
+            purchases = picking._get_subcontracting_source_purchase()
+            picking.subcontracting_purchase_id = purchases[:1]
 
     def _notify_administrators(self, group_xml_id, title, message):
         """Helper method to send an activity notification to all users in a specific group"""
