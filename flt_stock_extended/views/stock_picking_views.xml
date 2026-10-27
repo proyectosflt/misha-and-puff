@@ -22,10 +22,6 @@
                 <field name="x_studio_color_name" optional="show" string="Nombre Color"/>
                 <field name="color_family_id" optional="show"/>
             </xpath>
-            <xpath expr="//field[@name='move_ids_without_package']/list/field[@name='description_bom_line']" position="attributes">
-                <attribute name="column_invisible">1</attribute>
-            </xpath>
-            
             <!-- Added sum to Demanda (product_uom_qty) -->
             <xpath expr="//field[@name='move_ids_without_package']/list/field[@name='product_uom_qty']" position="attributes">
                 <attribute name="sum">Total Demanda</attribute>
@@ -49,6 +45,17 @@
                 <field name="neto_prov" optional="show" column_invisible="parent.picking_type_code != 'incoming'" sum="Total Neto Prov"/>
                 <field name="diferencia_demanda" optional="show" widget="badge" decoration-success="diferencia_demanda &gt; 0" decoration-danger="diferencia_demanda &lt;= 0" sum="Total Dif. Demanda"/>
                 <field name="diferencia_prov" optional="show" column_invisible="parent.picking_type_code != 'incoming'" widget="badge" decoration-success="diferencia_prov &gt; 0" decoration-danger="diferencia_prov &lt;= 0" sum="Total Dif. Prov"/>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="view_picking_form_inherit_hide_kit_field" model="ir.ui.view">
+        <field name="name">stock.picking.form.inherit.hide.kit.field</field>
+        <field name="model">stock.picking</field>
+        <field name="inherit_id" ref="mrp.view_picking_form_inherit_mrp"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='description_bom_line']" position="attributes">
+                <attribute name="column_invisible">1</attribute>
             </xpath>
         </field>
     </record>
