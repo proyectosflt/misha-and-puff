@@ -17,6 +17,8 @@
 ^LL1218
 <t t-set="fit" t-value="0.7"/>
 <t t-set="prop" t-value="0.85"/>
+<t t-set="wide_chars" t-value="'WM'"/>
+<t t-set="narrow_chars" t-value="'I1-/. '"/>
 <t t-set="head_wmax" t-value="123"/>
 <t t-set="foot_wmax" t-value="140"/>
 
@@ -30,11 +32,15 @@
 <t t-set="color" t-value="(tmpl.product_color_id.codigo or '').strip()"/>
 <t t-set="line3" t-value="(((tenido + '-') if (tenido and color) else tenido) + color).strip('-')"/>
 
-<t t-set="l1_w" t-value="min(int(780 / (fit * (len(line1) or 1))), head_wmax)"/>
+<t t-set="line1_len" t-value="sum([1.5 if c in wide_chars else 0.8 if c in narrow_chars else 1.0 for c in line1]) or 1"/>
+<t t-set="line2_len" t-value="sum([1.5 if c in wide_chars else 0.8 if c in narrow_chars else 1.0 for c in line2]) or 1"/>
+<t t-set="line3_len" t-value="sum([1.5 if c in wide_chars else 0.8 if c in narrow_chars else 1.0 for c in line3]) or 1"/>
+
+<t t-set="l1_w" t-value="min(int(780 / (fit * line1_len)), head_wmax)"/>
 <t t-set="l1_h" t-value="int(l1_w / prop)"/>
-<t t-set="l2_w" t-value="min(int(780 / (fit * (len(line2) or 1))), head_wmax)"/>
+<t t-set="l2_w" t-value="min(int(780 / (fit * line2_len)), head_wmax)"/>
 <t t-set="l2_h" t-value="int(l2_w / prop)"/>
-<t t-set="l3_w" t-value="min(int(780 / (fit * (len(line3) or 1))), head_wmax)"/>
+<t t-set="l3_w" t-value="min(int(780 / (fit * line3_len)), head_wmax)"/>
 <t t-set="l3_h" t-value="int(l3_w / prop)"/>
 <t t-set="y2" t-value="25 + l1_h + 12"/>
 <t t-set="y3" t-value="y2 + l2_h + 12"/>
@@ -86,6 +92,8 @@
      it if a long line runs past the edge, raise it if long lines come out too small. -->
 <t t-set="fit" t-value="0.7"/>
 <t t-set="prop" t-value="0.85"/>
+<t t-set="wide_chars" t-value="'WM'"/>
+<t t-set="narrow_chars" t-value="'I1-/. '"/>
 <t t-set="head_wmax" t-value="123"/>
 <t t-set="foot_wmax" t-value="140"/>
 
@@ -96,22 +104,23 @@
     <t t-set="props" t-value="tmpl.product_familia_id.property_ids.sorted(lambda p: p.sequence)"/>
     <t t-set="rest_codes" t-value="[(tmpl[p.property_field].codigo or '').strip() for p in props if p.property_field not in excluded and tmpl[p.property_field] and (tmpl[p.property_field].codigo or '').strip()]"/>
     <t t-set="line1" t-value="'-'.join(rest_codes).strip('-')"/>
+<t t-set="line2" t-value="(tmpl.product_titulo_id.codigo or '').strip()"/>
+<t t-set="tenido" t-value="(tmpl.product_tenido_id.codigo or '').strip()"/>
+<t t-set="color" t-value="(tmpl.product_color_id.codigo or '').strip()"/>
+<t t-set="line3" t-value="(((tenido + '-') if (tenido and color) else tenido) + color).strip('-')"/>
 
-    <t t-set="line2" t-value="(tmpl.product_titulo_id.codigo or '').strip()"/>
+<t t-set="line1_len" t-value="sum([1.5 if c in wide_chars else 0.8 if c in narrow_chars else 1.0 for c in line1]) or 1"/>
+<t t-set="line2_len" t-value="sum([1.5 if c in wide_chars else 0.8 if c in narrow_chars else 1.0 for c in line2]) or 1"/>
+<t t-set="line3_len" t-value="sum([1.5 if c in wide_chars else 0.8 if c in narrow_chars else 1.0 for c in line3]) or 1"/>
 
-    <t t-set="tenido" t-value="(tmpl.product_tenido_id.codigo or '').strip()"/>
-    <t t-set="color" t-value="(tmpl.product_color_id.codigo or '').strip()"/>
-    <t t-set="line3" t-value="(((tenido + '-') if (tenido and color) else tenido) + color).strip('-')"/>
-
-    <t t-set="l1_w" t-value="min(int(780 / (fit * (len(line1) or 1))), head_wmax)"/>
-    <t t-set="l1_h" t-value="int(l1_w / prop)"/>
-    <t t-set="l2_w" t-value="min(int(780 / (fit * (len(line2) or 1))), head_wmax)"/>
-    <t t-set="l2_h" t-value="int(l2_w / prop)"/>
-    <t t-set="l3_w" t-value="min(int(780 / (fit * (len(line3) or 1))), head_wmax)"/>
-    <t t-set="l3_h" t-value="int(l3_w / prop)"/>
-
-    <t t-set="y2" t-value="25 + l1_h + 12"/>
-    <t t-set="y3" t-value="y2 + l2_h + 12"/>
+<t t-set="l1_w" t-value="min(int(780 / (fit * line1_len)), head_wmax)"/>
+<t t-set="l1_h" t-value="int(l1_w / prop)"/>
+<t t-set="l2_w" t-value="min(int(780 / (fit * line2_len)), head_wmax)"/>
+<t t-set="l2_h" t-value="int(l2_w / prop)"/>
+<t t-set="l3_w" t-value="min(int(780 / (fit * line3_len)), head_wmax)"/>
+<t t-set="l3_h" t-value="int(l3_w / prop)"/>
+<t t-set="y2" t-value="25 + l1_h + 12"/>
+<t t-set="y3" t-value="y2 + l2_h + 12"/>
 
 ^FO0,25^FB812,1,0,C^A0N,<t t-out="l1_h"/>,<t t-out="l1_w"/>^FD<t t-out="line1"/>^FS
 ^FO0,<t t-out="y2"/>^FB812,1,0,C^A0N,<t t-out="l2_h"/>,<t t-out="l2_w"/>^FD<t t-out="line2"/>^FS
