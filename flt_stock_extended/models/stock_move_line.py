@@ -16,7 +16,7 @@ class StockMoveLine(models.Model):
     tara_cono = fields.Float(string="Tara cono", compute='_compute_tara_cono', store=True, readonly=False, digits='Stock Weight')
     tara_cono_total = fields.Float(string="Tara total", compute='_compute_tara_cono_total', store=True, readonly=False, digits='Stock Weight')
     peso_bruto = fields.Float(string="Peso bruto", digits='Stock Weight')
-    peso_neto = fields.Float(string="Peso neto", compute='_compute_peso_neto', store=True, readonly=False, digits='Stock Weight')
+    peso_neto = fields.Float(string="Peso neto", compute='_compute_peso_neto', inverse='_inverse_peso_neto', store=True, readonly=False, digits='Stock Weight')
 
     @api.model_create_multi
     def create(self, vals_list):
@@ -113,6 +113,15 @@ class StockMoveLine(models.Model):
                     record.quantity = value
             except Exception:
                 continue
+
+    def _inverse_peso_neto(self):
+        for record in self:
+            record.quantity = record.peso_neto
+
+    @api.onchange('peso_neto')
+    def _onchange_peso_neto(self):
+        for record in self:
+            record.quantity = record.peso_neto
 
     def action_duplicar(self):
         for record in self:
