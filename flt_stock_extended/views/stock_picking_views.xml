@@ -22,6 +22,9 @@
                 <field name="x_studio_color_name" optional="show" string="Nombre Color"/>
                 <field name="color_family_id" optional="show"/>
             </xpath>
+            <xpath expr="//field[@name='move_ids_without_package']/list/field[@name='description_bom_line']" position="attributes">
+                <attribute name="column_invisible">1</attribute>
+            </xpath>
             
             <!-- Added sum to Demanda (product_uom_qty) -->
             <xpath expr="//field[@name='move_ids_without_package']/list/field[@name='product_uom_qty']" position="attributes">
