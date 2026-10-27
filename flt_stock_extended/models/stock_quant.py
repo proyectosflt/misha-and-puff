@@ -1,55 +1,106 @@
 # -*- coding: utf-8 -*-
 from odoo import api, models, fields
+from odoo.exceptions import UserError
 
 class StockQuant(models.Model):
     _inherit = 'stock.quant'
     
     cantidad_conos = fields.Integer(string="Conos")
-    peso_bruto = fields.Float(string="Peso bruto")
-    peso_neto = fields.Float(string="Peso neto")
+    tara_cono = fields.Float(string="Tara cono unitaria", digits='Stock Weight')
+    descripcion = fields.Text(
+        string="Descripción",
+        related='product_id.product_tmpl_id.descripcion',
+        readonly=True,
+    )
+    product_titulo_id = fields.Many2one(
+        related='product_id.product_tmpl_id.product_titulo_id',
+        string="Título",
+        readonly=True,
+    )
+    product_color_id = fields.Many2one(
+        related='product_id.product_tmpl_id.product_color_id',
+        string="Color",
+        readonly=True,
+    )
+    procuct_color_family_id = fields.Many2one(
+        related='product_id.product_tmpl_id.color_family_id',
+        string="Familia de color",
+        readonly=True,
+    )
+    product_color_name = fields.Char(
+        related='product_id.product_tmpl_id.product_color_id.name',
+        string="Nombre color",
+        readonly=True,
+    )
+    paquetes = fields.Integer(
+        string="# Paquetes",
+        compute='_compute_paquetes',
+        store=True, 
+    ) 
+    peso_bruto = fields.Float(
+        string="Cantidad bruto",
+        related='package_id.peso_bruto',
+        readonly=True,
+        digits='Stock Weight',
+    )
+    agrupacion_total = fields.Char(
+        string="Total",
+        compute='_compute_agrupacion_total',
+        store=True,
+    )
+
+    def _compute_agrupacion_total(self):
+        for quant in self:
+            quant.agrupacion_total = "Total"
+
+    @api.depends('package_id')
+    def _compute_paquetes(self):
+        for quant in self:
+            quant.paquetes = 1 if quant.package_id else 0
+
+    def action_print_label(self):
+        self.ensure_one()
+        if not self.package_id:
+            raise UserError("Debe asignar un paquete antes de imprimir la etiqueta.")
+
+        report = self.env['ir.actions.report'].search([
+            ('report_name', '=', 'stock.label_package_template_view')
+        ], limit=1)
+        if not report:
+            raise UserError("No se encontró la acción de informe para la etiqueta del paquete.")
+
+        return report.report_action(self.package_id)
 
     def _update_available_quantity(self, product_id, location_id, quantity=0, lot_id=None, package_id=None, owner_id=None, in_date=None, **kwargs):
         """Override to retrieve custom fields from context and update quant accordingly"""
         
-        # Get custom field values from context
         cantidad_conos = self.env.context.get('quant_cantidad_conos', 0)
-        peso_bruto = self.env.context.get('quant_peso_bruto', 0.0)
-        peso_neto = self.env.context.get('quant_peso_neto', 0.0)
+        tara_cono = self.env.context.get('quant_tara_cono', 0.0)
         
-        # Determine if this is a source (removal) or destination (addition) operation
         move_line_location_id = self.env.context.get('move_line_location_id')
-        move_line_location_dest_id = self.env.context.get('move_line_location_dest_id')
         move_line_package_id = self.env.context.get('move_line_package_id')
-        move_line_result_package_id = self.env.context.get('move_line_result_package_id')
         
-        # Apply negative sign for source location/package (removal)
         package_id_val = package_id.id if package_id else False
         is_source = (location_id.id == move_line_location_id and package_id_val == move_line_package_id)
         
         if is_source:
             cantidad_conos = -cantidad_conos
-            peso_bruto = -peso_bruto
-            peso_neto = -peso_neto
         
-        # Call parent to handle standard quantity logic
         res = super(StockQuant, self)._update_available_quantity(product_id, location_id, quantity, lot_id=lot_id, package_id=package_id, owner_id=owner_id, in_date=in_date, **kwargs)
         
-        # Update our custom fields if any value is set and quantity is not zero
-        if quantity and ('quant_cantidad_conos' in self.env.context or 'quant_peso_bruto' in self.env.context or 'quant_peso_neto' in self.env.context):
+        if quantity and ('quant_cantidad_conos' in self.env.context or 'quant_tara_cono' in self.env.context):
             self = self.sudo()
             quants = self._gather(product_id, location_id, lot_id=lot_id, package_id=package_id, owner_id=owner_id, strict=True)
             if quants:
                 quant = quants[0]
                 quant.write({
                     'cantidad_conos': quant.cantidad_conos + cantidad_conos,
-                    'peso_bruto': quant.peso_bruto + peso_bruto,
-                    'peso_neto': quant.peso_neto + peso_neto,
+                    'tara_cono': tara_cono or quant.tara_cono,
                 })
         
         return res
 
     def _get_inventory_fields_create(self):
-        """ Returns a list of fields user can edit when he want to create a quant in `inventory_mode`. """
         inventory_fields_create = super()._get_inventory_fields_create()
-        inventory_fields_create += ['cantidad_conos', 'peso_bruto', 'peso_neto']
+        inventory_fields_create += ['cantidad_conos', 'tara_cono']
         return inventory_fields_create

@@ -7,8 +7,59 @@
         <field name="arch" type="xml">
             <xpath expr="//field[@name='product_uom_id']" position="after">
                 <field name="cantidad_conos"/>
-                <field name="peso_bruto"/>
-                <field name="peso_neto"/>
+                <field name="tara_cono"/>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="view_stock_quant_tree_inventory_editable_inherit_flt_stock_extended" model="ir.ui.view">
+        <field name="name">stock.quant.tree.inventory.editable.inherit.flt.stock.extended</field>
+        <field name="model">stock.quant</field>
+        <field name="inherit_id" ref="stock.view_stock_quant_tree_inventory_editable"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='product_id']" position="after">
+                <field name="descripcion" optional="show"/>
+                <field name="product_titulo_id" optional="show"/>
+                <field name="product_color_id" optional="show"/>
+                <field name="product_color_name" optional="show"/>
+                <field name="procuct_color_family_id" optional="show"/>
+            </xpath>
+            <xpath expr="//field[@name='package_id']" position="after">
+                <field name="paquetes" groups="stock.group_tracking_lot" optional="show" sum="Total paquetes"/>
+                <field name="cantidad_conos" string="Conos" optional="show" sum="Total conos"/>
+            </xpath>
+            <xpath expr="//field[@name='quantity']" position="attributes">
+                <attribute name="string">Cantidad neto</attribute>
+                <attribute name="sum">Total neto</attribute>
+            </xpath>
+            <xpath expr="//field[@name='quantity']" position="before">
+                <field name="peso_bruto" optional="show" sum="Total bruto"/>
+            </xpath>
+            <xpath expr="//field[@name='inventory_quantity']" position="attributes">
+                <attribute name="optional">hide</attribute>
+            </xpath>
+            <xpath expr="//field[@name='inventory_diff_quantity']" position="attributes">
+                <attribute name="optional">hide</attribute>
+            </xpath>
+            <xpath expr="//button[@name='action_inventory_history']" position="before">
+                <button name="action_print_label" type="object" string="Imprimir ZPL"
+                        class="btn btn-link" icon="fa-print" invisible="not package_id"/>
+            </xpath>
+        </field>
+    </record> 
+
+    <record id="view_stock_quant_search_inherit_flt_stock_extended" model="ir.ui.view">
+        <field name="name">stock.quant.search.inherit.flt.stock.extended</field>
+        <field name="model">stock.quant</field>
+        <field name="inherit_id" ref="stock.quant_search_view"/>
+        <field name="arch" type="xml">
+            <xpath expr="//filter[@name='productgroup']" position="after">
+                <filter name="group_by_agrupacion_total" string="Total"
+                        context="{'group_by': 'agrupacion_total'}"/>
+                <filter name="group_by_product_titulo_id" string="Título"
+                        context="{'group_by': 'product_titulo_id'}"/>
+                <filter name="group_by_product_color_id" string="Color"
+                        context="{'group_by': 'product_color_id'}"/>
             </xpath>
         </field>
     </record>
@@ -20,9 +71,8 @@
         <field name="arch" type="xml">
             <xpath expr="//field[@name='product_uom_id']" position="after">
                 <field name="cantidad_conos"/>
-                <field name="peso_bruto"/>
-                <field name="peso_neto"/>
+                <field name="tara_cono"/>
             </xpath>
         </field>
-    </record>
+    </record> 
 </odoo>

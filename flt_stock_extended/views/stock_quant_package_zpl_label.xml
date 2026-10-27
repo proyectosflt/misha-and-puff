@@ -1,0 +1,174 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="action_report_move_line_package_zpl" model="ir.actions.report">
+            <field name="name">Move Line Package ZPL Label</field>
+            <field name="model">stock.move.line</field>
+            <field name="report_type">qweb-text</field>
+            <field name="report_name">flt_stock_extended.stock_move_line_package_zpl</field>
+            <field name="report_file">flt_stock_extended.stock_move_line_package_zpl</field>
+            <field name="print_report_name">'Package - %s' % (object.result_package_id.name)</field>
+        </record>
+
+        <template id="stock_move_line_package_zpl">
+            <t t-foreach="docs" t-as="line">
+^XA
+^PW812
+^LL1218
+<t t-set="fit" t-value="0.7"/>
+<t t-set="prop" t-value="0.85"/>
+<!-- <t t-set="wide_chars" t-value="'WM'"/>
+<t t-set="narrow_chars" t-value="'I1-/. '"/> -->
+<t t-set="cw" t-value="{'W': 1.5, 'M': 1.4, 'O': 1.1, 'Q': 1.1, 'D': 1.05, 'G': 1.05, 'N': 1.05, 'H': 1.05, 'U': 1.05, 'I': 0.5, '1': 0.6, '-': 0.7, '/': 0.7, '.': 0.5}"/>
+<t t-set="head_wmax" t-value="123"/>
+<t t-set="foot_wmax" t-value="140"/>
+
+<t t-set="tmpl" t-value="line.product_id.product_tmpl_id"/>
+<t t-set="excluded" t-value="('product_tenido_id', 'product_color_id', 'product_titulo_id')"/>
+<t t-set="props" t-value="tmpl.product_familia_id.property_ids.sorted(lambda p: p.sequence)"/>
+<t t-set="rest_codes" t-value="[(tmpl[p.property_field].codigo or '').strip() for p in props if p.property_field not in excluded and tmpl[p.property_field] and (tmpl[p.property_field].codigo or '').strip()]"/>
+<t t-set="line1" t-value="'-'.join(rest_codes).strip('-')"/>
+<t t-set="line2" t-value="(tmpl.product_titulo_id.codigo or '').strip()"/>
+<t t-set="tenido" t-value="(tmpl.product_tenido_id.codigo or '').strip()"/>
+<t t-set="color" t-value="(tmpl.product_color_id.codigo or '').strip()"/>
+<t t-set="line3" t-value="(((tenido + '-') if (tenido and color) else tenido) + color).strip('-')"/>
+
+<t t-set="line1_len" t-value="sum([cw.get(c, 1.0) for c in line1]) or 1"/>
+<t t-set="line2_len" t-value="sum([cw.get(c, 1.0) for c in line2]) or 1"/>
+<t t-set="line3_len" t-value="sum([cw.get(c, 1.0) for c in line3]) or 1"/>
+
+<t t-set="l1_w" t-value="min(int(780 / (fit * line1_len)), head_wmax)"/>
+<t t-set="l1_h" t-value="int(l1_w / prop)"/>
+<t t-set="l2_w" t-value="min(int(780 / (fit * line2_len)), head_wmax)"/>
+<t t-set="l2_h" t-value="int(l2_w / prop)"/>
+<t t-set="l3_w" t-value="min(int(780 / (fit * line3_len)), head_wmax)"/>
+<t t-set="l3_h" t-value="int(l3_w / prop)"/>
+<t t-set="y2" t-value="25 + l1_h + 12"/>
+<t t-set="y3" t-value="y2 + l2_h + 12"/>
+
+^FO0,25^FB812,1,0,C^A0N,<t t-out="l1_h"/>,<t t-out="l1_w"/>^FD<t t-out="line1"/>^FS
+^FO0,<t t-out="y2"/>^FB812,1,0,C^A0N,<t t-out="l2_h"/>,<t t-out="l2_w"/>^FD<t t-out="line2"/>^FS
+^FO0,<t t-out="y3"/>^FB812,1,0,C^A0N,<t t-out="l3_h"/>,<t t-out="l3_w"/>^FD<t t-out="line3"/>^FS
+
+<t t-set="barcode_val" t-value="line.result_package_id.name"/>
+<t t-set="barcode_len" t-value="len(barcode_val) if barcode_val else 0"/>
+<t t-set="barcode_x" t-value="int(353.5 - (barcode_len * 16.5))"/>
+<t t-if="barcode_x &lt; 10"><t t-set="barcode_x" t-value="10"/></t>
+<t t-set="bc_w" t-value="min(int(780 / (fit * (barcode_len or 1))), 140)"/>
+<t t-set="bc_h" t-value="int(bc_w / prop)"/>
+^FO<t t-out="barcode_x"/>,520^BY3,3,150
+^BCN,150,N,N,N
+^FD<t t-out="barcode_val"/>^FS
+^FO0,685^FB812,1,0,C^A0N,<t t-out="bc_h"/>,<t t-out="bc_w"/>^FD<t t-out="barcode_val"/>^FS
+
+<t t-set="is_unit_uom" t-value="line.product_id.uom_id == env.ref('uom.product_uom_unit')"/>
+<t t-set="header1" t-value="'CANT.' if is_unit_uom else 'CONOS'"/>
+<t t-set="header2" t-value="'U. MED.' if is_unit_uom else 'KGB'"/>
+<t t-set="header3" t-value="'KG' if is_unit_uom else 'KGN'"/>
+<t t-set="conos_val" t-value="'{:g}'.format(line.quantity or 0.0) if is_unit_uom else (line.cantidad_conos or '')"/>
+<t t-set="bruto_val" t-value="('UNID' if line.product_uom_id.name == 'Unidades' else line.product_uom_id.name) if is_unit_uom else '{:.3f}'.format(line.peso_bruto or 0.0)"/>
+<t t-set="neto_val" t-value="'{:.3f}'.format((line.quantity or 0.0) * (line.product_id.weight or 0.0)) if is_unit_uom else '{:.3f}'.format(line.peso_neto or 0.0)"/>
+^FO0,870^FB270,1,0,C^A0N,73,62^FD<t t-out="header1"/>^FS
+^FO271,870^FB270,1,0,C^A0N,73,62^FD<t t-out="header2"/>^FS
+^FO542,870^FB270,1,0,C^A0N,73,62^FD<t t-out="header3"/>^FS
+<t t-set="foot_len" t-value="max(len(str(conos_val)), len(str(bruto_val)), len(str(neto_val))) or 1"/>
+<t t-set="foot_w" t-value="min(int(260 / (fit * foot_len)), foot_wmax)"/>
+<t t-set="foot_h" t-value="int(foot_w / prop)"/>
+^FO0,955^FB270,1,0,C^A0N,<t t-out="foot_h"/>,<t t-out="foot_w"/>^FD<t t-out="conos_val"/>^FS
+^FO271,955^FB270,1,0,C^A0N,<t t-out="foot_h"/>,<t t-out="foot_w"/>^FD<t t-out="bruto_val"/>^FS
+^FO542,955^FB270,1,0,C^A0N,<t t-out="foot_h"/>,<t t-out="foot_w"/>^FD<t t-out="neto_val"/>^FS
+^XZ
+            </t>
+        </template>
+
+        <template id="label_package_template_view_inherit" inherit_id="stock.label_package_template_view">
+            <xpath expr="//t[@t-translation='off']" position="replace">
+                <t t-translation="off">
+^XA
+^PW812
+^LL1218
+<!-- TEXT SIZING: ^A0N,h,w squashes the glyphs when w sits far below h, so width is pinned at
+     PROP x height (the ratio this label used at 4x3) and the pair is scaled down only as far
+     as the string length demands. FIT is the per-character advance as a fraction of w: lower
+     it if a long line runs past the edge, raise it if long lines come out too small. -->
+<t t-set="fit" t-value="0.7"/>
+<t t-set="prop" t-value="0.85"/>
+<!-- <t t-set="wide_chars" t-value="'WM'"/>
+<t t-set="narrow_chars" t-value="'I1-/. '"/> -->
+<t t-set="cw" t-value="{'W': 1.5, 'M': 1.4, 'O': 1.1, 'Q': 1.1, 'D': 1.05, 'G': 1.05, 'N': 1.05, 'H': 1.05, 'U': 1.05, 'I': 0.5, '1': 0.6, '-': 0.7, '/': 0.7, '.': 0.5}"/>
+<t t-set="head_wmax" t-value="123"/>
+<t t-set="foot_wmax" t-value="140"/>
+
+<t t-set="quant" t-value="package.quant_ids and package.quant_ids[0]"/>
+<t t-set="tmpl" t-value="quant.product_tmpl_id if quant else False"/>
+<t t-if="tmpl">
+    <t t-set="excluded" t-value="('product_tenido_id', 'product_color_id', 'product_titulo_id')"/>
+    <t t-set="props" t-value="tmpl.product_familia_id.property_ids.sorted(lambda p: p.sequence)"/>
+    <t t-set="rest_codes" t-value="[(tmpl[p.property_field].codigo or '').strip() for p in props if p.property_field not in excluded and tmpl[p.property_field] and (tmpl[p.property_field].codigo or '').strip()]"/>
+    <t t-set="line1" t-value="'-'.join(rest_codes).strip('-')"/>
+<t t-set="line2" t-value="(tmpl.product_titulo_id.codigo or '').strip()"/>
+<t t-set="tenido" t-value="(tmpl.product_tenido_id.codigo or '').strip()"/>
+<t t-set="color" t-value="(tmpl.product_color_id.codigo or '').strip()"/>
+<t t-set="line3" t-value="(((tenido + '-') if (tenido and color) else tenido) + color).strip('-')"/>
+
+<t t-set="line1_len" t-value="sum([cw.get(c, 1.0) for c in line1]) or 1"/>
+<t t-set="line2_len" t-value="sum([cw.get(c, 1.0) for c in line2]) or 1"/>
+<t t-set="line3_len" t-value="sum([cw.get(c, 1.0) for c in line3]) or 1"/>
+
+<t t-set="l1_w" t-value="min(int(780 / (fit * line1_len)), head_wmax)"/>
+<t t-set="l1_h" t-value="int(l1_w / prop)"/>
+<t t-set="l2_w" t-value="min(int(780 / (fit * line2_len)), head_wmax)"/>
+<t t-set="l2_h" t-value="int(l2_w / prop)"/>
+<t t-set="l3_w" t-value="min(int(780 / (fit * line3_len)), head_wmax)"/>
+<t t-set="l3_h" t-value="int(l3_w / prop)"/>
+<t t-set="y2" t-value="25 + l1_h + 12"/>
+<t t-set="y3" t-value="y2 + l2_h + 12"/>
+
+^FO0,25^FB812,1,0,C^A0N,<t t-out="l1_h"/>,<t t-out="l1_w"/>^FD<t t-out="line1"/>^FS
+^FO0,<t t-out="y2"/>^FB812,1,0,C^A0N,<t t-out="l2_h"/>,<t t-out="l2_w"/>^FD<t t-out="line2"/>^FS
+^FO0,<t t-out="y3"/>^FB812,1,0,C^A0N,<t t-out="l3_h"/>,<t t-out="l3_w"/>^FD<t t-out="line3"/>^FS
+</t>
+
+<!-- DYNAMIC BARCODE CENTERING MATH IN QWEB (module width 3) -->
+<t t-set="barcode_val" t-value="package.name"/>
+<t t-set="barcode_len" t-value="len(barcode_val) if barcode_val else 0"/>
+<t t-set="barcode_x" t-value="int(353.5 - (barcode_len * 16.5))"/>
+<t t-if="barcode_x &lt; 10">
+    <t t-set="barcode_x" t-value="10"/>
+</t>
+
+<!-- The built-in interpretation line ignores ^CF here, so it is switched off (4th ^BC arg)
+     and the value is drawn underneath as a normal ^A0N field we can actually size. -->
+<t t-set="bc_w" t-value="min(int(780 / (fit * (barcode_len or 1))), 140)"/>
+<t t-set="bc_h" t-value="int(bc_w / prop)"/>
+
+^FO<t t-out="barcode_x"/>,520^BY3,3,150
+^BCN,150,N,N,N
+^FD<t t-out="barcode_val"/>^FS
+^FO0,685^FB812,1,0,C^A0N,<t t-out="bc_h"/>,<t t-out="bc_w"/>^FD<t t-out="barcode_val"/>^FS
+
+<!-- FOOTER: three columns spanning the full 812 so the numbers get as much width as possible -->
+<t t-set="is_unit_uom" t-value="quant and quant.product_id.uom_id == env.ref('uom.product_uom_unit')"/>
+<t t-set="header1" t-value="'CANT.' if is_unit_uom else 'CONOS'"/>
+<t t-set="header2" t-value="'U. MED.' if is_unit_uom else 'KGB'"/>
+<t t-set="header3" t-value="'KG' if is_unit_uom else 'KGN'"/>
+<t t-set="conos_val" t-value="'{:g}'.format(quant.quantity or 0.0) if is_unit_uom else (package.cantidad_conos or '')"/>
+<t t-set="bruto_val" t-value="('UNID' if quant.product_id.uom_id.name == 'Unidades' else quant.product_id.uom_id.name) if is_unit_uom else '{:.3f}'.format(package.peso_bruto or 0.0)"/>
+<t t-set="neto_val" t-value="'{:.3f}'.format((quant.quantity or 0.0) * (quant.product_id.weight or 0.0)) if is_unit_uom else '{:.3f}'.format(package.peso_neto or 0.0)"/>
+^FO0,870^FB270,1,0,C^A0N,73,62^FD<t t-out="header1"/>^FS
+^FO271,870^FB270,1,0,C^A0N,73,62^FD<t t-out="header2"/>^FS
+^FO542,870^FB270,1,0,C^A0N,73,62^FD<t t-out="header3"/>^FS
+<!-- One size for the whole row, driven by the longest of the three -->
+<t t-set="foot_len" t-value="max(len(str(conos_val)), len(str(bruto_val)), len(str(neto_val))) or 1"/>
+<t t-set="foot_w" t-value="min(int(260 / (fit * foot_len)), foot_wmax)"/>
+<t t-set="foot_h" t-value="int(foot_w / prop)"/>
+
+^FO0,955^FB270,1,0,C^A0N,<t t-out="foot_h"/>,<t t-out="foot_w"/>^FD<t t-out="conos_val"/>^FS
+^FO271,955^FB270,1,0,C^A0N,<t t-out="foot_h"/>,<t t-out="foot_w"/>^FD<t t-out="bruto_val"/>^FS
+^FO542,955^FB270,1,0,C^A0N,<t t-out="foot_h"/>,<t t-out="foot_w"/>^FD<t t-out="neto_val"/>^FS
+^XZ
+                </t>
+            </xpath>
+        </template>
+    </data>
+</odoo>

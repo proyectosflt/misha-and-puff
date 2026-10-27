@@ -4,11 +4,12 @@ from odoo import models, fields, api
 class StockMove(models.Model):
     _inherit = 'stock.move'
 
-    x_studio_title = fields.Char(related='product_id.x_studio_title', string="Title", readonly=True)
+    x_studio_title = fields.Char(related='product_id.product_tmpl_id.product_titulo_id.name', string="Title", readonly=True)
     descripcion = fields.Text(related='product_id.product_tmpl_id.descripcion', string="Descripción", readonly=True)
-    x_studio_color_code = fields.Char(related='product_id.x_studio_color_code', string="Color Code", readonly=True)
-    x_studio_color_name = fields.Char(related='product_id.x_studio_color_name', string="Color Name", readonly=True)
-    color_family_id = fields.Many2one(related='product_id.color_family_id', string="Familia de Color", readonly=True)
+    x_studio_color_code = fields.Char(related='product_id.product_tmpl_id.product_color_id.codigo', string="Color Code", readonly=True)
+    x_studio_color_name = fields.Char(related='product_id.product_tmpl_id.product_color_name', string="Color Name", readonly=True)
+    color_family_id = fields.Many2one(related='product_id.product_tmpl_id.color_family_id', string="Familia de Color", readonly=True)
+    item_number = fields.Integer(string="Item", compute='_compute_item_number')
 
     allowed_product_ids = fields.Many2many(
         'product.product',
@@ -23,6 +24,21 @@ class StockMove(models.Model):
     paquetes = fields.Integer(string="Paquetes", compute="_compute_detailed_metrics", store=True)
     conos = fields.Integer(string="Conos", compute="_compute_detailed_metrics", store=True)
     cantidad_bruto = fields.Float(string="Cantidad bruto", compute="_compute_detailed_metrics", store=True)
+    
+    tolerancia_compra = fields.Float(related='purchase_line_id.tolerancia', string="Tolerancia", digits='Stock Weight', default=0.0)
+    tolerancia_venta = fields.Float(related='sale_line_id.tolerancia', string="Tolerancia", digits='Stock Weight', default=0.0)
+
+    @api.depends('picking_id', 'picking_id.move_ids_without_package')
+    def _compute_item_number(self):
+        for move in self:
+            if move.picking_id and move.picking_id.move_ids_without_package:
+                moves = move.picking_id.move_ids_without_package
+                if move in moves:
+                    move.item_number = list(moves).index(move) + 1
+                else:
+                    move.item_number = 0
+            else:
+                move.item_number = 0
 
     @api.depends('picking_id', 'picking_id.origin', 'origin')
     def _compute_allowed_product_ids(self):
@@ -41,10 +57,10 @@ class StockMove(models.Model):
                     move.allowed_product_ids = [(6, 0, product_ids)]
                 else:
                     # If PO not found, allow all products
-                    move.allowed_product_ids = [(6, 0, [])]
+                    move.allowed_product_ids = [(6, 0, self.env['product.product'].search([]).ids)]
             else:
                 # Not from a purchase order, allow all products
-                move.allowed_product_ids = [(6, 0, [])]
+                move.allowed_product_ids = [(6, 0, self.env['product.product'].search([]).ids)]
 
     @api.depends('move_line_ids', 'move_line_ids.cantidad_conos', 'move_line_ids.peso_bruto')
     def _compute_detailed_metrics(self):

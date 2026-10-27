@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 from odoo import models, fields, api
 from odoo.exceptions import ValidationError
+from odoo.osv import expression
+from .product_search_utils import format_product_search_result
 
 
 class ProductProduct(models.Model):
@@ -8,22 +10,61 @@ class ProductProduct(models.Model):
 
     product_type_id = fields.Many2one('product.type', string='Clasificación de producto')
     weight = fields.Float(default=1.0)
+    codificacion_anterior = fields.Char(
+        related='product_tmpl_id.codificacion_anterior',
+        string='Codificación Anterior',
+        store=True,
+        readonly=True,
+    )
+    product_template_id = fields.Integer(
+        related='product_tmpl_id.product_template_id',
+        string='ID',
+        store=True,
+        readonly=True,
+    )
 
     x_studio_title = fields.Char(string='Title', compute='_compute_studio_fields', store=True)
     x_studio_color_code = fields.Char(string='Color Code', compute='_compute_studio_fields', store=True)
     x_studio_color_name = fields.Char(string='Color Name', compute='_compute_studio_fields', store=True)
-    color_family_id = fields.Many2one('color.family', string='Familia de Color', compute='_compute_studio_fields', store=True)
     default_code = fields.Char(compute='_compute_studio_fields', store=True)
+
+    @api.model
+    def name_search(self, name='', args=None, operator='ilike', limit=100):
+        args = list(args or [])
+        if not name:
+            return super().name_search(name=name, args=args, operator=operator, limit=limit)
+        
+        # Search across name, default_code (Internal Reference), barcode, and codificacion_anterior
+        domain = [
+            '|', '|', '|',
+            ('name', operator, name),
+            ('default_code', operator, name),
+            ('barcode', operator, name),
+            ('codificacion_anterior', operator, name),
+        ]
+        
+        if name.isdigit():
+            domain = ['|'] + domain + [('product_template_id', '=', int(name))]
+
+        if args:
+            domain = ['&'] + args + domain
+
+        products = self.search_fetch(
+            domain,
+            ['display_name', 'codificacion_anterior', 'product_template_id'],
+            limit=limit,
+        )
+        if self.env.context.get('_flt_product_search_dropdown'):
+            return [(product.id, format_product_search_result(product)) for product in products]
+        return [(product.id, product.display_name) for product in products]
 
     @api.depends('product_template_variant_value_ids',
                  'product_template_variant_value_ids.attribute_id.name',
                  'product_template_variant_value_ids.product_attribute_value_id.name',
                  'product_template_variant_value_ids.product_attribute_value_id.nombre',
-                 'product_template_variant_value_ids.product_attribute_value_id.color_family_id',
                  'product_tmpl_id.attribute_line_ids',
                  'product_tmpl_id.attribute_line_ids.value_ids',
                  'product_tmpl_id.attribute_line_ids.value_ids.nombre',
-                 'product_tmpl_id.attribute_line_ids.value_ids.color_family_id',
                  'product_tmpl_id.attribute_line_ids.attribute_id.name',
                  'name',
                  'product_tmpl_id.name')
@@ -32,7 +73,6 @@ class ProductProduct(models.Model):
             title = False
             color_code = False
             color_name = False
-            color_family = False
             
             # First, check variant-specific values (for multi-variant attributes)
             ptavs = product.product_template_variant_value_ids
@@ -42,7 +82,6 @@ class ProductProduct(models.Model):
                     title = ptav.product_attribute_value_id.name
                 elif attr_name == 'Color':
                     val = ptav.product_attribute_value_id
-                    color_family = val.color_family_id
                     color_code = val.name
                     color_name = val.nombre
             
@@ -56,14 +95,12 @@ class ProductProduct(models.Model):
                         title = attr_line.value_ids[0].name
                     elif attr_name == 'Color' and not color_code and len(attr_line.value_ids) == 1:
                         val = attr_line.value_ids[0]
-                        color_family = val.color_family_id
                         color_code = val.name
                         color_name = val.nombre
             
             product.x_studio_title = title
             product.x_studio_color_code = color_code
             product.x_studio_color_name = color_name
-            product.color_family_id = color_family
             
             # Use product.name which delegates to template name
             # or fallback to product_tmpl_id.name directly
@@ -76,9 +113,10 @@ class ProductProduct(models.Model):
 
     def write(self, vals):
         res = super(ProductProduct, self).write(vals)
-        for product in self:
-            if product.uom_id.name == 'kg' and product.weight != 1:
-                raise ValidationError("El peso del producto no puede ser diferente de 1 si la unidad de medida es kilogramos.")
+        if 'uom_id' in vals or 'weight' in vals:
+            for product in self:
+                if product.uom_id.name == 'kg' and product.weight != 1:
+                    raise ValidationError("El peso del producto no puede ser diferente de 1 si la unidad de medida es kilogramos.")
         return res
 
     @api.model_create_multi
@@ -96,5 +134,3 @@ class ProductProduct(models.Model):
     def _onchange_uom_id_weight(self):
         if self.uom_id.name == 'kg' and self.weight == 0:
             self.weight = 1.0
-
-

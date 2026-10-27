@@ -1,5 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
+    <record id="product_template_search_view_inherit_flt_stock_extended" model="ir.ui.view">
+        <field name="name">product.template.search.inherit.flt.stock.extended</field>
+        <field name="model">product.template</field>
+        <field name="inherit_id" ref="product.product_template_search_view"/>
+        <field name="arch" type="xml">
+            <xpath expr="//search/field[@name='name']" position="after">
+                <field name="codificacion_anterior"/>
+                <field name="product_template_id" string="ID"/>
+            </xpath>
+        </field>
+    </record>
+
     <record id="product_template_form_view_inherit_flt_stock_extended" model="ir.ui.view">
         <field name="name">product.template.form.inherit.flt.stock.extended</field>
         <field name="model">product.template</field>
@@ -7,6 +19,58 @@
         <field name="arch" type="xml">
             <xpath expr="//field[@name='categ_id']" position="after">
                 <field name="descripcion"/>
+            </xpath>
+            <xpath expr="//field[@name='descripcion']" position="after">
+                <field name="x_studio_design_name"/>
+                <field name="x_studio_content"/>
+                <field name="x_studio_percent"/>
+            </xpath>
+            <xpath expr="//group[@name='group_general']" position="inside">
+                <field name="show_rubro" invisible="1"/>
+                <field name="show_material" invisible="1"/>
+                <field name="show_detalle" invisible="1"/>
+                <field name="show_titulo" invisible="1"/>
+                <field name="show_type" invisible="1"/>
+                <field name="show_model" invisible="1"/>
+                <field name="show_tenido" invisible="1"/>
+                <field name="show_color" invisible="1"/>
+                <field name="show_medida" invisible="1"/>
+                <field name="show_texto" invisible="1"/>
+                <field name="show_talla" invisible="1"/>
+                <field name="show_otros" invisible="1"/>
+
+                <field name="product_familia_id"/>
+                <field name="product_rubro_id" invisible="not show_rubro"/>
+                <field name="product_material_id" invisible="not show_material"/>
+                <field name="product_detalle_id" invisible="not show_detalle"/>
+                <field name="product_titulo_id" invisible="not show_titulo"/>
+                <field name="product_otros_id" invisible="not show_otros"/>
+                <field name="product_type_id" invisible="not show_type"/>
+                <field name="product_model_id" invisible="not show_model"/>
+                <field name="product_tenido_id" invisible="not show_tenido"/>
+                <field name="product_color_id" invisible="not show_color"/>
+                <field name="product_color_name" invisible="not show_color"/>
+                <field name="color_family_id" invisible="not show_color"/>
+                <field name="product_medida_id" invisible="not show_medida"/>
+                <field name="product_texto_id" invisible="not show_texto"/>
+                <field name="product_talla_id" invisible="not show_talla"/>
+                <field name="product_template_id_aux"/>
+                <field name="product_template_id" readonly="1"/>
+            </xpath>
+            <xpath expr="//group[@name='group_standard_price']" position="inside">
+                <field name = "codificacion_anterior" readonly="1"/>  
+            </xpath>
+            <xpath expr="//notebook" position="inside">
+                <page string="Tolerancias">
+                    <group>
+                        <field name="tolerancia_compra"/>
+                        <field name="tolerancia_venta"/>
+                    </group>
+                    <group>
+                        <field name="fecha_minima_tolerancia_compra"/>
+                        <field name="fecha_minima_tolerancia_venta"/>
+                    </group>
+                </page>
             </xpath>
         </field>
     </record>

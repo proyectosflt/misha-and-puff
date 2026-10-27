@@ -16,8 +16,8 @@
         <field name="model">product.product</field>
         <field name="inherit_id" ref="product.product_product_tree_view"/>
         <field name="arch" type="xml">
-            <xpath expr="//field[@name='product_template_variant_value_ids']" position="after">
-                <field name="color_family_id" optional="show"/>
+            <xpath expr="//field[@name='product_template_variant_value_ids']" position="attributes">
+                <attribute name='invisible'>1</attribute>
             </xpath>
         </field>
     </record>
@@ -28,6 +28,18 @@
         <field name="arch" type="xml">
             <xpath expr="//field[@name='barcode']" position="after">
                 <field name="color_family_id"/>
+            </xpath>
+        </field>
+    </record>
+
+     <record id="product_product_search_view_inherit_flt_stock_extended" model="ir.ui.view">
+        <field name="name">product.product.search.inherit.flt.stock.extended</field>
+        <field name="model">product.product</field>
+        <field name="inherit_id" ref="product.product_search_form_view"/>
+        <field name="arch" type="xml">
+            <xpath expr="//search/field[@name='name']" position="after">
+                <field name="codificacion_anterior"/>
+                <field name="product_template_id" string="ID"/>
             </xpath>
         </field>
     </record>
