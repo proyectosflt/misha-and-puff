@@ -185,7 +185,7 @@
                                         <t t-foreach="lines" t-as="line">
                                             <tr>
                                                 <td style="text-align: right;"><span t-esc="line_index + 1"/></td>
-                                                <td style="text-align: left;"><span t-field="line.name"/></td>
+                                                <td style="text-align: left;"><span t-field="line.product_id.name"/></td>
                                                 <td style="text-align: left;"><span t-field="line.descripcion"/></td>
                                                 <td style="text-align: left;"><span t-field="line.x_studio_title"/></td>
                                                 <td style="text-align: left;"><span t-field="line.x_studio_color_code"/></td>
