@@ -167,15 +167,17 @@
                                     <thead class="section-header">
                                         <tr>
                                             <th style="width: 5%; text-align: right;">IT</th>
-                                            <th style="width: 14%; text-align: left;">PRODUCTO</th>
-                                            <th style="width: 15%; text-align: left;">DESCRIPCIÓN</th>
-                                            <th style="width: 12%; text-align: left;">TÍTULO</th>
-                                            <th style="width: 10%; text-align: left;">F. COLOR</th>
+                                            <th style="width: 12%; text-align: left;">PRODUCTO</th>
+                                            <th style="width: 13%; text-align: left;">DESCRIPCIÓN</th>
+                                            <th style="width: 10%; text-align: left;">TÍTULO</th>
+                                            <th style="width: 7%; text-align: left;">CÓDIGO COLOR</th>
+                                            <th style="width: 9%; text-align: left;">COLOR</th>
+                                            <th style="width: 8%; text-align: left;">F. COLOR</th>
                                             <th style="width: 8%; text-align: right; white-space: nowrap;">PAQUETES</th>
                                             <th style="width: 6%; text-align: right;">CONOS</th>
-                                            <th style="width: 9%; text-align: right;">PESO BRUTO</th>
+                                            <th style="width: 8%; text-align: right;">PESO BRUTO</th>
                                             <th style="width: 9%; text-align: right;">PESO NETO</th>
-                                            <th style="width: 12%; text-align: left;">UNID. DE MEDIDA</th>
+                                            <th style="width: 5%; text-align: left;">UNID. DE MEDIDA</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -186,6 +188,8 @@
                                                 <td style="text-align: left;"><span t-field="line.name"/></td>
                                                 <td style="text-align: left;"><span t-field="line.descripcion"/></td>
                                                 <td style="text-align: left;"><span t-field="line.x_studio_title"/></td>
+                                                <td style="text-align: left;"><span t-field="line.x_studio_color_code"/></td>
+                                                <td style="text-align: left;"><span t-field="line.x_studio_color_name"/></td>
                                                 <td style="text-align: left;"><span t-field="line.color_family_id"/></td>
                                                 <td style="text-align: right;"><span t-field="line.paquetes"/></td>
                                                 <td style="text-align: right;"><span t-field="line.conos"/></td>
@@ -206,10 +210,12 @@
                                                 <td></td>
                                                 <td></td>
                                                 <td></td>
+                                                <td></td>
+                                                <td></td>
                                             </tr>
                                         </t>
                                         <tr class="fw-bold">
-                                            <td colspan="5" style="text-align: right;">TOTAL</td>
+                                            <td colspan="7" style="text-align: right;">TOTAL</td>
                                             <td style="text-align: right;"><span t-esc="sum(lines.mapped('paquetes'))"/></td>
                                             <td style="text-align: right;"><span t-esc="sum(lines.mapped('conos'))"/></td>
                                             <td style="text-align: right;"><span t-esc="sum(lines.mapped('cantidad_bruto'))"/></td>
