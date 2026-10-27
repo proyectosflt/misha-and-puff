@@ -94,17 +94,66 @@ class ProductTemplate(models.Model):
         string='Codificación Anterior',
         help='Codificación anterior del producto, si existía'
     )
-    product_template_id = fields.Integer(
-        string='ID',
-        compute='_compute_product_template_id',
-        store=True,
-        readonly=True,
-    )
+    product_template_id_aux = fields.Integer(string='ID auxiliar', copy=False)
+    product_template_id = fields.Integer(string='ID', readonly=True, copy=False, index=True)
 
-    
-    def _compute_product_template_id(self):
-        for record in self:
-            record.product_template_id = record.id
+    _sql_constraints = [
+        ('product_template_id_uniq',
+         'UNIQUE(product_template_id)',
+         'The product template ID must be unique.'),
+    ]
+
+    @api.constrains('product_template_id_aux')
+    def _check_aux_unique(self):
+        for rec in self.filtered('product_template_id_aux'):
+            dup = self.with_context(active_test=False).sudo().search_count([
+                ('product_template_id_aux', '=', rec.product_template_id_aux),
+                ('id', '!=', rec.id),
+            ])
+            if dup:
+                raise ValidationError("Another product already uses this auxiliary ID.")
+
+    @api.model
+    def _get_free_product_template_id(self):
+        """Smallest positive integer not used as product_template_id."""
+        self.flush_model(['product_template_id'])
+        self.env.cr.execute("""
+            SELECT MIN(c.n)
+              FROM (SELECT 1 AS n
+                    UNION ALL
+                    SELECT product_template_id + 1
+                      FROM product_template
+                     WHERE product_template_id IS NOT NULL) c
+             WHERE NOT EXISTS (SELECT 1 FROM product_template p
+                                WHERE p.product_template_id = c.n)
+        """)
+        return self.env.cr.fetchone()[0]
+
+    def _assign_product_template_id(self):
+        Template = self.with_context(active_test=False).sudo()
+        # Records with an aux go first so they win against others in the same batch
+        for rec in self.sorted(key=lambda r: not r.product_template_id_aux):
+            wanted = rec.product_template_id_aux or rec.id
+            if rec.product_template_id == wanted:
+                continue
+
+            holder = Template.search([
+                ('product_template_id', '=', wanted),
+                ('id', '!=', rec.id),
+            ], limit=1)
+
+            if holder and not (rec.product_template_id_aux and not holder.product_template_id_aux):
+                # The holder has priority (or neither has aux and the holder was there first):
+                # the current record looks for another value.
+                wanted = self._get_free_product_template_id()
+            elif holder:
+                # The current record has the aux, so the holder moves.
+                # Flush before assigning, because the unique constraint is checked immediately.
+                holder.product_template_id = self._get_free_product_template_id()
+                holder.flush_recordset(['product_template_id'])
+
+            rec.product_template_id = wanted
+            rec.flush_recordset(['product_template_id'])
 
     @api.model
     def name_search(self, name='', args=None, operator='ilike', limit=100):
@@ -239,6 +288,7 @@ class ProductTemplate(models.Model):
                 if uom.name == 'kg' and vals.get('weight', 0) == 0:
                     vals['weight'] = 1.0
         records = super(ProductTemplate, self).create(vals_list)
+        records._assign_product_template_id()
         if not self.env.context.get('skip_name_sync'):
             for rec in records:
                 if rec.codificacion and rec.name != rec.codificacion:
@@ -247,6 +297,8 @@ class ProductTemplate(models.Model):
 
     def write(self, vals):
         res = super(ProductTemplate, self).write(vals)
+        if 'product_template_id_aux' in vals:
+            self._assign_product_template_id()
         # Update name with codificacion whenever attributes change in standard write operations
         if not self.env.context.get('skip_name_sync'):
             for rec in self:
