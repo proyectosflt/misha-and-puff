@@ -28,7 +28,7 @@ class ProductTemplate(models.Model):
         string='Descripción',
         compute='_compute_descripcion',
         store=True,
-        help='Descripción del producto basada en los nombres de sus atributos'
+        help='Descripción del producto basada en sus atributos; usa el código para el color'
     )
 
     x_studio_design_name = fields.Char(string='Design Name')
@@ -171,6 +171,7 @@ class ProductTemplate(models.Model):
                  'product_model_id', 'product_model_id.name',
                  'product_tenido_id', 'product_tenido_id.name',
                  'product_color_id', 'product_color_id.name',
+                 'product_color_id.codigo',
                  'product_medida_id', 'product_medida_id.name',
                  'product_texto_id', 'product_texto_id.name',
                  'product_talla_id', 'product_talla_id.name',
@@ -187,9 +188,14 @@ class ProductTemplate(models.Model):
             for prop in sorted_properties:
                 field_value = record[prop.property_field]
                 if field_value and hasattr(field_value, 'name'):
-                    name = (field_value.name or '').strip()
-                    if name:
-                        names.append(name)
+                    value = (
+                        f'{field_value.codigo} ({field_value.name})'
+                        if prop.property_field == 'product_color_id'
+                        else field_value.name
+                    )
+                    value = (value or '').strip()
+                    if value:
+                        names.append(value)
 
             record.descripcion = '-'.join(names) if names else ''
 
