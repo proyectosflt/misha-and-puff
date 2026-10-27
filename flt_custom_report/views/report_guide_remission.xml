@@ -206,6 +206,14 @@
                                                 <td></td>
                                             </tr>
                                         </t>
+                                        <tr class="fw-bold">
+                                            <td colspan="5" style="text-align: right;">TOTAL</td>
+                                            <td style="text-align: right;"><span t-esc="sum(lines.mapped('paquetes'))"/></td>
+                                            <td style="text-align: right;"><span t-esc="sum(lines.mapped('conos'))"/></td>
+                                            <td style="text-align: right;"><span t-esc="sum(lines.mapped('cantidad_bruto'))"/></td>
+                                            <td style="text-align: right;"><span t-esc="sum(lines.mapped('quantity'))"/></td>
+                                            <td></td>
+                                        </tr>
                                     </tbody>
                                 </table>
                             </div>
