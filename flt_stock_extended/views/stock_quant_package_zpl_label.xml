@@ -17,8 +17,9 @@
 ^LL1218
 <t t-set="fit" t-value="0.7"/>
 <t t-set="prop" t-value="0.85"/>
-<t t-set="wide_chars" t-value="'WM'"/>
-<t t-set="narrow_chars" t-value="'I1-/. '"/>
+<!-- <t t-set="wide_chars" t-value="'WM'"/>
+<t t-set="narrow_chars" t-value="'I1-/. '"/> -->
+<t t-set="cw" t-value="{'W': 1.5, 'M': 1.4, 'O': 1.1, 'Q': 1.1, 'D': 1.05, 'G': 1.05, 'N': 1.05, 'H': 1.05, 'U': 1.05, 'I': 0.5, '1': 0.6, '-': 0.7, '/': 0.7, '.': 0.5}"/>
 <t t-set="head_wmax" t-value="123"/>
 <t t-set="foot_wmax" t-value="140"/>
 
@@ -32,9 +33,9 @@
 <t t-set="color" t-value="(tmpl.product_color_id.codigo or '').strip()"/>
 <t t-set="line3" t-value="(((tenido + '-') if (tenido and color) else tenido) + color).strip('-')"/>
 
-<t t-set="line1_len" t-value="sum([1.5 if c in wide_chars else 0.8 if c in narrow_chars else 1.0 for c in line1]) or 1"/>
-<t t-set="line2_len" t-value="sum([1.5 if c in wide_chars else 0.8 if c in narrow_chars else 1.0 for c in line2]) or 1"/>
-<t t-set="line3_len" t-value="sum([1.5 if c in wide_chars else 0.8 if c in narrow_chars else 1.0 for c in line3]) or 1"/>
+<t t-set="line1_len" t-value="sum([cw.get(c, 1.0) for c in line1]) or 1"/>
+<t t-set="line2_len" t-value="sum([cw.get(c, 1.0) for c in line2]) or 1"/>
+<t t-set="line3_len" t-value="sum([cw.get(c, 1.0) for c in line3]) or 1"/>
 
 <t t-set="l1_w" t-value="min(int(780 / (fit * line1_len)), head_wmax)"/>
 <t t-set="l1_h" t-value="int(l1_w / prop)"/>
@@ -92,8 +93,9 @@
      it if a long line runs past the edge, raise it if long lines come out too small. -->
 <t t-set="fit" t-value="0.7"/>
 <t t-set="prop" t-value="0.85"/>
-<t t-set="wide_chars" t-value="'WM'"/>
-<t t-set="narrow_chars" t-value="'I1-/. '"/>
+<!-- <t t-set="wide_chars" t-value="'WM'"/>
+<t t-set="narrow_chars" t-value="'I1-/. '"/> -->
+<t t-set="cw" t-value="{'W': 1.5, 'M': 1.4, 'O': 1.1, 'Q': 1.1, 'D': 1.05, 'G': 1.05, 'N': 1.05, 'H': 1.05, 'U': 1.05, 'I': 0.5, '1': 0.6, '-': 0.7, '/': 0.7, '.': 0.5}"/>
 <t t-set="head_wmax" t-value="123"/>
 <t t-set="foot_wmax" t-value="140"/>
 
@@ -109,9 +111,9 @@
 <t t-set="color" t-value="(tmpl.product_color_id.codigo or '').strip()"/>
 <t t-set="line3" t-value="(((tenido + '-') if (tenido and color) else tenido) + color).strip('-')"/>
 
-<t t-set="line1_len" t-value="sum([1.5 if c in wide_chars else 0.8 if c in narrow_chars else 1.0 for c in line1]) or 1"/>
-<t t-set="line2_len" t-value="sum([1.5 if c in wide_chars else 0.8 if c in narrow_chars else 1.0 for c in line2]) or 1"/>
-<t t-set="line3_len" t-value="sum([1.5 if c in wide_chars else 0.8 if c in narrow_chars else 1.0 for c in line3]) or 1"/>
+<t t-set="line1_len" t-value="sum([cw.get(c, 1.0) for c in line1]) or 1"/>
+<t t-set="line2_len" t-value="sum([cw.get(c, 1.0) for c in line2]) or 1"/>
+<t t-set="line3_len" t-value="sum([cw.get(c, 1.0) for c in line3]) or 1"/>
 
 <t t-set="l1_w" t-value="min(int(780 / (fit * line1_len)), head_wmax)"/>
 <t t-set="l1_h" t-value="int(l1_w / prop)"/>
