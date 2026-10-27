@@ -3,6 +3,8 @@ from odoo import models, fields
 
 class ProductType(models.Model):
     _name = 'product.type'
-    _description = 'Product Type'
+    _description = 'Tipo de Producto'
 
-    name = fields.Char(string='Name', required=True)
+    name = fields.Char(string='Nombre', required=True)
+    codigo = fields.Char(string='Código', required=True)
+    familia_ids = fields.Many2many('product.familia', string='Familias')

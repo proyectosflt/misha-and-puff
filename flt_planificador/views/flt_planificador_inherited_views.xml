@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    
+    <!-- Herencia en Sale Order (Lista) -->
+    <record id="view_order_tree_inherit_planificador" model="ir.ui.view">
+        <field name="name">sale.order.list.inherit.planificador</field>
+        <field name="model">sale.order</field>
+        <field name="inherit_id" ref="sale.sale_order_tree"/>
+        <field name="arch" type="xml">
+            <!-- Modificamos el orden por defecto de la lista -->
+            <xpath expr="//list" position="attributes">
+                <attribute name="default_order">no_priority asc, commitment_day asc, pri_tp_sort asc, pri_cp_sort asc</attribute>
+            </xpath>
+            <!-- Añadimos las columnas visuales -->
+            <field name="partner_id" position="after">
+                <field name="temporada" optional="show"/>
+                <field name="programa" optional="show"/>
+                <field name="pri_tp" optional="show"/>
+                <field name="pri_cp" optional="show"/>
+            </field>
+        </field>
+    </record>
+
+    <!-- Herencia en Stock Picking (Lista) -->
+    <record id="vpicktree_inherit_planificador" model="ir.ui.view">
+        <field name="name">stock.picking.list.inherit.planificador</field>
+        <field name="model">stock.picking</field>
+        <field name="inherit_id" ref="stock.vpicktree"/>
+        <field name="arch" type="xml">
+            <!-- Modificamos el orden por defecto de la lista -->
+            <xpath expr="//list" position="attributes">
+                <attribute name="default_order">no_priority asc, scheduled_day asc, pri_tp_sort asc, pri_cp_sort asc</attribute>
+            </xpath>
+            <!-- Añadimos las columnas visuales -->
+            <field name="partner_id" position="after">
+                <field name="temporada" optional="show"/>
+                <field name="programa" optional="show"/>
+                <field name="pri_tp" optional="show"/>
+                <field name="pri_cp" optional="show"/>
+            </field>
+        </field>
+    </record>
+
+    <!-- ... (Mantén aquí los records de los formularios: view_order_form_inherit_planificador y view_picking_form_inherit_planificador) ... -->
+</odoo>

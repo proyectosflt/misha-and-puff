@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_stock_package_scan_form" model="ir.ui.view">
+        <field name="name">stock.package.scan.form</field>
+        <field name="model">stock.package.scan</field>
+        <field name="arch" type="xml">
+            <form>
+                <header>
+                    <button name="action_open_scanner" type="object"
+                            string="Abrir escáner" class="btn-primary"
+                            invisible="state == 'done'"/>
+                    <button name="action_done" type="object" string="Marcar como hecho"
+                            invisible="state != 'in_progress'"/>
+                    <button name="action_reset" type="object" string="Reiniciar"
+                            invisible="state == 'draft'"
+                            confirm="Esto borra todas las líneas escaneadas. ¿Continuar?"/>
+                    <field name="state" widget="statusbar"
+                           statusbar_visible="draft,in_progress,done"/>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <h1><field name="name" readonly="1"/></h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="product_id" readonly="1"/>
+                            <field name="descripcion" readonly="1"/>
+                            <field name="product_titulo_id" readonly="1"/>
+                            <field name="product_color_id" readonly="1"/>
+                            <field name="product_color_name" readonly="1"/>
+                            <field name="procuct_color_family_id" readonly="1"/>
+                            <field name="location_id" readonly="state != 'draft'"/>
+                        </group>
+                        <group>
+                            <field name="user_id"/>
+                            <field name="date"/>
+                            <field name="progress" widget="progressbar"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Paquetes">
+                            <field name="line_ids">
+                                <list editable="bottom" decoration-success="scanned == True">
+                                    <field name="package_id" readonly="1"/>
+                                    <field name="location_id" readonly="1"/>
+                                    <field name="cantidad_conos" string="Conos" readonly="1"/>
+                                    <field name="peso_bruto" string="Cantidad bruto" readonly="1"/>
+                                    <field name="product_qty" string="Cantidad neto" readonly="1"/>
+                                    <field name="product_uom_id" string="Unidad de medida" readonly="1"/>
+                                    <field name="scanned" widget="boolean_toggle"/>
+                                    <field name="scanned_date" readonly="1"/>
+                                    <field name="scanned_by" readonly="1"/>
+                                </list>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_stock_package_scan_list" model="ir.ui.view">
+        <field name="name">stock.package.scan.list</field>
+        <field name="model">stock.package.scan</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="name"/>
+                <field name="product_id"/>
+                <field name="user_id"/>
+                <field name="date"/>
+                <field name="scanned_count" string="Escaneados"/>
+                <field name="line_count" string="Total"/>
+                <field name="state" widget="badge"
+                       decoration-success="state == 'done'"
+                       decoration-info="state == 'in_progress'"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_stock_package_scan_search" model="ir.ui.view">
+        <field name="name">stock.package.scan.search</field>
+        <field name="model">stock.package.scan</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name"/>
+                <field name="product_id"/>
+                <field name="user_id"/>
+                <filter name="in_progress" string="En progreso"
+                        domain="[('state', '=', 'in_progress')]"/>
+                <filter name="done" string="Hecho"
+                        domain="[('state', '=', 'done')]"/>
+                <group expand="0" string="Agrupar por">
+                    <filter name="group_state" string="Estado" context="{'group_by': 'state'}"/>
+                    <filter name="group_user" string="Usuario" context="{'group_by': 'user_id'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_stock_package_scan" model="ir.actions.act_window">
+        <field name="name">Escaneos de paquetes</field>
+        <field name="res_model">stock.package.scan</field>
+        <field name="view_mode">list,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Aún no hay sesiones de escaneo: use "Escanear paquetes" para iniciar una.
+            </p>
+        </field>
+    </record>
+</odoo>

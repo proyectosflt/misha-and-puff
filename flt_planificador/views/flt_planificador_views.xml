@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Vista Lista Principal del Planificador (Editable bottom) -->
+    <record id="view_flt_planificador_list" model="ir.ui.view">
+        <field name="name">flt.planificador.list</field>
+        <field name="model">flt.planificador</field>
+        <field name="arch" type="xml">
+            <list string="Planificaciones" editable="bottom">
+                <field name="name"/>
+                <field name="date"/>
+                <field name="state" widget="badge" 
+                       decoration-info="state == 'en_proceso'" 
+                       decoration-success="state == 'cerrado'"/>
+                <button name="action_open_lines" type="object" string="Editar Líneas" icon="fa-list" class="btn-primary"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- Acción Principal (Solo abre la lista) -->
+    <record id="action_flt_planificador" model="ir.actions.act_window">
+        <field name="name">Planificación</field>
+        <field name="res_model">flt.planificador</field>
+        <field name="view_mode">list</field>
+    </record>
+
+    <record id="view_flt_planificador_line_list" model="ir.ui.view">
+    <field name="name">flt.planificador.line.list</field>
+    <field name="model">flt.planificador.line</field>
+    <field name="arch" type="xml">
+        <list string="Líneas de Planificación" editable="bottom" multi_edit="1">
+            
+            <!-- Header for bulk action buttons -->
+            <header>
+                <button name="action_procesar" 
+                        string="Procesar" 
+                        type="object" 
+                        class="btn-primary" 
+                        icon="fa-cogs"/>
+            </header>
+            
+                 <field name="fecha_planificada" optional="show" readonly="state == 'procesada'"/>
+                 <field name="pri_tp" optional="show" readonly="state == 'procesada'"/>
+                 <field name="temporada" optional="show" readonly="state == 'procesada'"/>
+                 <field name="programa" optional="show" readonly="state == 'procesada'"/>
+                 <field name="pri_cp" optional="show" readonly="state == 'procesada'"/>
+                 <field name="partner_id" optional="show" readonly="state == 'procesada'"/>
+                 <field name="pri_prod" optional="show" readonly="state == 'procesada'"/>
+                 <field name="product_id" optional="show" readonly="state == 'procesada'"/>
+                 <field name="cantidad_requerida" optional="show" readonly="state == 'procesada'"/>
+                 <field name="product_uom_id" optional="show"/>
+                 <field name="sale_order_id" optional="show"/>
+                 <field name="delivery_status" widget="badge" optional="show"
+                     decoration-warning="delivery_status == 'pending' or delivery_status == 'partial'"
+                     decoration-info="delivery_status == 'started'"
+                     decoration-success="delivery_status == 'full'"/>
+                 <field name="picking_ids" widget="many2many_tags" optional="hide"/>
+                 <field name="state" readonly="1" optional="show"
+                   widget="badge" 
+                   decoration-warning="state == 'pendiente'" 
+                   decoration-success="state == 'procesada'"/>
+            <button name="action_copy_line" type="object" string="Copiar" icon="fa-copy" class="btn-secondary"/>
+        </list>
+    </field>
+</record>
+
+</odoo>

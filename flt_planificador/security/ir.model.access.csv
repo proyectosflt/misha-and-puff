@@ -1,0 +1,3 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_flt_planificador_user,flt.planificador.user,model_flt_planificador,base.group_user,1,1,1,1
+access_flt_planificador_line_user,flt.planificador.line.user,model_flt_planificador_line,base.group_user,1,1,1,1
