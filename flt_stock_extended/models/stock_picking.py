@@ -29,14 +29,7 @@ class StockPicking(models.Model):
     )
     def _compute_subcontracting_purchase_id(self):
         for picking in self:
-            get_source_purchase = getattr(picking, '_get_subcontracting_source_purchase', None)
-            if get_source_purchase:
-                purchases = get_source_purchase()
-            else:
-                purchases = self.env['purchase.order']
-                for move in picking.move_ids:
-                    purchases |= move.move_orig_ids.production_id.purchase_line_id.order_id
-                    purchases |= move.move_dest_ids.raw_material_production_id.move_finished_ids.move_dest_ids.purchase_line_id.order_id
+            purchases = picking._get_subcontracting_source_purchase()
             picking.subcontracting_purchase_id = purchases[:1]
 
     def _notify_administrators(self, group_xml_id, title, message):
