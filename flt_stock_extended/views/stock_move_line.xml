@@ -10,7 +10,7 @@
                 <attribute name="readonly">1</attribute>
                 <attribute name="string">Paquete creado</attribute>
             </xpath>
-            <xpath expr="//field[@name='product_uom_id']" position="after">
+            <xpath expr="//field[@name='product_uom_id' and not(@column_invisible='True')]" position="after">
                 <field name="result_package_id" column_invisible="parent.picking_type_id != 1"
                        readonly="1" string="Paquete creado"/>
             </xpath>
