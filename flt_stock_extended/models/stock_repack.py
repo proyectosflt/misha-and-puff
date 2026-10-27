@@ -148,7 +148,7 @@ class StockRepackLine(models.Model):
     tara_bolsa = fields.Float(compute='_compute_tara_bolsa', readonly=False, store=True, digits='Stock Weight')
     tara_cono = fields.Float(compute='_compute_tara_cono', readonly=False, store=True, digits='Stock Weight')
     tara_cono_total = fields.Float(string="Tara total", compute='_compute_tara_cono_total', store=True, digits='Stock Weight')
-    peso_neto = fields.Float(compute='_compute_peso_neto', store=True, digits='Stock Weight')
+    peso_neto = fields.Float(compute='_compute_peso_neto', store=True, digits='Stock Weight',readonly=False)
 
     package_id = fields.Many2one('stock.quant.package', string="Paquete Creado", readonly=True, copy=False)
     is_applied = fields.Boolean(string="Aplicado", default=False, copy=False)
