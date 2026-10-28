@@ -10,21 +10,24 @@ from .product_search_utils import format_product_search_result
 from collections import defaultdict
 
 _logger = logging.getLogger(__name__)
+PLACEHOLDER_NAME = 'Nuevo producto'
 
 class ProductTemplate(models.Model):
     _inherit = 'product.template'
 
+    name = fields.Char(default=PLACEHOLDER_NAME)
+
     @api.constrains('name')
     def _check_unique_name(self):
         for template in self:
-            duplicate = self.sudo().search([
+            if not template.name or template.name == PLACEHOLDER_NAME:
+                continue
+            duplicate = self.sudo().with_context(active_test=False).search([
                 ('name', '=', template.name),
-                ('product_template_id', '!=', template.product_template_id),
+                ('id', '!=', template.id),
             ], limit=1)
             if duplicate:
-                raise ValidationError(
-                    _('El nombre del producto debe ser único.')
-                )
+                raise ValidationError(_('El nombre del producto debe ser único.'))
     
     descripcion = fields.Text(
         string='Descripción',
@@ -105,6 +108,15 @@ class ProductTemplate(models.Model):
          'The product template ID must be unique.'),
     ]
 
+    def _sync_name_with_codificacion(self):
+        if self.env.context.get('skip_name_sync'):
+            return
+        for rec in self:
+            if not isinstance(rec.id, int):   # skip onchange (NewId) records
+                continue
+            if rec.codificacion and rec.name != rec.codificacion:
+                rec.with_context(skip_name_sync=True).write({'name': rec.codificacion})
+            
     @api.constrains('product_template_id_aux')
     def _check_aux_unique(self):
         for rec in self.filtered('product_template_id_aux'):
@@ -211,6 +223,7 @@ class ProductTemplate(models.Model):
             #     codes.append(str(record.id))
 
             record.codificacion = '-'.join(codes) if codes else ''
+        self._sync_name_with_codificacion()
 
     @api.depends('product_familia_id', 'product_familia_id.property_ids.sequence', 'product_familia_id.property_ids.property_field',
                  'product_familia_id.name',
@@ -291,10 +304,7 @@ class ProductTemplate(models.Model):
                     vals['weight'] = 1.0
         records = super(ProductTemplate, self).create(vals_list)
         records._assign_product_template_id()
-        if not self.env.context.get('skip_name_sync'):
-            for rec in records:
-                if rec.codificacion and rec.name != rec.codificacion:
-                    rec.with_context(skip_name_sync=True).write({'name': rec.codificacion})
+        records._sync_name_with_codificacion()
         return records
 
     def write(self, vals):
@@ -302,10 +312,7 @@ class ProductTemplate(models.Model):
         if 'product_template_id_aux' in vals:
             self._assign_product_template_id()
         # Update name with codificacion whenever attributes change in standard write operations
-        if not self.env.context.get('skip_name_sync'):
-            for rec in self:
-                if rec.codificacion and rec.name != rec.codificacion:
-                    rec.with_context(skip_name_sync=True).write({'name': rec.codificacion})
+        self._sync_name_with_codificacion()
         # Trigger recomputation on variants when template is updated
         self.product_variant_ids._compute_studio_fields()
         return res
