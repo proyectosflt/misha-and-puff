@@ -6,6 +6,8 @@ from odoo import _, models, fields, api
 from odoo.modules.module import get_module_resource
 from odoo.osv import expression
 from .product_search_utils import format_product_search_result
+                        
+from collections import defaultdict
 
 _logger = logging.getLogger(__name__)
 
@@ -469,3 +471,67 @@ class ProductTemplate(models.Model):
                         # Explicitly preserve current product name as codificacion_anterior ONLY during the cron transition
                         vals_to_write['codificacion_anterior'] = template.name
                         template.write(vals_to_write)
+
+
+    def _predict_codificacion_from_row(self, row):
+        parts = []
+        # _CSV_FIELD_MAP is in the same order as _CSV_PROPERTY_ORDER
+        for field_name, model_name, name_index, code_index in self._CSV_FIELD_MAP:
+            raw_name = self._csv_cell(row, name_index)
+            raw_code = self._csv_cell(row, code_index) if code_index is not None else ''
+            if not raw_name and not raw_code:
+                continue
+            code = self._csv_code(raw_code or raw_name)
+            if code:
+                parts.append(code)
+        return '-'.join(parts)
+
+    @api.model
+    def _dry_run_codificacion_csv(self):
+        csv_path = get_module_resource('flt_stock_extended', 'data', self._CSV_FILENAME)
+        if not csv_path:
+            _logger.warning('CSV not found')
+            return
+
+        current = {}
+        for t in self.sudo().with_context(active_test=False).search([]):
+            current.setdefault((t.name or '').lower(), []).append(t.id)
+
+        by_code = defaultdict(list)
+        with open(csv_path, newline='', encoding='utf-8-sig') as f:
+            reader = csv.reader(f)
+            next(reader, None)
+            for line_no, row in enumerate(reader, start=2):
+                if not row or not any((c or '').strip() for c in row):
+                    continue
+                csv_name = self._csv_cell(row, 1)
+                if not csv_name:
+                    continue
+                code = self._predict_codificacion_from_row(row)
+                by_code[code.lower()].append((line_no, csv_name, code))
+
+        # 1) Different rows producing the same codificacion
+        for key, items in by_code.items():
+            if len(items) > 1:
+                _logger.warning('DUPLICATE CODE %r from rows: %s', key, items)
+
+        # 2) Predicted code equals the current name of another template
+        for key, items in by_code.items():
+            holders = current.get(key, [])
+            for line_no, csv_name, code in items:
+                others = [i for i in holders if csv_name.lower() != key]
+                if others:
+                    _logger.warning('NAME CLASH line %s: %r -> %r already used by template ids %s',
+                                    line_no, csv_name, code, others)
+
+        # 3) Same source name appearing more than once, or matching several templates
+        names = defaultdict(list)
+        for items in by_code.values():
+            for line_no, csv_name, _code in items:
+                names[csv_name.lower()].append(line_no)
+        for name, lines in names.items():
+            if len(lines) > 1:
+                _logger.warning('CSV NAME REPEATED %r on lines %s', name, lines)
+            if len(current.get(name, [])) > 1:
+                _logger.warning('SOURCE NAME MATCHES SEVERAL TEMPLATES %r ids %s',
+                                name, current[name])
