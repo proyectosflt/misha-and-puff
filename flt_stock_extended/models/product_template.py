@@ -453,13 +453,13 @@ class ProductTemplate(models.Model):
                 if not row or not any((cell or '').strip() for cell in row):
                     continue
 
-                reference = self._csv_cell(row, 1)
-                if not reference:
+                csv_name = self._csv_cell(row, 1)
+                if not csv_name:
                     continue
 
-                templates = self.sudo().search([('default_code', '=', reference)])
+                templates = self.sudo().search([('name', '=ilike', csv_name)])
                 if not templates:
-                    _logger.info('No product.template found for default_code %s', reference)
+                    _logger.info('No product.template found for name %s', csv_name)
                     continue
 
                 values = self._prepare_codificacion_vals_from_row(row)
