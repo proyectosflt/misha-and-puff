@@ -439,6 +439,22 @@ class ProductTemplate(models.Model):
             values[field_name] = record.id if record else False
 
         return values
+    
+    def _pick_by_stock(self, templates):
+        """Return (best_template, {template_id: stock}) ordering by stock desc, then id asc."""
+        if len(templates) == 1:
+            return templates, {}
+        quants = self.env['stock.quant'].sudo().with_context(active_test=False)._read_group(
+            [('product_id.product_tmpl_id', 'in', templates.ids),
+            ('location_id.usage', '=', 'internal')],
+            ['product_id'],
+            ['quantity:sum'],
+        )
+        stock = defaultdict(float)
+        for product, qty in quants:
+            stock[product.product_tmpl_id.id] += qty
+        best = sorted(templates, key=lambda t: (-stock[t.id], t.id))[0]
+        return best, dict(stock)
 
     @api.model
     def _cron_sync_product_codificacion_from_csv(self):
@@ -447,30 +463,83 @@ class ProductTemplate(models.Model):
             _logger.warning('Codificacion CSV not found: %s', self._CSV_FILENAME)
             return
 
+        Template = self.sudo().with_context(active_test=False)
+        processed = set()
+        csv_names = set()
+        claimed = {}   # predicted code (lower) -> line that got it
+        review = []
+
+        def _pending(csv_name):
+            return Template.search([
+                ('name', '=ilike', csv_name),
+                ('codificacion_anterior', 'in', [False, '']),
+                ('id', 'not in', list(processed)),
+            ], order='id')
+
         with open(csv_path, newline='', encoding='utf-8-sig') as csv_file:
             reader = csv.reader(csv_file)
             next(reader, None)
 
-            for row in reader:
-                if not row or not any((cell or '').strip() for cell in row):
+            for line_no, row in enumerate(reader, start=2):
+                if not row or not any((c or '').strip() for c in row):
                     continue
-
                 csv_name = self._csv_cell(row, 1)
                 if not csv_name:
                     continue
+                csv_names.add(csv_name)
 
-                templates = self.sudo().search([('name', '=ilike', csv_name)])
-                if not templates:
-                    _logger.info('No product.template found for name %s', csv_name)
+                candidates = _pending(csv_name)
+                if not candidates:
+                    # Already handled by an earlier row, or not in the DB.
+                    # Only a CSV duplicate, not a database problem.
+                    _logger.info('Line %s: nothing pending for %r', line_no, csv_name)
                     continue
 
-                values = self._prepare_codificacion_vals_from_row(row)
-                if values:
-                    for template in templates:
-                        vals_to_write = dict(values)
-                        # Explicitly preserve current product name as codificacion_anterior ONLY during the cron transition
-                        vals_to_write['codificacion_anterior'] = template.name
-                        template.write(vals_to_write)
+                template, stock = self._pick_by_stock(candidates)
+                if len(candidates) > 1:
+                    _logger.info('Line %s: %r had %s candidates, picked %s (stock %s)',
+                                line_no, csv_name, len(candidates), template.id, stock)
+                    
+                code = self._predict_codificacion_from_row(row)
+                key = code.lower()
+
+                if key in claimed:
+                    review.append((line_no, csv_name, 'code %s already given by line %s'
+                                % (code, claimed[key])))
+                    continue
+                holder = Template.search([('name', '=', code), ('id', '!=', template.id)], limit=1)
+                if holder:
+                    review.append((line_no, csv_name, 'name %s held by template %s'
+                                % (code, holder.id)))
+                    continue
+
+                try:
+                    with self.env.cr.savepoint():
+                        values = self._prepare_codificacion_vals_from_row(row)
+                        if not values:
+                            continue
+                        vals = dict(values)
+                        vals['codificacion_anterior'] = template.name
+                        template.write(vals)
+                    processed.add(template.id)
+                    claimed[key] = line_no
+                except ValidationError as e:
+                    review.append((line_no, csv_name, str(e)))
+
+        # Real problem: pending templates that match a CSV name but got nothing
+            for csv_name in csv_names:
+                left = _pending(csv_name)
+                if left:
+                    _best, stock = self._pick_by_stock(left | Template.browse(list(processed)).filtered(
+                        lambda t: t.codificacion_anterior and t.codificacion_anterior.lower() == csv_name.lower()))
+                    for tmpl in left:
+                        review.append((None, csv_name,
+                                    'template %s matches this CSV name but was not assigned (stock %s)'
+                                    % (tmpl.id, stock.get(tmpl.id, 0.0))))
+
+        _logger.warning('Codificacion sync: %s items need review', len(review))
+        for item in review:
+            _logger.warning('REVIEW line %s %r: %s', *item)
 
 
     def _predict_codificacion_from_row(self, row):
