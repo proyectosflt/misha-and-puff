@@ -111,11 +111,13 @@ class ProductTemplate(models.Model):
     def _sync_name_with_codificacion(self):
         if self.env.context.get('skip_name_sync'):
             return
+        langs = [code for code, _name in self.env['res.lang'].get_installed()]
         for rec in self:
-            if not isinstance(rec.id, int):   # skip onchange (NewId) records
+            if not isinstance(rec.id, int) or not rec.codificacion:
                 continue
-            if rec.codificacion and rec.name != rec.codificacion:
-                rec.with_context(skip_name_sync=True).write({'name': rec.codificacion})
+            if any(rec.with_context(lang=l).name != rec.codificacion for l in langs):
+                for l in langs:
+                    rec.with_context(skip_name_sync=True, lang=l).write({'name': rec.codificacion})
             
     @api.constrains('product_template_id_aux')
     def _check_aux_unique(self):
@@ -448,12 +450,12 @@ class ProductTemplate(models.Model):
         return values
     
     def _pick_by_stock(self, templates):
-        """Return (best_template, {template_id: stock}) ordering by stock desc, then id asc."""
+        """Return (best_template, {template_id: stock}), ordered by stock desc, then id asc."""
         if len(templates) == 1:
             return templates, {}
         quants = self.env['stock.quant'].sudo().with_context(active_test=False)._read_group(
             [('product_id.product_tmpl_id', 'in', templates.ids),
-            ('location_id.usage', '=', 'internal')],
+             ('location_id.usage', '=', 'internal')],
             ['product_id'],
             ['quantity:sum'],
         )
@@ -463,8 +465,69 @@ class ProductTemplate(models.Model):
         best = sorted(templates, key=lambda t: (-stock[t.id], t.id))[0]
         return best, dict(stock)
 
+    def _merge_precheck(self, dup, keeper):
+        if not keeper.active:
+            return False, 'the product holding this codificacion is archived'
+        if len(dup.product_variant_ids) != 1 or len(keeper.product_variant_ids) != 1:
+            return False, 'more than one variant, merge manually'
+        if dup.uom_id != keeper.uom_id:
+            return False, 'different unit of measure'
+        return True, ''
+
+    def _merge_into(self, dup, keeper):
+        """Repoint references from dup to keeper, then delete, else archive, else report."""
+        mapping = {
+            'product.template': (dup.id, keeper.id),
+            'product.product': (dup.product_variant_id.id, keeper.product_variant_id.id),
+        }
+        skip = {
+            'product.template', 'product.product',
+            'product.template.attribute.line', 'product.template.attribute.value',
+            'product.template.attribute.exclusion',
+        }
+        problems = []
+        for model_name in list(self.env.registry):
+            model = self.env[model_name]
+            if model._abstract or model._transient or not model._auto or model_name in skip:
+                continue
+            for field in model._fields.values():
+                if (field.type != 'many2one' or not field.store or field.compute
+                        or field.related or field.company_dependent):
+                    continue
+                pair = mapping.get(field.comodel_name)
+                if not pair:
+                    continue
+                old_id, new_id = pair
+                try:
+                    with self.env.cr.savepoint():
+                        self.env.cr.execute(
+                            'UPDATE "%s" SET "%s" = %%s WHERE "%s" = %%s'
+                            % (model._table, field.name, field.name), (new_id, old_id))
+                        if self.env.cr.rowcount:
+                            _logger.info('Merge %s -> %s: %s.%s moved %s rows',
+                                         dup.id, keeper.id, model_name, field.name,
+                                         self.env.cr.rowcount)
+                except Exception as e:
+                    problems.append('%s.%s: %s' % (model_name, field.name, e))
+
+        self.env.invalidate_all()
+
+        try:
+            with self.env.cr.savepoint():
+                dup.unlink()
+            return 'deleted', problems
+        except Exception as e:
+            problems.append('delete failed: %s' % e)
+        try:
+            with self.env.cr.savepoint():
+                dup.write({'active': False})
+            return 'archived', problems
+        except Exception as e:
+            problems.append('archive failed: %s' % e)
+        return 'failed', problems
+
     @api.model
-    def _cron_sync_product_codificacion_from_csv(self):
+    def _cron_sync_product_codificacion_from_csv(self, do_merge=True):
         csv_path = get_module_resource('flt_stock_extended', 'data', self._CSV_FILENAME)
         if not csv_path:
             _logger.warning('Codificacion CSV not found: %s', self._CSV_FILENAME)
@@ -473,13 +536,14 @@ class ProductTemplate(models.Model):
         Template = self.sudo().with_context(active_test=False)
         processed = set()
         csv_names = set()
-        claimed = {}   # predicted code (lower) -> line that got it
         review = []
+        merged_any = False
 
-        def _pending(csv_name):
+        def _candidates(csv_name):
             return Template.search([
-                ('name', '=ilike', csv_name),
-                ('codificacion_anterior', 'in', [False, '']),
+                ('active', '=', True),
+                '|', ('name', '=ilike', csv_name),
+                     ('codificacion_anterior', '=ilike', csv_name),
                 ('id', 'not in', list(processed)),
             ], order='id')
 
@@ -495,29 +559,44 @@ class ProductTemplate(models.Model):
                     continue
                 csv_names.add(csv_name)
 
-                candidates = _pending(csv_name)
+                candidates = _candidates(csv_name)
                 if not candidates:
-                    # Already handled by an earlier row, or not in the DB.
-                    # Only a CSV duplicate, not a database problem.
                     _logger.info('Line %s: nothing pending for %r', line_no, csv_name)
                     continue
 
-                template, stock = self._pick_by_stock(candidates)
-                if len(candidates) > 1:
-                    _logger.info('Line %s: %r had %s candidates, picked %s (stock %s)',
-                                line_no, csv_name, len(candidates), template.id, stock)
-                    
-                code = self._predict_codificacion_from_row(row)
-                key = code.lower()
+                migrated = candidates.filtered('codificacion_anterior')
+                template, stock = self._pick_by_stock(migrated or candidates)
 
-                if key in claimed:
-                    review.append((line_no, csv_name, 'code %s already given by line %s'
-                                % (code, claimed[key])))
+                code = self._predict_codificacion_from_row(row)
+                if '-' not in code:
+                    review.append((line_no, csv_name, 'only family code: %s' % code))
                     continue
-                holder = Template.search([('name', '=', code), ('id', '!=', template.id)], limit=1)
+
+                holder = Template.search([
+                    ('id', '!=', template.id),
+                    '|', ('codificacion', '=ilike', code), ('name', '=ilike', code),
+                ], order='active desc, id', limit=1)
+
                 if holder:
-                    review.append((line_no, csv_name, 'name %s held by template %s'
-                                % (code, holder.id)))
+                    ok, reason = self._merge_precheck(template, holder)
+                    if not ok:
+                        review.append((line_no, csv_name,
+                                       'not merged into template %s: %s' % (holder.id, reason)))
+                        continue
+                    if not do_merge:
+                        _logger.warning('WOULD MERGE line %s: template %s (%r) into %s (%r)',
+                                        line_no, template.id, template.name, holder.id, holder.name)
+                        continue
+                    dup_id, dup_name = template.id, template.name
+                    outcome, problems = self._merge_into(template, holder)
+                    processed.add(dup_id)
+                    merged_any = True
+                    _logger.warning('MERGED line %s: template %s (%r) into %s -> %s',
+                                    line_no, dup_id, dup_name, holder.id, outcome)
+                    if outcome != 'deleted' or problems:
+                        review.append((line_no, csv_name,
+                                       'merge into %s ended as %s; problems: %s'
+                                       % (holder.id, outcome, problems)))
                     continue
 
                 try:
@@ -526,23 +605,20 @@ class ProductTemplate(models.Model):
                         if not values:
                             continue
                         vals = dict(values)
-                        vals['codificacion_anterior'] = template.name
+                        if not template.codificacion_anterior:
+                            vals['codificacion_anterior'] = template.name
                         template.write(vals)
                     processed.add(template.id)
-                    claimed[key] = line_no
                 except ValidationError as e:
                     review.append((line_no, csv_name, str(e)))
 
-        # Real problem: pending templates that match a CSV name but got nothing
-            for csv_name in csv_names:
-                left = _pending(csv_name)
-                if left:
-                    _best, stock = self._pick_by_stock(left | Template.browse(list(processed)).filtered(
-                        lambda t: t.codificacion_anterior and t.codificacion_anterior.lower() == csv_name.lower()))
-                    for tmpl in left:
-                        review.append((None, csv_name,
-                                    'template %s matches this CSV name but was not assigned (stock %s)'
-                                    % (tmpl.id, stock.get(tmpl.id, 0.0))))
+        if merged_any and hasattr(self.env['stock.quant'], '_merge_quants'):
+            self.env['stock.quant'].sudo()._merge_quants()
+
+        for csv_name in csv_names:
+            for tmpl in _candidates(csv_name):
+                review.append((None, csv_name,
+                               'template %s matches this CSV name but was not assigned' % tmpl.id))
 
         _logger.warning('Codificacion sync: %s items need review', len(review))
         for item in review:
@@ -551,7 +627,6 @@ class ProductTemplate(models.Model):
 
     def _predict_codificacion_from_row(self, row):
         parts = []
-        # _CSV_FIELD_MAP is in the same order as _CSV_PROPERTY_ORDER
         for field_name, model_name, name_index, code_index in self._CSV_FIELD_MAP:
             raw_name = self._csv_cell(row, name_index)
             raw_code = self._csv_cell(row, code_index) if code_index is not None else ''
