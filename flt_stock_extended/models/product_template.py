@@ -200,11 +200,19 @@ class ProductTemplate(models.Model):
             return [(tmpl.id, format_product_search_result(tmpl)) for tmpl in templates]
         return [(tmpl.id, tmpl.display_name) for tmpl in templates]
 
-    @api.depends('product_familia_id', 'product_familia_id.property_ids.sequence', 'product_familia_id.property_ids.property_field', 
-                 'product_rubro_id', 'product_material_id', 'product_detalle_id', 
-                 'product_titulo_id', 'product_type_id', 'product_model_id', 
-                 'product_tenido_id', 'product_color_id', 'product_medida_id', 
-                 'product_texto_id', 'product_talla_id', 'product_otros_id')
+    @api.depends('product_familia_id', 'product_familia_id.property_ids.sequence', 'product_familia_id.property_ids.property_field',
+                 'product_rubro_id', 'product_rubro_id.codigo',
+                 'product_material_id', 'product_material_id.codigo',
+                 'product_detalle_id', 'product_detalle_id.codigo',
+                 'product_titulo_id', 'product_titulo_id.codigo',
+                 'product_type_id', 'product_type_id.codigo',
+                 'product_model_id', 'product_model_id.codigo',
+                 'product_tenido_id', 'product_tenido_id.codigo',
+                 'product_color_id', 'product_color_id.codigo',
+                 'product_medida_id', 'product_medida_id.codigo',
+                 'product_texto_id', 'product_texto_id.codigo',
+                 'product_talla_id', 'product_talla_id.codigo',
+                 'product_otros_id', 'product_otros_id.codigo')
     def _compute_codificacion(self):
         for record in self:
             if not record.product_familia_id or not record.product_familia_id.property_ids:
