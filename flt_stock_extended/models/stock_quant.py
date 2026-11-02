@@ -47,6 +47,7 @@ class StockQuant(models.Model):
         string="Total",
         compute='_compute_agrupacion_total',
         store=True,
+        default="Total"
     )
 
     def _compute_agrupacion_total(self):
