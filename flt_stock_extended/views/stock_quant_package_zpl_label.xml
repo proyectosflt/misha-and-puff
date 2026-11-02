@@ -24,14 +24,19 @@
 <t t-set="foot_wmax" t-value="140"/>
 
 <t t-set="tmpl" t-value="line.product_id.product_tmpl_id"/>
+<t t-set="is_unit_uom" t-value="line.product_id.uom_id == env.ref('uom.product_uom_unit')"/>
 <t t-set="excluded" t-value="('product_tenido_id', 'product_color_id', 'product_titulo_id')"/>
 <t t-set="props" t-value="tmpl.product_familia_id.property_ids.sorted(lambda p: p.sequence)"/>
 <t t-set="rest_codes" t-value="[(tmpl[p.property_field].codigo or '').strip() for p in props if p.property_field not in excluded and tmpl[p.property_field] and (tmpl[p.property_field].codigo or '').strip()]"/>
-<t t-set="line1" t-value="'-'.join(rest_codes).strip('-')"/>
+<t t-set="original_line1" t-value="'-'.join(rest_codes).strip('-')"/>
 <t t-set="line2" t-value="(tmpl.product_titulo_id.codigo or '').strip()"/>
 <t t-set="tenido" t-value="(tmpl.product_tenido_id.codigo or '').strip()"/>
 <t t-set="color" t-value="(tmpl.product_color_id.codigo or '').strip()"/>
 <t t-set="line3" t-value="(((tenido + '-') if (tenido and color) else tenido) + color).strip('-')"/>
+<t t-set="unit_line1" t-value="(tmpl.product_familia_id.name or '').strip()"/>
+<t t-set="line1" t-value="unit_line1 if is_unit_uom else original_line1"/>
+<t t-set="line2" t-value="original_line1 if is_unit_uom else line2"/>
+<t t-set="line3" t-value="(tmpl.product_titulo_id.codigo or '').strip() if is_unit_uom else line3"/>
 
 <t t-set="line1_len" t-value="sum([cw.get(c, 1.0) for c in line1]) or 1"/>
 <t t-set="line2_len" t-value="sum([cw.get(c, 1.0) for c in line2]) or 1"/>
@@ -43,7 +48,7 @@
 <t t-set="l2_h" t-value="int(l2_w / prop)"/>
 <t t-set="l3_w" t-value="min(int(780 / (fit * line3_len)), head_wmax)"/>
 <t t-set="l3_h" t-value="int(l3_w / prop)"/>
-<t t-set="y2" t-value="25 + l1_h + 12"/>
+<t t-set="y2" t-value="25 + l1_h + 12 + (45 if is_unit_uom else 0)"/>
 <t t-set="y3" t-value="y2 + l2_h + 12"/>
 
 ^FO0,25^FB812,1,0,C^A0N,<t t-out="l1_h"/>,<t t-out="l1_w"/>^FD<t t-out="line1"/>^FS
@@ -102,14 +107,19 @@
 <t t-set="quant" t-value="package.quant_ids and package.quant_ids[0]"/>
 <t t-set="tmpl" t-value="quant.product_tmpl_id if quant else False"/>
 <t t-if="tmpl">
+    <t t-set="is_unit_uom" t-value="quant.product_id.uom_id == env.ref('uom.product_uom_unit')"/>
     <t t-set="excluded" t-value="('product_tenido_id', 'product_color_id', 'product_titulo_id')"/>
     <t t-set="props" t-value="tmpl.product_familia_id.property_ids.sorted(lambda p: p.sequence)"/>
     <t t-set="rest_codes" t-value="[(tmpl[p.property_field].codigo or '').strip() for p in props if p.property_field not in excluded and tmpl[p.property_field] and (tmpl[p.property_field].codigo or '').strip()]"/>
-    <t t-set="line1" t-value="'-'.join(rest_codes).strip('-')"/>
+    <t t-set="original_line1" t-value="'-'.join(rest_codes).strip('-')"/>
 <t t-set="line2" t-value="(tmpl.product_titulo_id.codigo or '').strip()"/>
 <t t-set="tenido" t-value="(tmpl.product_tenido_id.codigo or '').strip()"/>
 <t t-set="color" t-value="(tmpl.product_color_id.codigo or '').strip()"/>
 <t t-set="line3" t-value="(((tenido + '-') if (tenido and color) else tenido) + color).strip('-')"/>
+<t t-set="unit_line1" t-value="(tmpl.product_familia_id.name or '').strip()"/>
+<t t-set="line1" t-value="unit_line1 if is_unit_uom else original_line1"/>
+<t t-set="line2" t-value="original_line1 if is_unit_uom else line2"/>
+<t t-set="line3" t-value="(tmpl.product_titulo_id.codigo or '').strip() if is_unit_uom else line3"/>
 
 <t t-set="line1_len" t-value="sum([cw.get(c, 1.0) for c in line1]) or 1"/>
 <t t-set="line2_len" t-value="sum([cw.get(c, 1.0) for c in line2]) or 1"/>
@@ -121,7 +131,7 @@
 <t t-set="l2_h" t-value="int(l2_w / prop)"/>
 <t t-set="l3_w" t-value="min(int(780 / (fit * line3_len)), head_wmax)"/>
 <t t-set="l3_h" t-value="int(l3_w / prop)"/>
-<t t-set="y2" t-value="25 + l1_h + 12"/>
+<t t-set="y2" t-value="25 + l1_h + 12 + (45 if is_unit_uom else 0)"/>
 <t t-set="y3" t-value="y2 + l2_h + 12"/>
 
 ^FO0,25^FB812,1,0,C^A0N,<t t-out="l1_h"/>,<t t-out="l1_w"/>^FD<t t-out="line1"/>^FS
