@@ -48,7 +48,7 @@
 <t t-set="l2_h" t-value="int(l2_w / prop)"/>
 <t t-set="l3_w" t-value="min(int(780 / (fit * line3_len)), head_wmax)"/>
 <t t-set="l3_h" t-value="int(l3_w / prop)"/>
-<t t-set="y2" t-value="25 + l1_h + 12"/>
+<t t-set="y2" t-value="25 + l1_h + 12 + (45 if is_unit_uom else 0)"/>
 <t t-set="y3" t-value="y2 + l2_h + 12"/>
 
 ^FO0,25^FB812,1,0,C^A0N,<t t-out="l1_h"/>,<t t-out="l1_w"/>^FD<t t-out="line1"/>^FS
@@ -131,7 +131,7 @@
 <t t-set="l2_h" t-value="int(l2_w / prop)"/>
 <t t-set="l3_w" t-value="min(int(780 / (fit * line3_len)), head_wmax)"/>
 <t t-set="l3_h" t-value="int(l3_w / prop)"/>
-<t t-set="y2" t-value="25 + l1_h + 12"/>
+<t t-set="y2" t-value="25 + l1_h + 12 + (45 if is_unit_uom else 0)"/>
 <t t-set="y3" t-value="y2 + l2_h + 12"/>
 
 ^FO0,25^FB812,1,0,C^A0N,<t t-out="l1_h"/>,<t t-out="l1_w"/>^FD<t t-out="line1"/>^FS
