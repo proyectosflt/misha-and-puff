@@ -12,15 +12,85 @@ class StockQuant(models.Model):
         related='product_id.product_tmpl_id.descripcion',
         readonly=True,
     )
+    # Propiedades de la codificación: se almacenan (store=True) porque
+    # Odoo solo permite agrupar por campos guardados en base de datos.
+    product_familia_id = fields.Many2one(
+        related='product_id.product_tmpl_id.product_familia_id',
+        string="Familia",
+        readonly=True,
+        store=True,
+    )
+    product_rubro_id = fields.Many2one(
+        related='product_id.product_tmpl_id.product_rubro_id',
+        string="Rubro",
+        readonly=True,
+        store=True,
+    )
+    product_material_id = fields.Many2one(
+        related='product_id.product_tmpl_id.product_material_id',
+        string="Material",
+        readonly=True,
+        store=True,
+    )
+    product_detalle_id = fields.Many2one(
+        related='product_id.product_tmpl_id.product_detalle_id',
+        string="Detalle",
+        readonly=True,
+        store=True,
+    )
     product_titulo_id = fields.Many2one(
         related='product_id.product_tmpl_id.product_titulo_id',
         string="Título",
         readonly=True,
+        store=True,
+    )
+    product_type_id = fields.Many2one(
+        related='product_id.product_tmpl_id.product_type_id',
+        string="Tipo",
+        readonly=True,
+        store=True,
+    )
+    product_model_id = fields.Many2one(
+        related='product_id.product_tmpl_id.product_model_id',
+        string="Modelo",
+        readonly=True,
+        store=True,
+    )
+    product_tenido_id = fields.Many2one(
+        related='product_id.product_tmpl_id.product_tenido_id',
+        string="Teñido",
+        readonly=True,
+        store=True,
     )
     product_color_id = fields.Many2one(
         related='product_id.product_tmpl_id.product_color_id',
         string="Color",
         readonly=True,
+        store=True,
+    )
+    product_medida_id = fields.Many2one(
+        related='product_id.product_tmpl_id.product_medida_id',
+        string="Medida",
+        readonly=True,
+        store=True,
+    )
+    product_texto_id = fields.Many2one(
+        related='product_id.product_tmpl_id.product_texto_id',
+        string="Texto",
+        readonly=True,
+        store=True,
+    )
+    product_talla_id = fields.Many2one(
+        related='product_id.product_tmpl_id.product_talla_id',
+        string="Talla",
+        readonly=True,
+        store=True,
+    )
+    product_otros_id = fields.Many2one(
+        related='product_id.product_tmpl_id.product_otros_id',
+        string="Otros Atributos",
+        readonly=True,
+        store=True,
     )
     procuct_color_family_id = fields.Many2one(
         related='product_id.product_tmpl_id.color_family_id',
