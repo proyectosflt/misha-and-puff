@@ -44,17 +44,23 @@ class StockRepack(models.Model):
                                    domain=[('usage', '=', 'internal')], string="Ubicación de Origen")
     theoretical_qty = fields.Float(compute='_compute_theoretical_qty',
                                    digits='Stock Weight', string="Stock actual sin empacar")
-    cantidad_empacada = fields.Float(compute='_compute_cantidad_empacada',
+    initial_loose_qty = fields.Float(digits='Stock Weight', string="Stock inicial sin empacar",
+                                     readonly=True, copy=False)
+    initial_qty_captured = fields.Boolean(string="Stock inicial registrado", readonly=True, copy=False)
+    cantidad_empacada =fields.Float(compute='_compute_cantidad_empacada',
                                      digits='Stock Weight', string="Cantidad empacada")
     line_ids = fields.One2many('stock.repack.line', 'repack_id', string="Líneas de empaque")
     remaining_qty = fields.Float(compute='_compute_remaining_qty',
                                   digits='Stock Weight', string="Diferencia")
 
-    @api.depends('product_id', 'location_id')
+    @api.depends('product_id', 'location_id', 'initial_loose_qty', 'initial_qty_captured')
     def _compute_theoretical_qty(self):
         for w in self:
             w.theoretical_qty = 0.0
-            if w.product_id and w.location_id:
+            # Desde la primera línea aplicada se muestra el stock inicial, no el suelto actual
+            if w.initial_qty_captured:
+                w.theoretical_qty = w.initial_loose_qty
+            elif w.product_id and w.location_id:
                 quants = self.env['stock.quant'].search([
                     ('product_id', '=', w.product_id.id),
                     ('location_id', '=', w.location_id.id),
@@ -80,7 +86,8 @@ class StockRepack(models.Model):
 
         # Las líneas aplicadas ya se descontaron del stock suelto: solo restan las pendientes
         pending_lines = self.line_ids.filtered(lambda l: not l.is_applied)
-        remnant_qty = self.theoretical_qty - sum(pending_lines.mapped('peso_neto'))
+        loose_qty = sum(self._get_loose_quants().mapped('quantity'))
+        remnant_qty = loose_qty - sum(pending_lines.mapped('peso_neto'))
 
         rounding = self.product_id.uom_id.rounding
         if float_compare(remnant_qty, 0.0, precision_rounding=rounding) > 0:
@@ -97,6 +104,17 @@ class StockRepack(models.Model):
             }
         
         return self._process_finalization(delete_remanent=True)
+
+    def _capture_initial_qty(self):
+        """Guarda el stock sin empacar antes del primer descuento de este registro."""
+        self.ensure_one()
+        if not self.initial_qty_captured:
+            # El valor en caché puede ser anterior a descuentos de otro registro
+            self.invalidate_recordset(['theoretical_qty'])
+            self.write({
+                'initial_loose_qty': self.theoretical_qty,
+                'initial_qty_captured': True,
+            })
 
     def _get_loose_quants(self):
         self.ensure_one()
@@ -246,6 +264,7 @@ class StockRepackLine(models.Model):
             })
 
             line.repack_id._apply_quant_adjustment(quant)
+            line.repack_id._capture_initial_qty()
             # Lo empacado sale siempre de la ubicación de origen del registro
             line.repack_id._deduct_loose_stock(line.peso_neto)
 
