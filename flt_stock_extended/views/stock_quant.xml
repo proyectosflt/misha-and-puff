@@ -56,10 +56,32 @@
             <xpath expr="//filter[@name='productgroup']" position="after">
                 <filter name="group_by_agrupacion_total" string="Total"
                         context="{'group_by': 'agrupacion_total'}"/>
+                <filter name="group_by_product_familia_id" string="Familia"
+                        context="{'group_by': 'product_familia_id'}"/>
+                <filter name="group_by_product_rubro_id" string="Rubro"
+                        context="{'group_by': 'product_rubro_id'}"/>
+                <filter name="group_by_product_material_id" string="Material"
+                        context="{'group_by': 'product_material_id'}"/>
+                <filter name="group_by_product_detalle_id" string="Detalle"
+                        context="{'group_by': 'product_detalle_id'}"/>
                 <filter name="group_by_product_titulo_id" string="Título"
                         context="{'group_by': 'product_titulo_id'}"/>
+                <filter name="group_by_product_type_id" string="Tipo"
+                        context="{'group_by': 'product_type_id'}"/>
+                <filter name="group_by_product_model_id" string="Modelo"
+                        context="{'group_by': 'product_model_id'}"/>
+                <filter name="group_by_product_tenido_id" string="Teñido"
+                        context="{'group_by': 'product_tenido_id'}"/>
                 <filter name="group_by_product_color_id" string="Color"
                         context="{'group_by': 'product_color_id'}"/>
+                <filter name="group_by_product_medida_id" string="Medida"
+                        context="{'group_by': 'product_medida_id'}"/>
+                <filter name="group_by_product_texto_id" string="Texto"
+                        context="{'group_by': 'product_texto_id'}"/>
+                <filter name="group_by_product_talla_id" string="Talla"
+                        context="{'group_by': 'product_talla_id'}"/>
+                <filter name="group_by_product_otros_id" string="Otros Atributos"
+                        context="{'group_by': 'product_otros_id'}"/>
             </xpath>
         </field>
     </record>
