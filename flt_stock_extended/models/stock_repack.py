@@ -2,6 +2,7 @@
 from markupsafe import Markup
 from odoo import models, fields, api
 from odoo.exceptions import UserError
+from odoo.tools import float_compare, float_is_zero
 
 class StockRepack(models.Model):
     _name = 'stock.repack'
@@ -43,17 +44,23 @@ class StockRepack(models.Model):
                                    domain=[('usage', '=', 'internal')], string="Ubicación de Origen")
     theoretical_qty = fields.Float(compute='_compute_theoretical_qty',
                                    digits='Stock Weight', string="Stock actual sin empacar")
-    cantidad_empacada = fields.Float(compute='_compute_cantidad_empacada',
+    initial_loose_qty = fields.Float(digits='Stock Weight', string="Stock inicial sin empacar",
+                                     readonly=True, copy=False)
+    initial_qty_captured = fields.Boolean(string="Stock inicial registrado", readonly=True, copy=False)
+    cantidad_empacada =fields.Float(compute='_compute_cantidad_empacada',
                                      digits='Stock Weight', string="Cantidad empacada")
     line_ids = fields.One2many('stock.repack.line', 'repack_id', string="Líneas de empaque")
     remaining_qty = fields.Float(compute='_compute_remaining_qty',
                                   digits='Stock Weight', string="Diferencia")
 
-    @api.depends('product_id', 'location_id')
+    @api.depends('product_id', 'location_id', 'initial_loose_qty', 'initial_qty_captured')
     def _compute_theoretical_qty(self):
         for w in self:
             w.theoretical_qty = 0.0
-            if w.product_id and w.location_id:
+            # Desde la primera línea aplicada se muestra el stock inicial, no el suelto actual
+            if w.initial_qty_captured:
+                w.theoretical_qty = w.initial_loose_qty
+            elif w.product_id and w.location_id:
                 quants = self.env['stock.quant'].search([
                     ('product_id', '=', w.product_id.id),
                     ('location_id', '=', w.location_id.id),
@@ -77,7 +84,13 @@ class StockRepack(models.Model):
         if self.state == 'done':
             raise UserError("Este registro ya se encuentra cerrado.")
 
-        if self.remaining_qty > 0:
+        # Las líneas aplicadas ya se descontaron del stock suelto: solo restan las pendientes
+        pending_lines = self.line_ids.filtered(lambda l: not l.is_applied)
+        loose_qty = sum(self._get_loose_quants().mapped('quantity'))
+        remnant_qty = loose_qty - sum(pending_lines.mapped('peso_neto'))
+
+        rounding = self.product_id.uom_id.rounding
+        if float_compare(remnant_qty, 0.0, precision_rounding=rounding) > 0:
             return {
                 'name': 'Confirmar Remanente',
                 'type': 'ir.actions.act_window',
@@ -86,22 +99,26 @@ class StockRepack(models.Model):
                 'target': 'new',
                 'context': {
                     'default_repack_id': self.id,
-                    'default_remaining_qty': self.remaining_qty,
+                    'default_remaining_qty': remnant_qty,
                 }
             }
         
         return self._process_finalization(delete_remanent=True)
 
-    def _process_finalization(self, delete_remanent=True):
+    def _capture_initial_qty(self):
+        """Guarda el stock sin empacar antes del primer descuento de este registro."""
         self.ensure_one()
-        Quant = self.env['stock.quant'].with_context(inventory_mode=True)
-        quants_to_apply = self.env['stock.quant']
+        if not self.initial_qty_captured:
+            # El valor en caché puede ser anterior a descuentos de otro registro
+            self.invalidate_recordset(['theoretical_qty'])
+            self.write({
+                'initial_loose_qty': self.theoretical_qty,
+                'initial_qty_captured': True,
+            })
 
-        unapplied_lines = self.line_ids.filtered(lambda l: not l.is_applied)
-        for line in unapplied_lines:
-            line.action_apply_line()
-
-        loose_quants = Quant.search([
+    def _get_loose_quants(self):
+        self.ensure_one()
+        return self.env['stock.quant'].with_context(inventory_mode=True).search([
             ('product_id', '=', self.product_id.id),
             ('location_id', '=', self.location_id.id),
             ('package_id', '=', False),
@@ -109,19 +126,47 @@ class StockRepack(models.Model):
             ('owner_id', '=', False),
         ])
 
+    def _apply_quant_adjustment(self, quants):
+        # Si devuelve una acción es un asistente y el ajuste no se aplicó
+        if quants and quants.action_apply_inventory():
+            raise UserError(
+                "El ajuste de inventario de %s requiere confirmación manual." % self.product_id.display_name
+            )
+
+    def _deduct_loose_stock(self, quantity):
+        """Descuenta la cantidad del stock suelto sin bajar de cero y devuelve lo que no se pudo descontar."""
+        self.ensure_one()
+        rounding = self.product_id.uom_id.rounding
+        loose_quants = self._get_loose_quants()
+        quants_to_apply = loose_quants.browse()
+        pending_qty = quantity
+
+        for loose_quant in loose_quants:
+            deduction = min(max(loose_quant.quantity, 0.0), pending_qty)
+            if float_is_zero(deduction, precision_rounding=rounding):
+                continue
+            loose_quant.inventory_quantity = loose_quant.quantity - deduction
+            quants_to_apply |= loose_quant
+            pending_qty -= deduction
+
+        self._apply_quant_adjustment(quants_to_apply)
+        return pending_qty
+
+    def _process_finalization(self, delete_remanent=True):
+        self.ensure_one()
+
+        unapplied_lines = self.line_ids.filtered(lambda l: not l.is_applied)
+        for line in unapplied_lines:
+            line.action_apply_line()
+
+        # Lo empacado ya se descontó al aplicar cada línea: conservar no requiere ajuste
         if delete_remanent:
+            loose_quants = self._get_loose_quants()
             for loose_quant in loose_quants:
                 loose_quant.cantidad_conos = 0
                 loose_quant.tara_cono = 0.0
                 loose_quant.inventory_quantity = 0.0
-                quants_to_apply |= loose_quant
-        else:
-            for loose_quant in loose_quants:
-                loose_quant.inventory_quantity = self.remaining_qty
-                quants_to_apply |= loose_quant
-
-        if quants_to_apply:
-            quants_to_apply.action_apply_inventory()
+            self._apply_quant_adjustment(loose_quants)
 
         self.write({'state': 'done'})
         self.message_post(
@@ -193,6 +238,11 @@ class StockRepackLine(models.Model):
             if line.repack_id.state == 'done':
                 raise UserError("No se pueden aplicar líneas en un registro cerrado.")
 
+            # Una línea copiada sin pesar tiene peso neto negativo y crearía stock negativo
+            rounding = line.repack_id.product_id.uom_id.rounding
+            if float_compare(line.peso_neto, 0.0, precision_rounding=rounding) <= 0:
+                raise UserError("No se puede aplicar una línea con peso neto igual o menor a cero.")
+
             Quant = self.env['stock.quant'].with_context(inventory_mode=True)
 
             package = self.env['stock.quant.package'].create({
@@ -213,7 +263,10 @@ class StockRepackLine(models.Model):
                 'inventory_quantity': line.peso_neto,
             })
 
-            quant.action_apply_inventory()
+            line.repack_id._apply_quant_adjustment(quant)
+            line.repack_id._capture_initial_qty()
+            # Lo empacado sale siempre de la ubicación de origen del registro
+            line.repack_id._deduct_loose_stock(line.peso_neto)
 
             line.write({
                 'package_id': package.id,
