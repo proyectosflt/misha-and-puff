@@ -58,6 +58,37 @@ class ProductProduct(models.Model):
             return [(product.id, format_product_search_result(product)) for product in products]
         return [(product.id, product.display_name) for product in products]
 
+    @api.model
+    def flt_get_global_totals(self, domain, field_names):
+        """Devuelve la suma global de los campos numéricos indicados sobre todos
+        los registros que cumplen el dominio (no solo la página cargada).
+        Respeta el contexto recibido (p. ej. to_date de 'Inventario a la fecha')."""
+        # Solo se aceptan campos numéricos no monetarios del modelo
+        numeric_fields = [
+            name for name in (field_names or [])
+            if name in self._fields and self._fields[name].type in ('integer', 'float')
+        ]
+        if not numeric_fields:
+            return {}
+
+        totals = {}
+        stored_fields = [name for name in numeric_fields if self._fields[name].store]
+        computed_fields = [name for name in numeric_fields if not self._fields[name].store]
+
+        # Campos almacenados: se suman directamente en base de datos
+        if stored_fields:
+            row = self._read_group(domain, [], [f'{name}:sum' for name in stored_fields])[0]
+            for name, value in zip(stored_fields, row):
+                totals[name] = value or 0
+
+        # Campos calculados (qty_available, virtual_available, ...): se calculan en lote
+        if computed_fields:
+            records = self.search(domain)
+            for name in computed_fields:
+                totals[name] = sum(records.mapped(name))
+
+        return totals
+
     @api.depends('product_template_variant_value_ids',
                  'product_template_variant_value_ids.attribute_id.name',
                  'product_template_variant_value_ids.product_attribute_value_id.name',
