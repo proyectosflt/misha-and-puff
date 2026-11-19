@@ -152,7 +152,8 @@
                             <table class="table table-sm o_main_table items-table">
                                 <colgroup>
                                     <col style="width: 8%;"/>
-                                    <col style="width: 52%;"/>
+                                    <col style="width: 42%;"/>
+                                    <col style="width: 10%;"/>
                                     <col style="width: 10%;"/>
                                     <col style="width: 10%;"/>
                                     <col style="width: 10%;"/>
@@ -166,6 +167,7 @@
                                     <th name="th_unidad" class="text-center"><span>UNIDAD MEDIDA</span></th>
                                     <th name="th_dscto_porc" class="text-center" t-if="not is_debit_note"><span>DSCTO %</span></th>
                                     <th name="th_precio_unitario" class="text-center"><span>PRECIO UNITARIO</span></th>
+                                    <th name="th_importe" class="text-center"><span>IMPORTE</span></th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -182,6 +184,8 @@
                                         <td class="text-center"><span t-field="line.product_uom_id.name"/></td>
                                         <td class="text-center" t-if="not is_debit_note"><span t-esc="'{:,.2f}'.format(float(line.discount or 0.0))"/></td>
                                         <td class="text-center"><span t-esc="'{:,.2f}'.format(float(line.price_unit or 0.0))"/></td>
+                                        <!-- Importe de la línea sin impuestos (cantidad x precio - descuento) -->
+                                        <td class="text-end"><span t-esc="'{:,.2f}'.format(float(line.price_subtotal or 0.0))"/></td>
                                     </tr>
                                 </t>
                                 <!-- Add empty rows to ensure minimum height (approx 20 rows) -->
@@ -193,6 +197,7 @@
                                         <td></td>
                                         <td t-if="not is_debit_note"></td>
                                         <td></td>
+                                        <td></td>
                                     </tr>
                                 </t>
                             </tbody>
@@ -200,16 +205,18 @@
                         </div>
 
                         <div class="row justify-content-end" style="margin-bottom: 0.5rem; margin-top: 10px;">
-                            <div class="col-4">
+                            <div class="col-5">
                                 <table class="table table-sm o_main_table items-table">
                                     <thead class="section-header">
                                         <tr>
+                                            <th class="text-center" style="padding: 2px 0;">SUBTOTAL</th>
                                             <th class="text-center" style="padding: 2px 0;">TOTAL IMPUESTOS</th>
                                             <th class="text-center" style="padding: 2px 0;">TOTAL</th>
                                         </tr>
                                     </thead>
                                     <tbody style="text-align: right;">
                                         <tr>
+                                            <td><span t-field="o.amount_untaxed"/></td>
                                             <td><span t-field="o.amount_tax"/></td>
                                             <td><span t-field="o.amount_total"/></td>
                                         </tr>
