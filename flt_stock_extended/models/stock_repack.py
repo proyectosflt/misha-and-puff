@@ -198,6 +198,18 @@ class StockRepackLine(models.Model):
     package_id = fields.Many2one('stock.quant.package', string="Paquete Creado", readonly=True, copy=False)
     is_applied = fields.Boolean(string="Aplicado", default=False, copy=False)
 
+    def write(self, vals):
+        # Una línea aplicada ya generó su paquete y descontó stock: no se puede modificar
+        allowed = {'package_id', 'is_applied'}
+        if set(vals) - allowed and self.filtered('is_applied'):
+            raise UserError("No se puede modificar una línea que ya fue aplicada.")
+        return super().write(vals)
+
+    @api.ondelete(at_uninstall=False)
+    def _unlink_except_applied(self):
+        if self.filtered('is_applied'):
+            raise UserError("No se puede eliminar una línea que ya fue aplicada.")
+
     def _default_location_id(self):
         repack_id = self.env.context.get('default_repack_id')
         if repack_id:

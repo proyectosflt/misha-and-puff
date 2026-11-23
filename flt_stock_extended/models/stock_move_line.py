@@ -31,6 +31,23 @@ class StockMoveLine(models.Model):
             self._sync_package_values()
         return result
 
+    def _is_applied_reception_line(self):
+        """Línea de recepción cuyo paquete ya se creó con el botón Aplicar."""
+        self.ensure_one()
+        return (self.picking_type_code == 'incoming'
+                and bool(self.result_package_id)
+                and self.state not in ('done', 'cancel'))
+
+    @api.ondelete(at_uninstall=False)
+    def _unlink_except_applied_reception(self):
+        # La cancelación del traslado sí debe poder limpiar las líneas
+        if self.env.context.get('flt_allow_unlink_applied'):
+            return
+        if any(line._is_applied_reception_line() for line in self):
+            raise UserError(
+                "No se puede eliminar una línea de recepción cuyo paquete ya fue aplicado."
+            )
+
     @api.onchange('package_id')
     def _onchange_package_id(self):
         for line in self:

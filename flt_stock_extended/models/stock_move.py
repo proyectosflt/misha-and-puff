@@ -69,6 +69,18 @@ class StockMove(models.Model):
             move.conos = sum(move.move_line_ids.mapped('cantidad_conos'))
             move.cantidad_bruto = sum(move.move_line_ids.mapped('peso_bruto'))
 
+    def action_open_package_selection(self):
+        """Abre la selección masiva de paquetes del despacho."""
+        self.ensure_one()
+        return self.env['stock.package.dispatch.wizard'].action_open_for_move(self)
+
+    def _action_cancel(self):
+        # Al cancelar se permite eliminar las líneas de recepción con paquete aplicado
+        return super(StockMove, self.with_context(flt_allow_unlink_applied=True))._action_cancel()
+
+    def _do_unreserve(self):
+        return super(StockMove, self.with_context(flt_allow_unlink_applied=True))._do_unreserve()
+
     @api.depends('quantity', 'neto_prov', 'product_uom_qty')
     def _compute_diferencias(self):
         for move in self:

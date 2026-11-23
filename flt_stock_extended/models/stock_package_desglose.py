@@ -28,6 +28,29 @@ class StockPackagesDesglose(models.Model):
     remaining_bruto = fields.Float(compute='_compute_remainings', string="Peso Bruto", digits='Stock Weight')
     remaining_neto = fields.Float(compute='_compute_remainings', string="Peso Neto", digits='Stock Weight')
 
+    # Datos del despacho cuando el desglose se abre desde la selección masiva de paquetes.
+    # Un modelo regular no puede tener Many2one a un modelo transitorio: se guarda el id.
+    dispatch_wizard_ref = fields.Integer(string="Asistente de despacho", copy=False)
+    origin_move_id = fields.Many2one('stock.move', string="Movimiento de despacho", readonly=True, copy=False)
+    origin_picking_id = fields.Many2one(related='origin_move_id.picking_id', string="Despacho", store=True)
+    dispatch_demand_qty = fields.Float(string="Demanda", digits='Stock Weight', readonly=True, copy=False)
+    dispatch_base_qty = fields.Float(string="Neto ya seleccionado", digits='Stock Weight', readonly=True, copy=False,
+                                     help="Neto de los paquetes seleccionados para el despacho sin contar los que se desglosan.")
+    dispatch_target_qty = fields.Float(compute='_compute_dispatch_values', string="Falta cubrir", digits='Stock Weight')
+    dispatch_selected_new_qty = fields.Float(compute='_compute_dispatch_values', string="Neto nuevo a despachar",
+                                             digits='Stock Weight')
+    dispatch_difference_qty = fields.Float(compute='_compute_dispatch_values', string="Diferencia resultante",
+                                           digits='Stock Weight')
+
+    @api.depends('dispatch_demand_qty', 'dispatch_base_qty',
+                 'dest_line_ids.select_for_dispatch', 'dest_line_ids.peso_neto')
+    def _compute_dispatch_values(self):
+        for rec in self:
+            selected_new = sum(rec.dest_line_ids.filtered('select_for_dispatch').mapped('peso_neto'))
+            rec.dispatch_target_qty = rec.dispatch_demand_qty - rec.dispatch_base_qty
+            rec.dispatch_selected_new_qty = selected_new
+            rec.dispatch_difference_qty = rec.dispatch_base_qty + selected_new - rec.dispatch_demand_qty
+
     @api.depends('source_line_ids.cantidad_conos', 'source_line_ids.peso_bruto', 'source_line_ids.peso_neto')
     def _compute_theoreticals(self):
         for rec in self:
@@ -87,6 +110,64 @@ class StockPackagesDesglose(models.Model):
             body=Markup(f"<p>Se finalizó el desglose y reempacado. El registro quedó en estado <b>Cerrado</b> con <b>{self.remaining_conos}</b> conos restantes.</p>"),
         )
 
+    # -------------------------------------------------------------------------
+    # Flujo desde la selección masiva de paquetes del despacho
+    # -------------------------------------------------------------------------
+    def _get_dispatch_form_action(self):
+        self.ensure_one()
+        return {
+            'name': "Desglose de paquetes para despacho",
+            'type': 'ir.actions.act_window',
+            'res_model': self._name,
+            'res_id': self.id,
+            'view_mode': 'form',
+            'views': [(self.env.ref('flt_stock_extended.view_stock_packages_desglose_dispatch_form').id, 'form')],
+            'target': 'new',
+            'context': {'dialog_size': 'extra-large'},
+        }
+
+    def _get_dispatch_wizard(self):
+        self.ensure_one()
+        wizard = self.env['stock.package.dispatch.wizard'].browse(self.dispatch_wizard_ref).exists()
+        if not wizard:
+            raise UserError(
+                "La selección de paquetes del despacho ya no está disponible. "
+                "Vuelva a abrir la selección desde el despacho."
+            )
+        return wizard
+
+    def action_finalizar_and_return(self):
+        """Finaliza el desglose y vuelve a la selección masiva con los nuevos paquetes."""
+        self.ensure_one()
+        wizard = self._get_dispatch_wizard()
+        source_packages = self.source_line_ids.mapped('package_id')
+
+        # Los paquetes de origen se vacían: se liberan antes sus reservas en este despacho
+        move = self.origin_move_id
+        if move and move.state not in ('done', 'cancel'):
+            move.move_line_ids.filtered(lambda ml: ml.package_id in source_packages).unlink()
+
+        self.action_finalizar()
+
+        new_packages_vals = [
+            (line.package_id, line.select_for_dispatch)
+            for line in self.dest_line_ids
+            if line.package_id
+        ]
+        wizard._apply_breakdown_result(source_packages, new_packages_vals)
+        return wizard._get_reopen_action()
+
+    def action_cancel_and_return(self):
+        """Descarta el desglose sin aplicar y vuelve a la selección masiva."""
+        self.ensure_one()
+        wizard = self._get_dispatch_wizard()
+        if self.dest_line_ids.filtered('is_applied'):
+            raise UserError(
+                "Ya hay paquetes nuevos aplicados en este desglose. Debe finalizarlo para que el inventario quede correcto."
+            )
+        self.unlink()
+        return wizard._get_reopen_action()
+
 
 class StockPackagesDesgloseSource(models.Model):
     _name = 'stock.packages.desglose.source'
@@ -94,6 +175,10 @@ class StockPackagesDesgloseSource(models.Model):
 
     desglose_id = fields.Many2one('stock.packages.desglose', ondelete='cascade')
     package_id = fields.Many2one('stock.quant.package', string="Paquete", required=True)
+    # Según la lógica de la empresa un paquete contiene un único producto
+    product_id = fields.Many2one('product.product', string="Producto", compute='_compute_package_data', store=True)
+    descripcion = fields.Text(related='product_id.product_tmpl_id.descripcion', string="Descripción")
+    color_code = fields.Char(related='product_id.product_tmpl_id.product_color_id.codigo', string="Código color")
     cantidad_conos = fields.Integer(string="Conos", compute='_compute_package_data', store=True)
     peso_neto = fields.Float(string="Peso Neto", compute='_compute_package_data', store=True, digits='Stock Weight')
     peso_bruto = fields.Float(string="Peso Bruto", compute='_compute_package_data', store=True, digits='Stock Weight')
@@ -108,10 +193,12 @@ class StockPackagesDesgloseSource(models.Model):
                 tara_conos = sum((q.tara_cono * q.cantidad_conos) for q in quants)
                 tara_bolsa = line.package_id.package_type_id.base_weight or 0.0
                 
+                line.product_id = quants[:1].product_id
                 line.cantidad_conos = conos
                 line.peso_neto = neto
                 line.peso_bruto = neto + tara_conos + tara_bolsa
             else:
+                line.product_id = False
                 line.cantidad_conos = 0
                 line.peso_neto = 0.0
                 line.peso_bruto = 0.0
@@ -139,6 +226,20 @@ class StockPackagesDesgloseDest(models.Model):
     
     package_id = fields.Many2one('stock.quant.package', string="Paquete Creado", readonly=True, copy=False)
     is_applied = fields.Boolean(string="Aplicado", default=False, copy=False)
+    select_for_dispatch = fields.Boolean(string="Llevar al despacho", copy=False,
+                                         help="El paquete nuevo vuelve marcado a la selección del despacho.")
+
+    def write(self, vals):
+        # Una línea aplicada ya generó su paquete: solo se permite marcarla para el despacho
+        allowed = {'select_for_dispatch', 'package_id', 'is_applied'}
+        if set(vals) - allowed and self.filtered('is_applied'):
+            raise UserError("No se puede modificar una línea que ya fue aplicada.")
+        return super().write(vals)
+
+    @api.ondelete(at_uninstall=False)
+    def _unlink_except_applied(self):
+        if self.filtered('is_applied'):
+            raise UserError("No se puede eliminar una línea que ya fue aplicada.")
 
     @api.onchange('desglose_id')
     def _onchange_desglose_id(self):

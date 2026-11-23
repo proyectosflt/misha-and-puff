@@ -71,18 +71,18 @@
                         <page string="Paquetes" name="packages">
                             <field name="line_ids" context="{'default_location_id': location_id}">
                                 <list editable="bottom">
-                                    <field name="location_id"/>
-                                    <field name="package_type_id"/>
-                                    <field name="cono_id"/>
+                                    <field name="location_id" readonly="is_applied"/>
+                                    <field name="package_type_id" readonly="is_applied"/>
+                                    <field name="cono_id" readonly="is_applied"/>
                                     <!-- sum="Total Conos" adds total row at footer -->
                                     <!-- sum="Total Peso Bruto" adds total row at footer -->
-                                    <field name="tara_bolsa"/>
-                                    <field name="tara_cono"/>
-                                    <field name="cantidad_conos" sum="Total Conos"/>
+                                    <field name="tara_bolsa" readonly="is_applied"/>
+                                    <field name="tara_cono" readonly="is_applied"/>
+                                    <field name="cantidad_conos" sum="Total Conos" readonly="is_applied"/>
                                     <field name="tara_cono_total" readonly="1"/>
                                     <!-- sum="Total Peso Neto" adds total row at footer -->
-                                    <field name="peso_bruto" sum="Total Peso Bruto"/>
-                                    <field name="peso_neto" sum="Total Peso Neto"/>
+                                    <field name="peso_bruto" sum="Total Peso Bruto" readonly="is_applied"/>
+                                    <field name="peso_neto" sum="Total Peso Neto" readonly="is_applied"/>
                                     <!-- Readonly Created Package Link -->
                                     <field name="package_id" readonly="1" widget="many2one"/>
                                     <field name="is_applied" column_invisible="True"/>

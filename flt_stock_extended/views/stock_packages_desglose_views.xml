@@ -8,6 +8,7 @@
         <field name="arch" type="xml">
             <list string="Desglose y reempacado">
                 <field name="create_date" string="Fecha"/>
+                <field name="origin_picking_id" optional="show"/>
                 <field name="theoretical_conos" string="Conos (Origen)"/>
                 <field name="packed_conos" string="Conos (Empacado)"/>
                 <field name="remaining_conos" string="Conos (Diferencia)"/>
@@ -58,6 +59,9 @@
                             <field name="source_line_ids">
                                 <list editable="bottom">
                                     <field name="package_id"/>
+                                    <field name="product_id" readonly="1" optional="show"/>
+                                    <field name="color_code" readonly="1"/>
+                                    <field name="descripcion" readonly="1" optional="show"/>
                                     <field name="cantidad_conos" sum="Total Conos"/>
                                     <field name="peso_bruto" sum="Total Bruto"/>
                                     <field name="peso_neto" sum="Total Neto"/>
@@ -68,15 +72,16 @@
                             <separator string="Nuevos Paquetes (Destino)"/>
                             <field name="dest_line_ids">
                                 <list editable="bottom">
-                                    <field name="location_id"/>
-                                    <field name="package_type_id"/>
-                                    <field name="cono_id"/>
-                                    <field name="tara_bolsa"/>
-                                    <field name="tara_cono"/>
-                                    <field name="cantidad_conos" sum="Total Conos"/>
+                                    <field name="location_id" readonly="is_applied"/>
+                                    <field name="package_type_id" readonly="is_applied"/>
+                                    <field name="cono_id" readonly="is_applied"/>
+                                    <field name="tara_bolsa" readonly="is_applied"/>
+                                    <field name="tara_cono" readonly="is_applied"/>
+                                    <field name="cantidad_conos" sum="Total Conos" readonly="is_applied"/>
                                     <field name="tara_cono_total" readonly="1"/>
-                                    <field name="peso_bruto" sum="Total Peso Bruto"/>
-                                    <field name="peso_neto" sum="Total Peso Neto"/>
+                                    <field name="peso_bruto" sum="Total Peso Bruto" readonly="is_applied"/>
+                                    <field name="peso_neto" sum="Total Peso Neto" readonly="is_applied"/>
+                                    <field name="select_for_dispatch" column_invisible="True"/>
                                     <!-- Readonly Created Package Link -->
                                     <field name="package_id" readonly="1" widget="many2one"/>
                                     <field name="is_applied" column_invisible="True"/>
@@ -92,6 +97,55 @@
                 </sheet>
                 <chatter/>
             </form>
+        </field>
+    </record>
+
+    <!-- Formulario de desglose como paso del asistente de despacho -->
+    <record id="view_stock_packages_desglose_dispatch_form" model="ir.ui.view">
+        <field name="name">stock.packages.desglose.dispatch.form</field>
+        <field name="model">stock.packages.desglose</field>
+        <field name="inherit_id" ref="view_stock_packages_desglose_form"/>
+        <field name="mode">primary</field>
+        <field name="arch" type="xml">
+            <xpath expr="//header" position="replace">
+                <field name="state" invisible="1"/>
+            </xpath>
+            <xpath expr="//field[@name='create_date']" position="replace">
+                <field name="dispatch_wizard_ref" invisible="1"/>
+                <group string="Despacho" col="6">
+                    <group colspan="2">
+                        <field name="origin_picking_id" readonly="1"/>
+                        <field name="dispatch_demand_qty"/>
+                        <field name="dispatch_base_qty"/>
+                    </group>
+                    <group colspan="2">
+                        <field name="dispatch_target_qty" class="fs-4 fw-bold"/>
+                        <div colspan="2" class="text-muted small">
+                            Neto que deben aportar los paquetes nuevos marcados con «Llevar al despacho».
+                        </div>
+                    </group>
+                    <group colspan="2">
+                        <field name="dispatch_selected_new_qty"/>
+                        <field name="dispatch_difference_qty" class="fs-4 fw-bold"
+                               decoration-success="dispatch_difference_qty == 0"
+                               decoration-warning="dispatch_difference_qty &lt; 0"
+                               decoration-danger="dispatch_difference_qty &gt; 0"/>
+                    </group>
+                </group>
+            </xpath>
+            <xpath expr="//field[@name='dest_line_ids']/list/field[@name='select_for_dispatch']" position="attributes">
+                <attribute name="column_invisible">False</attribute>
+                <attribute name="widget">boolean_toggle</attribute>
+            </xpath>
+            <xpath expr="//chatter" position="replace"/>
+            <xpath expr="//sheet" position="after">
+                <footer>
+                    <button name="action_finalizar_and_return" type="object" string="Finalizar y volver a la selección"
+                            class="btn-primary" data-hotkey="q"/>
+                    <button name="action_cancel_and_return" type="object" string="Cancelar y volver"
+                            class="btn-secondary" data-hotkey="x"/>
+                </footer>
+            </xpath>
         </field>
     </record>
 

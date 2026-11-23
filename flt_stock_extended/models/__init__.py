@@ -29,3 +29,4 @@ from . import purchase_order
 from . import sale_order
 from . import stock_repack
 from . import stock_package_desglose
+from . import stock_package_dispatch_wizard

@@ -1,0 +1,17 @@
+// La descripción en las vistas lista se muestra en una sola línea con elipsis
+// para que no aumente la altura de la fila.
+.o_list_renderer .o_list_table {
+    td.o_data_cell[name="descripcion"] {
+        white-space: nowrap !important;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        max-width: 280px;
+
+        .o_field_widget,
+        .o_field_widget span {
+            white-space: nowrap !important;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+    }
+}
