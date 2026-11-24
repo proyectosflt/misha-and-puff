@@ -106,6 +106,8 @@
         <field name="model">stock.packages.desglose</field>
         <field name="inherit_id" ref="view_stock_packages_desglose_form"/>
         <field name="mode">primary</field>
+        <!-- Prioridad baja: solo se usa cuando se abre desde el despacho, nunca desde el menú -->
+        <field name="priority">99</field>
         <field name="arch" type="xml">
             <xpath expr="//header" position="replace">
                 <field name="state" invisible="1"/>
