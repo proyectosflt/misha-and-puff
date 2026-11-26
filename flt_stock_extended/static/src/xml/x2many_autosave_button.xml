@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+    <!-- Permite que los botones marcados con o_flt_autosave guarden el padre en lugar de bloquearse -->
+    <t t-inherit="web.ListRenderer.RecordRow" t-inherit-mode="extension">
+        <xpath expr="//td[hasclass('o_data_cell')]//ViewButton" position="attributes">
+            <attribute name="onClick">fltGetButtonOnClick(record, button)</attribute>
+        </xpath>
+    </t>
+</templates>

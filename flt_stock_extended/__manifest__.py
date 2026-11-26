@@ -32,6 +32,8 @@
             'flt_stock_extended/static/src/js/picking_leave_warning.js',
             'flt_stock_extended/static/src/js/product_search_dropdown.js',
             'flt_stock_extended/static/src/js/list_global_totals.js',
+            'flt_stock_extended/static/src/js/x2many_autosave_button.js',
+            'flt_stock_extended/static/src/xml/x2many_autosave_button.xml',
             'flt_stock_extended/static/src/scss/list_description_ellipsis.scss',
         ],
     },

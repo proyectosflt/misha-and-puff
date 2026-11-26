@@ -41,9 +41,9 @@
                 <attribute name="optional">hide</attribute>
             </xpath>
             <xpath expr="//list" position="inside">
-                <button name="action_duplicar" string="Duplicar" type="object"
+                <button name="action_duplicar" string="Duplicar" type="object" class="o_flt_autosave"
                         column_invisible="parent.state in ('done', 'cancel')"/>
-                <button name="action_apply_package" string="Aplicar" type="object" icon="fa-check"
+                <button name="action_apply_package" string="Aplicar" type="object" icon="fa-check" class="o_flt_autosave"
                     column_invisible="parent.picking_type_id != 1"
                     invisible="result_package_id or parent.state in ('done', 'cancel')"/>
                 <button name="action_print_zpl_label" string="Imprimir ZPL" type="object" icon="fa-print"
@@ -88,7 +88,7 @@
                 <field name="picking_id" column_invisible="True"/>
                 <field name="picking_type_code" column_invisible="True"/>
                 <field name="state" column_invisible="True"/>
-                <button name="action_apply_package" string="Aplicar" type="object" icon="fa-check"
+                <button name="action_apply_package" string="Aplicar" type="object" icon="fa-check" class="o_flt_autosave"
                     invisible="picking_type_code != 'incoming' or result_package_id or state in ('done', 'cancel')"/>
                 <button name="action_print_zpl_label" string="Imprimir ZPL" type="object" icon="fa-print"
                     invisible="picking_type_code != 'incoming' or not result_package_id or state == 'cancel'"/>
