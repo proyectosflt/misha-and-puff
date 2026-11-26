@@ -123,7 +123,8 @@ class StockPackagesDesglose(models.Model):
             'view_mode': 'form',
             'views': [(self.env.ref('flt_stock_extended.view_stock_packages_desglose_dispatch_form').id, 'form')],
             'target': 'new',
-            'context': {'dialog_size': 'extra-large'},
+            # flt_desglose_dispatch indica a los botones de línea que deben reabrir este diálogo
+            'context': {'dialog_size': 'extra-large', 'flt_desglose_dispatch': True},
         }
 
     def _get_dispatch_wizard(self):
@@ -309,15 +310,24 @@ class StockPackagesDesgloseDest(models.Model):
                 body=Markup(f"<p>Se aplicó la línea de destino: <b>{new_package.name}</b> en <b>{line.location_id.display_name}</b></p>."),
             )
 
+        # En un diálogo, un botón que no devuelve acción cierra la ventana: se reabre el desglose
+        return self._get_dispatch_reopen_action()
+
+    def _get_dispatch_reopen_action(self):
+        if self.env.context.get('flt_desglose_dispatch') and len(self.desglose_id) == 1:
+            return self.desglose_id._get_dispatch_form_action()
+        return False
+
     def action_copy_line(self):
         self.ensure_one()
-        return self.copy(default={
+        new_line = self.copy(default={
             'peso_bruto': 0.0,
             'package_id': False,
             'is_applied': False,
             'tara_bolsa': self.tara_bolsa,
             'tara_cono': self.tara_cono,
         })
+        return self._get_dispatch_reopen_action() or new_line
 
     def action_print_label(self):
         self.ensure_one()
