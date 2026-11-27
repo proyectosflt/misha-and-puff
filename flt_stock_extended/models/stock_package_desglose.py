@@ -17,16 +17,16 @@ class StockPackagesDesglose(models.Model):
     dest_line_ids = fields.One2many('stock.packages.desglose.dest', 'desglose_id', string="Nuevos Paquetes (Destino)")
 
     theoretical_conos = fields.Integer(compute='_compute_theoreticals', string="Conos")
-    theoretical_bruto = fields.Float(compute='_compute_theoreticals', string="Peso Bruto", digits='Stock Weight')
-    theoretical_neto = fields.Float(compute='_compute_theoreticals', string="Peso Neto", digits='Stock Weight')
+    theoretical_bruto = fields.Float(compute='_compute_theoreticals', string="Kg bruto", digits='Stock Weight')
+    theoretical_neto = fields.Float(compute='_compute_theoreticals', string="Neto", digits='Stock Weight')
 
     packed_conos = fields.Integer(compute='_compute_packed', string="Conos")
-    packed_bruto = fields.Float(compute='_compute_packed', string="Peso Bruto", digits='Stock Weight')
-    packed_neto = fields.Float(compute='_compute_packed', string="Peso Neto", digits='Stock Weight')
+    packed_bruto = fields.Float(compute='_compute_packed', string="Kg bruto", digits='Stock Weight')
+    packed_neto = fields.Float(compute='_compute_packed', string="Neto", digits='Stock Weight')
 
     remaining_conos = fields.Integer(compute='_compute_remainings', string="Conos")
-    remaining_bruto = fields.Float(compute='_compute_remainings', string="Peso Bruto", digits='Stock Weight')
-    remaining_neto = fields.Float(compute='_compute_remainings', string="Peso Neto", digits='Stock Weight')
+    remaining_bruto = fields.Float(compute='_compute_remainings', string="Kg bruto", digits='Stock Weight')
+    remaining_neto = fields.Float(compute='_compute_remainings', string="Neto", digits='Stock Weight')
 
     # Datos del despacho cuando el desglose se abre desde la selección masiva de paquetes.
     # Un modelo regular no puede tener Many2one a un modelo transitorio: se guarda el id.
@@ -181,8 +181,8 @@ class StockPackagesDesgloseSource(models.Model):
     descripcion = fields.Text(related='product_id.product_tmpl_id.descripcion', string="Descripción")
     color_code = fields.Char(related='product_id.product_tmpl_id.product_color_id.codigo', string="Código color")
     cantidad_conos = fields.Integer(string="Conos", compute='_compute_package_data', store=True)
-    peso_neto = fields.Float(string="Peso Neto", compute='_compute_package_data', store=True, digits='Stock Weight')
-    peso_bruto = fields.Float(string="Peso Bruto", compute='_compute_package_data', store=True, digits='Stock Weight')
+    peso_neto = fields.Float(string="Neto", compute='_compute_package_data', store=True, digits='Stock Weight')
+    peso_bruto = fields.Float(string="Kg bruto", compute='_compute_package_data', store=True, digits='Stock Weight')
 
     @api.depends('package_id')
     def _compute_package_data(self):
@@ -219,7 +219,7 @@ class StockPackagesDesgloseDest(models.Model):
     package_type_id = fields.Many2one('stock.package.type', string="Tipo de bolsa", required=True)
     cono_id = fields.Many2one('tipo.cono', string="Tipo de cono")
     cantidad_conos = fields.Integer(string="Conos")
-    peso_bruto = fields.Float(string="Peso bruto", digits='Stock Weight')
+    peso_bruto = fields.Float(string="Kg bruto", digits='Stock Weight')
     tara_bolsa = fields.Float(compute='_compute_tara_bolsa', readonly=False, store=True, digits='Stock Weight')
     tara_cono = fields.Float(compute='_compute_tara_cono', readonly=False, store=True, digits='Stock Weight')
     tara_cono_total = fields.Float(string="Tara total", compute='_compute_tara_cono_total', store=True, digits='Stock Weight')

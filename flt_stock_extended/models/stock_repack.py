@@ -189,7 +189,7 @@ class StockRepackLine(models.Model):
     package_type_id = fields.Many2one('stock.package.type', string="Tipo de bolsa", required=True)
     cono_id = fields.Many2one('tipo.cono', string="Tipo de cono")
     cantidad_conos = fields.Integer(string="Conos")
-    peso_bruto = fields.Float(string="Peso bruto", digits='Stock Weight')
+    peso_bruto = fields.Float(string="Kg bruto", digits='Stock Weight')
     tara_bolsa = fields.Float(compute='_compute_tara_bolsa', readonly=False, store=True, digits='Stock Weight')
     tara_cono = fields.Float(compute='_compute_tara_cono', readonly=False, store=True, digits='Stock Weight')
     tara_cono_total = fields.Float(string="Tara total", compute='_compute_tara_cono_total', store=True, digits='Stock Weight')

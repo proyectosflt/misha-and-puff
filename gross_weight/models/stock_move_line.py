@@ -7,7 +7,7 @@ class StockMoveLine(models.Model):
     _inherit = 'stock.move.line'
     _description = 'Stock Move Line'
     
-    gross_weight = fields.Float('Peso bruto')
+    gross_weight = fields.Float('Kg bruto')
     cone_quantity = fields.Float('Cantidad de conos')
 
     @api.model_create_multi

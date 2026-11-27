@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 {
     'name': 'Stock Extended',
-    'version': '18.0.1.1.1',
+    'version': '18.0.1.1.2',
     'category': 'Stock',
     'summary': 'Add new features to stock module',
     'depends': ['base', 'stock', 'purchase', 'sale', 'sale_stock', 'purchase_stock', 'stock_delivery', 'mail', 'mrp', 'mrp_subcontracting'],

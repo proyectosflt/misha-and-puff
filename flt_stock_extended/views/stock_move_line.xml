@@ -34,8 +34,8 @@
                 <field name="tara_cono" column_invisible="parent.picking_type_id != 1" readonly="result_package_id and picking_type_code == 'incoming'"/>
                 <field name="cantidad_conos" sum="Total conos" readonly="result_package_id and picking_type_code == 'incoming'"/>
                 <field name="tara_cono_total" sum="Total tara conos" readonly="result_package_id and picking_type_code == 'incoming'"/>
-                <field name="peso_bruto" sum="Total peso bruto" readonly="result_package_id and picking_type_code == 'incoming'"/>
-                <field name="peso_neto" sum="Total peso neto" readonly="result_package_id and picking_type_code == 'incoming'"/>
+                <field name="peso_bruto" sum="Total kg bruto" readonly="result_package_id and picking_type_code == 'incoming'"/>
+                <field name="peso_neto" sum="Total neto" readonly="result_package_id and picking_type_code == 'incoming'"/>
             </xpath>
             <xpath expr="//field[@name='quantity']" position="attributes">
                 <attribute name="optional">hide</attribute>

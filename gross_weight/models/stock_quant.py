@@ -5,7 +5,7 @@ class StockQuant(models.Model):
     _inherit = 'stock.quant'
     _description = 'Stock Quant'
     
-    gross_weight = fields.Float('Peso bruto')
+    gross_weight = fields.Float('Kg bruto')
     cone_quantity = fields.Float('Cantidad de conos')
 
     def _update_available_quantity(self, product_id, location_id, quantity, lot_id=None, package_id=None, owner_id=None, in_date=None, gross_weight=None, cone_quantity=None):

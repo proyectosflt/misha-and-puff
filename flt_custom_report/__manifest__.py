@@ -1,7 +1,7 @@
 {
     'name': 'Custom Report',
     'summary': 'Custom reports for Valvosanitaria',
-    'version': '1.0',
+    'version': '1.1',
     'category': 'Accounting',
     'author': 'Samuel Gomez - FLT',
     'depends': ['account', 'stock', 'flt_stock_extended', 'l10n_pe_edi', 'dv_l10n_pe_edi_stock_template'],

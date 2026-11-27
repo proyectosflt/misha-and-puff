@@ -4,7 +4,7 @@ class StockMove(models.Model):
     _inherit = 'stock.move'
     _description = 'Stock Move'
     
-    gross_weight = fields.Float('Peso bruto', compute='_quantity_gross_weight_cone_compute')
+    gross_weight = fields.Float('Kg bruto', compute='_quantity_gross_weight_cone_compute')
     cone_quantity = fields.Float('Cantidad de conos', compute='_quantity_gross_weight_cone_compute')
 
     @api.depends('move_line_ids.gross_weight', 'move_line_ids.cone_quantity')

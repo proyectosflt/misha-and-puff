@@ -4,7 +4,7 @@ class ProductProduct(models.Model):
     _inherit = 'product.product'
     _description = 'Product Product'
     
-    gross_weight = fields.Float('Peso bruto', compute='_compute_cone_quantity_gross_weight', compute_sudo=True)
+    gross_weight = fields.Float('Kg bruto', compute='_compute_cone_quantity_gross_weight', compute_sudo=True)
     cone_quantity = fields.Float('Cantidad de conos', compute='_compute_cone_quantity_gross_weight', compute_sudo=True)
 
     quantity_svl = fields.Float(compute='_compute_value_svl', compute_sudo=True)

@@ -75,14 +75,14 @@
                                     <field name="package_type_id" readonly="is_applied"/>
                                     <field name="cono_id" readonly="is_applied"/>
                                     <!-- sum="Total Conos" adds total row at footer -->
-                                    <!-- sum="Total Peso Bruto" adds total row at footer -->
+                                    <!-- sum="Total kg bruto" adds total row at footer -->
                                     <field name="tara_bolsa" readonly="is_applied"/>
                                     <field name="tara_cono" readonly="is_applied"/>
                                     <field name="cantidad_conos" sum="Total Conos" readonly="is_applied"/>
                                     <field name="tara_cono_total" readonly="1"/>
-                                    <!-- sum="Total Peso Neto" adds total row at footer -->
-                                    <field name="peso_bruto" sum="Total Peso Bruto" readonly="is_applied"/>
-                                    <field name="peso_neto" sum="Total Peso Neto" readonly="is_applied"/>
+                                    <!-- sum="Total neto" adds total row at footer -->
+                                    <field name="peso_bruto" sum="Total kg bruto" readonly="is_applied"/>
+                                    <field name="peso_neto" sum="Total neto" readonly="is_applied"/>
                                     <!-- Readonly Created Package Link -->
                                     <field name="package_id" readonly="1" widget="many2one"/>
                                     <field name="is_applied" column_invisible="True"/>

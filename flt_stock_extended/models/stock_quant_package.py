@@ -5,8 +5,8 @@ class StockQuantPackage(models.Model):
     _inherit = 'stock.quant.package'
 
     cantidad_conos = fields.Integer(string="Conos", compute='_compute_totals', store=True)
-    peso_bruto = fields.Float(string="Peso bruto", compute='_compute_totals', store=True, digits='Stock Weight')
-    peso_neto = fields.Float(string="Peso neto", compute='_compute_totals', store=True, digits='Stock Weight')
+    peso_bruto = fields.Float(string="Kg bruto", compute='_compute_totals', store=True, digits='Stock Weight')
+    peso_neto = fields.Float(string="Neto", compute='_compute_totals', store=True, digits='Stock Weight')
     
     name = fields.Char(
         string='Package Reference', 
